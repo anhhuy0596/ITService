@@ -2,8 +2,10 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Multi-Tenant Project Portal - Minh Viet Group Proposal Integration</title>
+    <!-- Viewport tối ưu cho iPhone tai thỏ/Dynamic Island và Android -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>Enterprise Multi-Tenant Project Portal - Adaptive Cross-Device</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,153 +15,176 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        /* Tối ưu Safe Area Inset cho iOS & Android */
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+
+        body {
+            padding-top: var(--sat);
+            padding-bottom: var(--sab);
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
-        .leaflet-popup-content { margin: 12px 14px; font-family: inherit; }
+        .leaflet-popup-content { margin: 10px 12px; font-family: inherit; }
 
         @keyframes pulse-hq { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
         .hq-marker-icon { animation: pulse-hq 2s infinite ease-in-out; }
+
+        /* Smooth touch scrolling cho Mobile */
+        .touch-scroll {
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
-<body class="bg-gray-100 font-sans h-screen flex flex-col overflow-hidden text-gray-800">
+<body class="bg-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden text-gray-800 antialiased selection:bg-blue-500 selection:text-white">
 
     <!-- ========================================================================= -->
-    <!-- VIEW 1: AUTHENTICATION / LOGIN SCREEN -->
+    <!-- VIEW 1: AUTHENTICATION / LOGIN SCREEN (ADAPTIVE PC / TABLET / MOBILE) -->
     <!-- ========================================================================= -->
-    <section id="view-login" class="flex flex-1 items-center justify-center bg-slate-900 px-4">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-slate-700/50">
-            <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
+    <section id="view-login" class="flex flex-1 items-center justify-center bg-slate-900 px-4 py-6 overflow-y-auto custom-scrollbar">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-slate-700/50 my-auto">
+            <div class="text-center mb-5 sm:mb-6">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
                     🏢
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">ENTERPRISE PORTAL</h1>
-                <p class="text-xs text-gray-500 mt-1">Cổng thông tin dự án & Quản trị hạ tầng phân tán</p>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">ENTERPRISE PORTAL</h1>
+                <p class="text-[11px] sm:text-xs text-gray-500 mt-1">Cổng thông tin dự án & Quản trị hạ tầng phân tán</p>
             </div>
 
-            <form onsubmit="handleLogin(event)" class="space-y-4">
+            <form onsubmit="handleLogin(event)" class="space-y-3.5 sm:space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Tên đăng nhập</label>
+                    <label class="block text-[11px] sm:text-xs font-semibold text-gray-700 uppercase mb-1">Tên đăng nhập</label>
                     <input type="text" id="login-username" required placeholder="Nhập username..." 
-                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
+                           class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Mật khẩu</label>
+                    <label class="block text-[11px] sm:text-xs font-semibold text-gray-700 uppercase mb-1">Mật khẩu</label>
                     <input type="password" id="login-password" required placeholder="••••••••" 
-                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
+                           class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
                 </div>
                 <div id="login-error" class="hidden text-xs text-red-600 font-medium bg-red-50 p-2.5 rounded-lg border border-red-200">
                     ⚠️ Tên đăng nhập hoặc mật khẩu không chính xác!
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition duration-200">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition duration-200 min-h-[44px]">
                     Đăng nhập hệ thống →
                 </button>
             </form>
 
-            <div class="mt-6 pt-4 border-t border-gray-200 text-[11px] text-gray-500 space-y-1 bg-slate-50 p-3 rounded-xl">
-                <p class="font-bold text-gray-700">Tài khoản truy cập:</p>
+            <div class="mt-5 pt-3.5 border-t border-gray-200 text-[10.5px] sm:text-[11px] text-gray-500 space-y-1 bg-slate-50 p-3 rounded-xl">
+                <p class="font-bold text-gray-700">Tài khoản mẫu:</p>
                 <p>👑 <b>Admin:</b> <code class="bg-gray-200 px-1 rounded">admin</code> / <code class="bg-gray-200 px-1 rounded">admin123</code> (Xem cả 3 dự án & Quản lý User)</p>
-                <p>🚗 <b>Minh Việt Group:</b> <code class="bg-gray-200 px-1 rounded">client_minhviet</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (Proposal Full)</p>
-                <p>👔 <b>Uniqlo:</b> <code class="bg-gray-200 px-1 rounded">client_uniqlo</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (35 Sites + 3 NetNam HQs)</p>
+                <p>🚗 <b>Minh Việt:</b> <code class="bg-gray-200 px-1 rounded">client_minhviet</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (Full Proposal)</p>
+                <p>👔 <b>Uniqlo:</b> <code class="bg-gray-200 px-1 rounded">client_uniqlo</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (35 Sites + 3 HQs)</p>
                 <p>☕ <b>Starbucks:</b> <code class="bg-gray-200 px-1 rounded">client_starbucks</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (154 Stores)</p>
             </div>
         </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- VIEW 2: MAIN APP PORTAL -->
+    <!-- VIEW 2: MAIN APP PORTAL (RESPONSIVE HEADER + SUB-NAV + VIEWPORT) -->
     <!-- ========================================================================= -->
-    <div id="view-app" class="hidden flex-col h-screen overflow-hidden">
+    <div id="view-app" class="hidden flex-col h-[100dvh] overflow-hidden">
         
-        <!-- TOP NAVIGATION BAR -->
-        <header class="bg-gray-900 text-white px-6 py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-gray-800">
-            <div class="flex items-center space-x-3">
-                <div id="app-brand-badge" class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-base shadow-sm">
+        <!-- TOP NAVIGATION BAR (ADAPTIVE FLEX/WRAP) -->
+        <header class="bg-gray-900 text-white px-3 sm:px-6 py-2.5 sm:py-3 shadow-md flex flex-wrap justify-between items-center z-50 shrink-0 border-b border-gray-800 gap-2">
+            <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+                <div id="app-brand-badge" class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-sm shrink-0">
                     P
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 id="app-project-title" class="text-base font-bold uppercase tracking-wide">PORTAL DASHBOARD</h2>
-                        <span id="app-role-badge" class="text-[10px] bg-blue-900 text-blue-300 border border-blue-700 font-semibold px-2 py-0.5 rounded-full uppercase">Role</span>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <h2 id="app-project-title" class="text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide truncate max-w-[200px] sm:max-w-xs md:max-w-md">PORTAL DASHBOARD</h2>
+                        <span id="app-role-badge" class="text-[9px] sm:text-[10px] bg-blue-900 text-blue-300 border border-blue-700 font-semibold px-1.5 py-0.5 rounded-full uppercase shrink-0">Role</span>
                     </div>
-                    <p id="app-project-subtitle" class="text-xs text-gray-400">Không gian quản trị & giám sát hạ tầng phân tán</p>
+                    <p id="app-project-subtitle" class="text-[10px] sm:text-xs text-gray-400 truncate max-w-[220px] sm:max-w-md">Không gian quản trị & giám sát hạ tầng phân tán</p>
                 </div>
             </div>
 
-            <!-- ACTION BAR -->
-            <div class="flex items-center space-x-3">
+            <!-- ACTION BAR (RESPONSIVE) -->
+            <div class="flex items-center space-x-2 sm:space-x-3 ml-auto">
                 
                 <!-- BỘ CHỌN DỰ ÁN CHO ADMIN -->
-                <div id="admin-project-selector-container" class="hidden items-center space-x-2 bg-gray-800/90 border border-gray-700 p-1 rounded-xl">
-                    <span class="text-[11px] font-semibold text-gray-400 pl-2">📁 Chọn Dự Án:</span>
-                    <select id="admin-project-dropdown" onchange="handleAdminChangeProject(this.value)" class="bg-gray-900 text-white text-xs font-bold py-1.5 px-3 rounded-lg border border-gray-600 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                        <option value="minhviet">🚗 Minh Việt Group & VinFast CarOn (Full Proposal)</option>
+                <div id="admin-project-selector-container" class="hidden items-center space-x-1.5 bg-gray-800/90 border border-gray-700 p-1 rounded-xl">
+                    <span class="text-[10px] sm:text-[11px] font-semibold text-gray-400 pl-1.5 hidden md:inline">📁 Dự Án:</span>
+                    <select id="admin-project-dropdown" onchange="handleAdminChangeProject(this.value)" class="bg-gray-900 text-white text-[11px] sm:text-xs font-bold py-1 px-2 sm:px-2.5 rounded-lg border border-gray-600 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer max-w-[140px] sm:max-w-[220px] md:max-w-none truncate">
+                        <option value="minhviet">🚗 Minh Việt Group & VinFast CarOn</option>
                         <option value="uniqlo">👔 Uniqlo & NetNam (35 Sites)</option>
                         <option value="starbucks">☕ Starbucks Vietnam (154 Stores)</option>
                     </select>
                 </div>
 
                 <!-- ADMIN TABS -->
-                <div id="admin-nav-tab" class="hidden space-x-2">
-                    <button onclick="switchAdminView('USERS')" id="btn-tab-users" class="bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs">
-                        ⚙️ Quản lý tài khoản
+                <div id="admin-nav-tab" class="hidden space-x-1.5">
+                    <button onclick="switchAdminView('USERS')" id="btn-tab-users" class="bg-blue-600 text-white text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold shadow-xs">
+                        ⚙️ <span class="hidden sm:inline">Quản lý</span> User
                     </button>
-                    <button onclick="switchAdminView('PREVIEW')" id="btn-tab-preview" class="bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700">
-                        👁️ Xem Dự Án
+                    <button onclick="switchAdminView('PREVIEW')" id="btn-tab-preview" class="bg-gray-800 text-gray-300 hover:text-white text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700">
+                        👁️ <span class="hidden sm:inline">Xem</span> Dự Án
                     </button>
                 </div>
                 
-                <div class="text-right hidden sm:block">
+                <div class="text-right hidden lg:block">
                     <div id="user-display-name" class="text-xs font-bold text-gray-200">User Name</div>
                     <div id="user-tenant-name" class="text-[10px] text-gray-400">Tenant Name</div>
                 </div>
                 
-                <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-xs px-3 py-1.5 rounded-lg font-semibold transition">
-                    Đăng xuất
+                <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                    Thoát
                 </button>
             </div>
         </header>
 
-        <!-- SUB-NAV FOR CLIENT DASHBOARD (3 MỤC TIÊU CHUẨN) -->
-        <nav id="client-subnav" class="bg-white border-b border-gray-200 px-6 py-2 flex space-x-2 shrink-0 shadow-xs z-30">
-            <button onclick="switchClientSection('REQ')" id="btn-sec-req" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition">
-                📋 1. Yêu cầu dự án & Đánh giá hiện trạng
+        <!-- SUB-NAV FOR CLIENT DASHBOARD (TOUCH SCROLLING CHO MOBILE & TABLET) -->
+        <nav id="client-subnav" class="bg-white border-b border-gray-200 px-3 sm:px-6 py-2 flex items-center space-x-2 shrink-0 shadow-xs z-30 overflow-x-auto touch-scroll custom-scrollbar whitespace-nowrap">
+            <button onclick="switchClientSection('REQ')" id="btn-sec-req" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]">
+                📋 1. Yêu cầu & Hiện trạng
             </button>
-            <button onclick="switchClientSection('MAP')" id="btn-sec-map" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition">
-                🗺️ 2. Bản đồ các site & Điều phối Onsite
+            <button onclick="switchClientSection('MAP')" id="btn-sec-map" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+                🗺️ 2. Bản đồ các site & Dispatch
             </button>
-            <button onclick="switchClientSection('SOL')" id="btn-sec-sol" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition">
-                💡 3. Thông tin giải pháp đề xuất & BoM
+            <button onclick="switchClientSection('SOL')" id="btn-sec-sol" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+                💡 3. Giải pháp đề xuất & BoM
             </button>
         </nav>
 
-        <!-- APP BODY CONTAINER -->
+        <!-- ===================================================================== -->
+        <!-- APP BODY CONTAINER (RESPONSIVE VIEWPORT) -->
+        <!-- ===================================================================== -->
         <div class="flex-1 relative overflow-hidden flex bg-gray-100">
             
-            <!-- VIEW: ADMIN USER MANAGEMENT (CHỈ ADMIN THẤY) -->
-            <section id="sec-admin-users" class="hidden flex-1 overflow-y-auto p-6 max-w-7xl mx-auto w-full">
-                <div class="flex justify-between items-center mb-6">
+            <!-- VIEW: ADMIN USER MANAGEMENT -->
+            <section id="sec-admin-users" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-7xl mx-auto w-full custom-scrollbar">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4 sm:mb-6">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">Quản Lý Tài Khoản & Phân Quyền Khách Hàng</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Tạo mới, sửa, xóa, đổi mật khẩu và phân quyền Tenant truy cập từng dự án</p>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900">Quản Lý Tài Khoản & Phân Quyền</h3>
+                        <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5">Tạo mới, sửa, xóa, đổi mật khẩu và phân quyền Tenant cho từng khách hàng</p>
                     </div>
-                    <button onclick="openCreateUserModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-xl font-bold shadow-md">
+                    <button onclick="openCreateUserModal()" class="self-start sm:self-auto bg-blue-600 hover:bg-blue-700 text-white text-xs px-3.5 py-2 rounded-xl font-bold shadow-md transition">
                         + Tạo tài khoản mới
                     </button>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table class="w-full text-left text-xs">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto touch-scroll custom-scrollbar">
+                    <table class="w-full text-left text-xs min-w-[550px]">
                         <thead class="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase font-semibold">
                             <tr>
-                                <th class="p-4">Tên hiển thị / Username</th>
-                                <th class="p-4">Vai trò (Role)</th>
-                                <th class="p-4">Dự án được gán (Tenant Scope)</th>
-                                <th class="p-4">Trạng thái</th>
-                                <th class="p-4 text-right">Thao tác</th>
+                                <th class="p-3 sm:p-4">Tên hiển thị / Username</th>
+                                <th class="p-3 sm:p-4">Vai trò (Role)</th>
+                                <th class="p-3 sm:p-4">Dự án gán (Tenant)</th>
+                                <th class="p-3 sm:p-4">Trạng thái</th>
+                                <th class="p-3 sm:p-4 text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="admin-user-tbody" class="divide-y divide-gray-200"></tbody>
@@ -168,75 +193,77 @@
             </section>
 
             <!-- VIEW: CLIENT SECTION 1 - PROJECT REQUIREMENTS -->
-            <section id="sec-client-req" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full custom-scrollbar">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
-                    <div class="border-b border-gray-200 pb-4 flex justify-between items-center">
+            <section id="sec-client-req" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                    <div class="border-b border-gray-200 pb-3 sm:pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                         <div>
-                            <span class="text-xs font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-md">Module 1</span>
-                            <h3 id="req-title" class="text-xl font-bold text-gray-900 mt-2">Yêu Cầu Dự Án & Đánh Giá Hiện Trạng Kỹ Thuật</h3>
+                            <span class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-md">Module 1</span>
+                            <h3 id="req-title" class="text-base sm:text-xl font-bold text-gray-900 mt-1.5 sm:mt-2">Yêu Cầu Dự Án & Đánh Giá Hiện Trạng Kỹ Thuật</h3>
                         </div>
-                        <span id="req-status-badge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">Sẵn sàng triển khai</span>
+                        <span id="req-status-badge" class="self-start sm:self-auto bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full">Sẵn sàng triển khai</span>
                     </div>
-                    <div id="req-content-body" class="text-sm text-gray-700 leading-relaxed space-y-6"></div>
+                    <div id="req-content-body" class="text-xs sm:text-sm text-gray-700 leading-relaxed space-y-4 sm:space-y-6"></div>
                 </div>
             </section>
 
-            <!-- VIEW: CLIENT SECTION 2 - FULLSCREEN INTERACTIVE MAP -->
+            <!-- VIEW: CLIENT SECTION 2 - FULLSCREEN INTERACTIVE MAP (RESPONSIVE DRAWER ON MOBILE) -->
             <section id="sec-client-map" class="hidden flex-1 relative h-full w-full overflow-hidden">
                 
                 <!-- MAP CONTAINER 100% -->
                 <div id="map" class="absolute inset-0 h-full w-full z-0 bg-slate-200"></div>
 
-                <!-- BẢNG ĐIỀU KHIỂN NỔI THU GỌN / MỞ RỘNG -->
-                <div id="map-floating-panel" class="absolute top-4 left-4 z-20 w-[420px] max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
+                <!-- BẢNG ĐIỀU KHIỂN NỔI: TỰ SCALE THÀNH BOTTOM SHEET / SIDEBAR TÙY THIẾT BỊ -->
+                <div id="map-floating-panel" class="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-20 w-auto sm:w-[380px] md:w-[410px] max-h-[45vh] sm:max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
                     
-                    <div class="p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl">
-                        <div>
-                            <h3 id="panel-project-name" class="font-bold text-gray-900 text-sm">Danh Sách Site Hạ Tầng</h3>
-                            <p id="map-site-counter" class="text-[11px] font-semibold text-blue-600">Đang tải danh sách điểm...</p>
+                    <div class="p-3 sm:p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl shrink-0">
+                        <div class="min-w-0 pr-2">
+                            <h3 id="panel-project-name" class="font-bold text-gray-900 text-xs sm:text-sm truncate">Danh Sách Site Hạ Tầng</h3>
+                            <p id="map-site-counter" class="text-[10px] sm:text-[11px] font-semibold text-blue-600 truncate">Đang tải danh sách điểm...</p>
                         </div>
-                        <button onclick="toggleMapPanel()" title="Thu gọn danh sách" class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs transition">
+                        <button onclick="toggleMapPanel()" title="Thu gọn danh sách" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-gray-600 flex items-center justify-center font-bold text-xs transition shrink-0">
                             ◀
                         </button>
                     </div>
 
-                    <div class="p-3 border-b border-gray-100">
+                    <div class="p-2.5 sm:p-3 border-b border-gray-100 shrink-0">
                         <div class="relative">
-                            <input type="text" id="map-search-input" oninput="filterMapSites()" placeholder="Tìm site, chi nhánh, đường phố, ISP..." 
-                                   class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
-                            <span class="absolute left-3 top-2 text-gray-400 text-xs">🔍</span>
+                            <input type="text" id="map-search-input" oninput="filterMapSites()" placeholder="Tìm site, đường phố, ISP..." 
+                                   class="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
+                            <span class="absolute left-2.5 top-1.5 sm:top-2 text-gray-400 text-xs">🔍</span>
                         </div>
                     </div>
 
-                    <div id="map-site-list" class="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar"></div>
+                    <div id="map-site-list" class="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 sm:space-y-2.5 custom-scrollbar touch-scroll"></div>
                 </div>
 
-                <button id="btn-open-panel" onclick="toggleMapPanel()" class="hidden absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-md text-gray-800 border border-gray-300 shadow-xl px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition">
+                <!-- NÚT MỞ RỘNG PANEL KHI ĐÃ THU GỌN -->
+                <button id="btn-open-panel" onclick="toggleMapPanel()" class="hidden absolute top-3 left-3 z-20 bg-white/95 backdrop-blur-md text-gray-800 border border-gray-300 shadow-xl px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-blue-50 hover:text-blue-600 transition">
                     <span>📋 Danh sách Site</span> <span>▶</span>
                 </button>
 
-                <button onclick="toggleBrowserFullscreen()" class="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-md text-gray-700 border border-gray-300 shadow-lg px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-gray-50 transition">
-                    <span>⛶ Phóng to toàn màn hình</span>
+                <!-- NÚT PHÓNG TO TOÀN MÀN HÌNH -->
+                <button onclick="toggleBrowserFullscreen()" class="absolute top-3 right-3 z-20 bg-white/95 backdrop-blur-md text-gray-700 border border-gray-300 shadow-lg px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 hover:bg-gray-50 transition">
+                    <span>⛶ <span class="hidden sm:inline">Toàn màn hình</span></span>
                 </button>
             </section>
 
             <!-- VIEW: CLIENT SECTION 3 - SOLUTION ARCHITECTURE -->
-            <section id="sec-client-sol" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full custom-scrollbar">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
-                    <div class="border-b border-gray-200 pb-4">
-                        <span class="text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Module 3</span>
-                        <h3 id="sol-title" class="text-xl font-bold text-gray-900 mt-2">Phương Án Đề Xuất Chuẩn Hóa Hạ Tầng & Dịch Vụ IT Support</h3>
+            <section id="sec-client-sol" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                    <div class="border-b border-gray-200 pb-3 sm:pb-4">
+                        <span class="text-[10px] sm:text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Module 3</span>
+                        <h3 id="sol-title" class="text-base sm:text-xl font-bold text-gray-900 mt-1.5 sm:mt-2">Phương Án Đề Xuất Chuẩn Hóa Hạ Tầng & Dịch Vụ IT Support</h3>
                     </div>
-                    <div id="sol-content-body" class="text-sm text-gray-700 leading-relaxed space-y-6"></div>
+                    <div id="sol-content-body" class="text-xs sm:text-sm text-gray-700 leading-relaxed space-y-4 sm:space-y-6"></div>
                 </div>
             </section>
         </div>
     </div>
 
     <!-- MODAL: CREATE / EDIT USER -->
-    <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <h3 id="modal-user-title" class="text-lg font-bold text-gray-900">Tạo Tài Khoản Người Dùng</h3>
+    <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-3.5 sm:space-y-4 my-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 id="modal-user-title" class="text-base sm:text-lg font-bold text-gray-900">Tạo Tài Khoản Người Dùng</h3>
             <form onsubmit="handleSaveUser(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="modal-user-id">
                 <div>
@@ -268,15 +295,15 @@
                     </select>
                 </div>
                 <div class="flex justify-end space-x-2 pt-3 border-t">
-                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200">Hủy</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">Lưu thông tin</button>
+                    <button type="button" onclick="closeUserModal()" class="px-3.5 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 min-h-[38px]">Hủy</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 min-h-[38px]">Lưu</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- JAVASCRIPT: FULL DATASETS & APP LOGIC -->
+    <!-- JAVASCRIPT: DATASETS, RESPONSIVE ADAPTER & LOGIC -->
     <!-- ========================================================================= -->
     <script>
         // --- 1. USER DATABASE (RBAC) ---
@@ -289,11 +316,11 @@
 
         // --- 2. PROJECTS DATA REPOSITORY ---
         const projectsDB = {
-            // === PROJECT 1: MINH VIỆT GROUP (TÍCH HỢP TOÀN BỘ PROPOSAL) ===
+            // === PROJECT 1: MINH VIỆT GROUP ===
             minhviet: {
                 id: "minhviet",
-                name: "Minh Việt Group - Chuỗi Kho Vận & Xưởng Dịch Vụ VinFast CarOn",
-                clientName: "MINH VIỆT GROUP (Mảng Kho Vận & Chuỗi Xưởng Dịch Vụ VinFast CarOn)",
+                name: "Minh Việt Group - Chuỗi Kho Vận & Xưởng VinFast CarOn",
+                clientName: "MINH VIỆT GROUP (Mảng Kho Vận & Chuỗi Xưởng VinFast CarOn)",
                 providerName: "Aus Asia Technologies (AAT)",
                 icon: "🚗",
                 badgeBg: "bg-blue-600",
@@ -318,17 +345,17 @@
                     ],
                     scopeBlocks: [
                         { block: "Khối A: Hạ tầng Mạng & Kết nối Internet", content: "Lắp đặt Router Gateway chuyên dụng Multi-WAN cân bằng tải & Auto-Failover; triển khai Managed Switch phân tách VLAN; quy hoạch hệ thống Enterprise Wi-Fi 6 Fast Roaming (802.11k/v/r)." },
-                        { block: "Khối B: Thiết bị Đầu cuối & Hệ thống Ngoại vi", content: "Xử lý lỗi phần mềm/phần cứng máy trạm cơ bản; chuẩn hóa IP tĩnh cho Máy in hóa đơn/phiếu xuất kho, máy quét mã vạch; tách dải mạng tối ưu luồng truyền Camera CCTV." },
-                        { block: "Khối C: Dịch vụ Vận hành & Hỗ trợ Onsite SLA", content: "Giám sát chủ động từ xa 24/7 qua Cloud Controller; tiếp nhận yêu cầu qua Hotline/Ticket Portal/Zalo; Kỹ sư Onsite hiện trường ứng cứu sự cố theo SLA cam kết." },
-                        { block: "Khối D: Nội dung Ngoài phạm vi", content: "Không can thiệp phần mềm nghiệp vụ nội bộ VinFast/Minh Việt; chi phí linh kiện vật lý thay thế (cháy nổ, hỏng bo mạch) sẽ được báo giá phê duyệt riêng." }
+                        { block: "Khối B: Thiết bị Đầu cuối & Ngoại vi", content: "Xử lý lỗi phần mềm/phần cứng máy trạm cơ bản; chuẩn hóa IP tĩnh cho Máy in hóa đơn/phiếu xuất kho, máy quét mã vạch; tách dải mạng tối ưu luồng truyền Camera CCTV." },
+                        { block: "Khối C: Vận hành & Hỗ trợ Onsite SLA", content: "Giám sát chủ động từ xa 24/7 qua Cloud Controller; tiếp nhận yêu cầu qua Hotline/Ticket Portal/Zalo; Kỹ sư Onsite hiện trường ứng cứu sự cố theo SLA cam kết." },
+                        { block: "Khối D: Ngoài phạm vi", content: "Không can thiệp phần mềm nghiệp vụ nội bộ VinFast/Minh Việt; chi phí linh kiện vật lý thay thế (cháy nổ, hỏng bo mạch) sẽ được báo giá phê duyệt riêng." }
                     ],
                     raciTable: [
                         { stt: 1, task: "Cung cấp danh sách các Site, mặt bằng và đầu mối phụ trách", aat: "Hỗ trợ biểu mẫu (C)", mv: "Chịu trách nhiệm chính (A/R)" },
                         { stt: 2, task: "Khảo sát thực tế hạ tầng và lập phương án kỹ thuật chi tiết", aat: "Chịu trách nhiệm chính (A/R)", mv: "Bố trí người dẫn và mở cửa (C)" },
                         { stt: 3, task: "Phê duyệt phương án thiết kế và dự toán kinh phí mua sắm", aat: "Tư vấn kỹ thuật (C)", mv: "Chịu trách nhiệm phê duyệt (A)" },
                         { stt: 4, task: "Thi công lắp đặt thiết bị, kéo cáp, cấu hình VLAN, cân bằng tải", aat: "Chịu trách nhiệm chính (A/R)", mv: "Giám sát hiện trường (I)" },
-                        { stt: 5, task: "Làm việc với các ISP nhà mạng khi xảy ra sự cố đứt cáp", aat: "Đại diện xử lý kỹ thuật (A/R)", mv: "Cung cấp thông tin hợp đồng ISP (I)" },
-                        { stt: 6, task: "Tiếp nhận và xử lý sự cố người dùng (PC, Máy in, Camera, Wi-Fi)", aat: "Thực hiện cam kết theo SLA (A/R)", mv: "Gửi yêu cầu qua kênh Ticket (I)" },
+                        { stt: 5, task: "Làm việc với các ISP nhà mạng khi xảy ra sự cố đứt cáp", aat: "Đại diện xử lý kỹ thuật (A/R)", mv: "Cung cấp hợp đồng ISP (I)" },
+                        { stt: 6, task: "Tiếp nhận và xử lý sự cố người dùng (PC, Máy in, Camera, Wi-Fi)", aat: "Thực hiện cam kết theo SLA (A/R)", mv: "Gửi yêu cầu qua Ticket (I)" },
                         { stt: 7, task: "Nghiệm thu dịch vụ và báo cáo vận hành định kỳ hàng tháng", aat: "Lập báo cáo chi tiết (A/R)", mv: "Đánh giá & Nghiệm thu (A)" }
                     ],
                     deliverables: [
@@ -411,7 +438,7 @@
                 ]
             },
 
-            // === PROJECT 2: UNIQLO & NETNAM (35 SITES + 3 HQS) ===
+            // === PROJECT 2: UNIQLO & NETNAM ===
             uniqlo: {
                 id: "uniqlo",
                 name: "Uniqlo Retail & NetNam Field Engineer Network",
@@ -479,7 +506,7 @@
                 ]
             },
 
-            // === PROJECT 3: STARBUCKS VIETNAM (154 SITES) ===
+            // === PROJECT 3: STARBUCKS VIETNAM ===
             starbucks: {
                 id: "starbucks",
                 name: "Starbucks Vietnam Store Locator (154 Stores)",
@@ -521,7 +548,7 @@
         let animatedBike = null;
         let bikeInterval = null;
 
-        // --- 4. AUTHENTICATION & STRICT RBAC ACCESS ---
+        // --- 4. AUTHENTICATION CONTROLLER ---
         function handleLogin(e) {
             e.preventDefault();
             const u = document.getElementById('login-username').value.trim();
@@ -597,7 +624,7 @@
 
         function applyProjectBranding(proj) {
             document.getElementById('app-brand-badge').innerText = proj.icon;
-            document.getElementById('app-brand-badge').className = `w-9 h-9 ${proj.badgeBg} rounded-xl flex items-center justify-center font-bold text-white text-base shadow-sm`;
+            document.getElementById('app-brand-badge').className = `w-8 h-8 sm:w-9 sm:h-9 ${proj.badgeBg} rounded-xl flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-sm shrink-0`;
             document.getElementById('app-project-title').innerText = proj.name;
             document.getElementById('app-project-subtitle').innerText = `Khách hàng: ${proj.clientName}`;
             document.getElementById('panel-project-name').innerText = `Các site: ${proj.name}`;
@@ -619,14 +646,14 @@
                 secUsers.classList.remove('hidden');
                 [secReq, secMap, secSol].forEach(el => el.classList.add('hidden'));
                 clientSubnav.classList.add('hidden');
-                btnUsers.className = "bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
-                btnPrev.className = "bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
+                btnUsers.className = "bg-blue-600 text-white text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
+                btnPrev.className = "bg-gray-800 text-gray-300 hover:text-white text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
                 renderAdminUsersTable();
             } else {
                 secUsers.classList.add('hidden');
                 clientSubnav.classList.remove('hidden');
-                btnUsers.className = "bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
-                btnPrev.className = "bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
+                btnUsers.className = "bg-gray-800 text-gray-300 hover:text-white text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
+                btnPrev.className = "bg-blue-600 text-white text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
                 
                 const selectedKey = document.getElementById('admin-project-dropdown').value;
                 activeProject = projectsDB[selectedKey];
@@ -643,19 +670,19 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
                 tr.innerHTML = `
-                    <td class="p-4">
+                    <td class="p-3 sm:p-4">
                         <div class="font-bold text-gray-900">${user.name}</div>
-                        <div class="text-gray-400 font-mono text-[11px]">${user.username}</div>
+                        <div class="text-gray-400 font-mono text-[10px] sm:text-[11px]">${user.username}</div>
                     </td>
-                    <td class="p-4">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">
+                    <td class="p-3 sm:p-4">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">
                             ${user.role}
                         </span>
                     </td>
-                    <td class="p-4 font-semibold text-gray-700 uppercase">${user.tenantId}</td>
-                    <td class="p-4"><span class="inline-flex items-center text-emerald-600 text-[11px] font-semibold">● Hoạt động</span></td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="openEditUserModal(${user.id})" class="text-blue-600 hover:underline font-semibold">Sửa / Đổi Pass</button>
+                    <td class="p-3 sm:p-4 font-semibold text-gray-700 uppercase">${user.tenantId}</td>
+                    <td class="p-3 sm:p-4"><span class="inline-flex items-center text-emerald-600 text-[10px] sm:text-[11px] font-semibold">● Hoạt động</span></td>
+                    <td class="p-3 sm:p-4 text-right space-x-2">
+                        <button onclick="openEditUserModal(${user.id})" class="text-blue-600 hover:underline font-semibold">Sửa</button>
                         ${user.role !== 'ADMIN' ? `<button onclick="handleDeleteUser(${user.id})" class="text-red-600 hover:underline font-semibold">Xóa</button>` : ''}
                     </td>
                 `;
@@ -718,7 +745,7 @@
             }
         }
 
-        // --- 6. CLIENT DASHBOARD SECTIONS (TÍCH HỢP ĐẦY ĐỦ PROPOSAL MINH VIỆT) ---
+        // --- 6. CLIENT DASHBOARD SECTIONS ---
         function switchClientSection(sec) {
             const secReq = document.getElementById('sec-client-req');
             const secMap = document.getElementById('sec-client-map');
@@ -730,24 +757,24 @@
             const btnSol = document.getElementById('btn-sec-sol');
 
             [secReq, secMap, secSol, secUsers].forEach(el => el.classList.add('hidden'));
-            [btnReq, btnMap, btnSol].forEach(b => b.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition");
+            [btnReq, btnMap, btnSol].forEach(b => b.className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]");
 
             if (sec === 'REQ') {
                 secReq.classList.remove('hidden');
-                btnReq.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition";
+                btnReq.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]";
                 renderProjectRequirements();
             } else if (sec === 'MAP') {
                 secMap.classList.remove('hidden');
-                btnMap.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition";
+                btnMap.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]";
                 setTimeout(initProjectMap, 150);
             } else if (sec === 'SOL') {
                 secSol.classList.remove('hidden');
-                btnSol.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition";
+                btnSol.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]";
                 renderProjectSolution();
             }
         }
 
-        // RENDER MODULE 1: YÊU CẦU DỰ ÁN & HIỆN TRẠNG
+        // RENDER MODULE 1: YÊU CẦU DỰ ÁN & HIỆN TRẠNG (FLUID SCALING)
         function renderProjectRequirements() {
             const p = activeProject;
             document.getElementById('req-title').innerText = `Yêu Cầu Dự Án & Hiện Trạng: ${p.name}`;
@@ -755,51 +782,51 @@
             if (p.id === 'minhviet') {
                 document.getElementById('req-content-body').innerHTML = `
                     <!-- TÓM TẮT DÀNH CHO BAN LÃNH ĐẠO -->
-                    <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-bold text-blue-950 text-sm flex items-center gap-2">
+                    <div class="p-3.5 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 mb-2">
+                            <h4 class="font-bold text-blue-950 text-xs sm:text-sm flex items-center gap-2">
                                 <span>📌</span> Tóm Tắt Dành Cho Ban Lãnh Đạo (Executive Summary)
                             </h4>
-                            <span class="text-[11px] font-semibold text-blue-800 bg-white px-2 py-0.5 rounded border border-blue-200">Phiên bản: ${p.proposalMeta.version}</span>
+                            <span class="self-start sm:self-auto text-[10px] sm:text-[11px] font-semibold text-blue-800 bg-white px-2 py-0.5 rounded border border-blue-200">Phiên bản: ${p.proposalMeta.version}</span>
                         </div>
                         <p class="text-xs text-blue-900 leading-relaxed">${p.requirements.executiveSummary}</p>
                     </div>
 
                     <!-- 4 ĐIỂM NGHẼN TRỌNG YẾU TẠI CÁC SITE -->
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                    <div class="space-y-2.5 sm:space-y-3">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
                             <span>⚠️</span> 4 Điểm Nghẽn Trọng Yếu Hiện Trạng Ghi Nhận Tại Các Site
                         </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
                             ${p.requirements.bottlenecks.map(b => `
-                                <div class="p-3.5 bg-red-50/60 rounded-xl border border-red-200">
+                                <div class="p-3 sm:p-3.5 bg-red-50/60 rounded-xl border border-red-200">
                                     <h5 class="font-bold text-red-950 text-xs mb-1">🔴 ${b.title}</h5>
-                                    <p class="text-xs text-gray-700 leading-relaxed">${b.desc}</p>
+                                    <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed">${b.desc}</p>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
 
-                    <!-- BẢNG TỔNG HỢP RỦI RO & MỨC ƯU TIÊN -->
+                    <!-- BẢNG TỔNG HỢP RỦI RO & MỨC ƯU TIÊN (RESPONSIVE SCROLL) -->
                     <div class="space-y-2">
-                        <h4 class="font-bold text-gray-900 text-sm">📊 Bảng Tổng Hợp Rủi Ro & Tác Động Vận Hành</h4>
-                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
-                            <table class="w-full text-xs text-left">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">📊 Bảng Tổng Hợp Rủi Ro & Tác Động Vận Hành</h4>
+                        <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[500px]">
                                 <thead class="bg-gray-100 font-bold text-gray-700 border-b">
                                     <tr>
-                                        <th class="p-3">Hạng mục Khảo sát</th>
-                                        <th class="p-3">Hiện trạng Ghi nhận</th>
-                                        <th class="p-3">Rủi ro Vận hành Nghiêm trọng</th>
-                                        <th class="p-3 text-center">Mức Ưu tiên</th>
+                                        <th class="p-2.5 sm:p-3">Hạng mục Khảo sát</th>
+                                        <th class="p-2.5 sm:p-3">Hiện trạng Ghi nhận</th>
+                                        <th class="p-2.5 sm:p-3">Rủi ro Vận hành Nghiêm trọng</th>
+                                        <th class="p-2.5 sm:p-3 text-center">Mức Ưu tiên</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     ${p.requirements.riskTable.map(r => `
                                         <tr class="hover:bg-gray-50">
-                                            <td class="p-3 font-semibold text-gray-900">${r.item}</td>
-                                            <td class="p-3 text-gray-600">${r.status}</td>
-                                            <td class="p-3 text-red-700 font-medium">${r.risk}</td>
-                                            <td class="p-3 text-center">
+                                            <td class="p-2.5 sm:p-3 font-semibold text-gray-900">${r.item}</td>
+                                            <td class="p-2.5 sm:p-3 text-gray-600">${r.status}</td>
+                                            <td class="p-2.5 sm:p-3 text-red-700 font-medium">${r.risk}</td>
+                                            <td class="p-2.5 sm:p-3 text-center">
                                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.priority.includes('P1') ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">
                                                     ${r.priority}
                                                 </span>
@@ -812,40 +839,40 @@
                     </div>
 
                     <!-- 4 KHỐI PHẠM VI CÔNG VIỆC -->
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                    <div class="space-y-2.5 sm:space-y-3">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
                             <span>🎯</span> 4 Khối Phạm Vi Công Việc (Scope of Work)
                         </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
                             ${p.requirements.scopeBlocks.map(s => `
-                                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                                    <h5 class="font-bold text-gray-900 text-xs mb-1.5">${s.block}</h5>
-                                    <p class="text-xs text-gray-600 leading-relaxed">${s.content}</p>
+                                <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                                    <h5 class="font-bold text-gray-900 text-xs mb-1">${s.block}</h5>
+                                    <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">${s.content}</p>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
 
-                    <!-- MA TRẬN PHÂN ĐỊNH TRÁCH NHIỆM RACI -->
+                    <!-- MA TRẬN PHÂN ĐỊNH TRÁCH NHIỆM RACI (RESPONSIVE SCROLL) -->
                     <div class="space-y-2">
-                        <h4 class="font-bold text-gray-900 text-sm">🤝 Phân Định Trách Nhiệm Giữa Hai Bên (RACI Matrix)</h4>
-                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
-                            <table class="w-full text-xs text-left">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">🤝 Phân Định Trách Nhiệm Giữa Hai Bên (RACI Matrix)</h4>
+                        <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[550px]">
                                 <thead class="bg-gray-100 font-bold text-gray-700 border-b">
                                     <tr>
-                                        <th class="p-3 text-center w-12">STT</th>
-                                        <th class="p-3">Nhiệm vụ / Hoạt động Dự án & Vận hành</th>
-                                        <th class="p-3">Aus Asia Technologies</th>
-                                        <th class="p-3">Minh Việt Group</th>
+                                        <th class="p-2.5 sm:p-3 text-center w-10 sm:w-12">STT</th>
+                                        <th class="p-2.5 sm:p-3">Nhiệm vụ / Hoạt động Dự án & Vận hành</th>
+                                        <th class="p-2.5 sm:p-3">Aus Asia Technologies</th>
+                                        <th class="p-2.5 sm:p-3">Minh Việt Group</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     ${p.requirements.raciTable.map(item => `
                                         <tr class="hover:bg-gray-50">
-                                            <td class="p-3 text-center font-bold text-gray-500">${item.stt}</td>
-                                            <td class="p-3 font-semibold text-gray-900">${item.task}</td>
-                                            <td class="p-3 text-blue-700 font-medium">${item.aat}</td>
-                                            <td class="p-3 text-emerald-700 font-medium">${item.mv}</td>
+                                            <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">${item.stt}</td>
+                                            <td class="p-2.5 sm:p-3 font-semibold text-gray-900">${item.task}</td>
+                                            <td class="p-2.5 sm:p-3 text-blue-700 font-medium">${item.aat}</td>
+                                            <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">${item.mv}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -854,29 +881,28 @@
                     </div>
 
                     <!-- SẢN PHẨM GIAO NỘP -->
-                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-                        <h4 class="font-bold text-emerald-950 text-xs mb-2 flex items-center gap-1.5">
+                    <div class="p-3.5 sm:p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <h4 class="font-bold text-emerald-950 text-xs mb-1.5 flex items-center gap-1.5">
                             <span>📦</span> Danh mục Sản phẩm Bàn giao & Hồ sơ Nghiệm thu (Deliverables):
                         </h4>
-                        <ul class="list-disc pl-5 space-y-1 text-xs text-emerald-900">
+                        <ul class="list-disc pl-4 sm:pl-5 space-y-1 text-xs text-emerald-900">
                             ${p.requirements.deliverables.map(d => `<li>${d}</li>`).join('')}
                         </ul>
                     </div>
                 `;
             } else {
-                // Layout cho Starbucks / Uniqlo
                 document.getElementById('req-content-body').innerHTML = `
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="p-3.5 sm:p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <h4 class="font-bold text-gray-900 mb-1">🎯 Mục tiêu & Phạm vi dự án:</h4>
                         <p class="text-xs text-gray-700">${p.requirements.executiveSummary}</p>
                     </div>
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="p-3.5 sm:p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <h4 class="font-bold text-gray-900 mb-2">📦 Sản phẩm bàn giao chính:</h4>
-                        <ul class="list-disc pl-5 space-y-1 text-xs text-gray-700">
+                        <ul class="list-disc pl-4 sm:pl-5 space-y-1 text-xs text-gray-700">
                             ${p.requirements.deliverables.map(d => `<li>${d}</li>`).join('')}
                         </ul>
                     </div>
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="p-3.5 sm:p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <h4 class="font-bold text-gray-900 mb-1">⚡ Cam kết chất lượng dịch vụ (SLA):</h4>
                         <p class="text-xs font-semibold text-emerald-700">${p.requirements.sla}</p>
                     </div>
@@ -884,7 +910,7 @@
             }
         }
 
-        // RENDER MODULE 3: GIẢI PHÁP ĐỀ XUẤT & BOM
+        // RENDER MODULE 3: GIẢI PHÁP ĐỀ XUẤT & BOM (FLUID SCALING)
         function renderProjectSolution() {
             const p = activeProject;
             document.getElementById('sol-title').innerText = `Phương Án Đề Xuất & Dịch Vụ: ${p.name}`;
@@ -892,27 +918,27 @@
             if (p.id === 'minhviet') {
                 document.getElementById('sol-content-body').innerHTML = `
                     <!-- KIẾN TRÚC MẠNG MỤC TIÊU & 5 LỚP VLAN -->
-                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 space-y-3">
-                        <h4 class="font-bold text-sm flex items-center gap-2">
+                    <div class="p-3.5 sm:p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 space-y-2.5 sm:space-y-3">
+                        <h4 class="font-bold text-xs sm:text-sm flex items-center gap-2">
                             <span>🏛️</span> 4.1. Kiến Trúc Hạ Tầng Mạng Doanh Nghiệp Mục Tiêu
                         </h4>
                         <p class="text-xs text-blue-900 leading-relaxed">${p.solution.architectureDesc}</p>
                         
-                        <div class="border border-blue-200 rounded-lg overflow-hidden bg-white mt-2">
-                            <table class="w-full text-xs text-left">
+                        <div class="border border-blue-200 rounded-lg overflow-x-auto touch-scroll custom-scrollbar bg-white mt-2">
+                            <table class="w-full text-xs text-left min-w-[450px]">
                                 <thead class="bg-blue-100/70 font-bold text-blue-900 border-b">
                                     <tr>
-                                        <th class="p-2.5">Phân đoạn VLAN</th>
-                                        <th class="p-2.5">Tên VLAN</th>
-                                        <th class="p-2.5">Mục đích & Thiết bị kết nối</th>
+                                        <th class="p-2 sm:p-2.5">Phân đoạn VLAN</th>
+                                        <th class="p-2 sm:p-2.5">Tên VLAN</th>
+                                        <th class="p-2 sm:p-2.5">Mục đích & Thiết bị kết nối</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-blue-100 text-gray-700">
                                     ${p.solution.vlanPlan.map(v => `
                                         <tr>
-                                            <td class="p-2.5 font-bold text-blue-700">${v.vlan}</td>
-                                            <td class="p-2.5 font-semibold">${v.name}</td>
-                                            <td class="p-2.5">${v.purpose}</td>
+                                            <td class="p-2 sm:p-2.5 font-bold text-blue-700">${v.vlan}</td>
+                                            <td class="p-2 sm:p-2.5 font-semibold">${v.name}</td>
+                                            <td class="p-2 sm:p-2.5">${v.purpose}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -920,28 +946,28 @@
                         </div>
                     </div>
 
-                    <!-- BẢNG BOM THIẾT BỊ TIÊU CHUẨN 1 SITE -->
+                    <!-- BẢNG BOM THIẾT BỊ TIÊU CHUẨN 1 SITE (RESPONSIVE SCROLL) -->
                     <div class="space-y-2">
-                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
                             <span>📑</span> 6.1. Bảng Định Mức Trang Thiết Bị Mạng Cho 1 Site Tiêu Chuẩn (BoM)
                         </h4>
-                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
-                            <table class="w-full text-xs text-left">
+                        <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[500px]">
                                 <thead class="bg-gray-100 font-bold text-gray-700 border-b">
                                     <tr>
-                                        <th class="p-3">Hạng mục Thiết bị</th>
-                                        <th class="p-3">Quy cách & Thông số Kỹ thuật Chuẩn</th>
-                                        <th class="p-3 text-center">ĐVT</th>
-                                        <th class="p-3 text-center">Số lượng</th>
+                                        <th class="p-2.5 sm:p-3">Hạng mục Thiết bị</th>
+                                        <th class="p-2.5 sm:p-3">Quy cách & Thông số Kỹ thuật Chuẩn</th>
+                                        <th class="p-2.5 sm:p-3 text-center">ĐVT</th>
+                                        <th class="p-2.5 sm:p-3 text-center">Số lượng</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     ${p.solution.bom.map(b => `
                                         <tr class="hover:bg-gray-50">
-                                            <td class="p-3 font-semibold text-gray-900">${b.item}</td>
-                                            <td class="p-3 text-gray-600">${b.specs}</td>
-                                            <td class="p-3 text-center text-gray-500">${b.unit}</td>
-                                            <td class="p-3 text-center font-bold text-blue-600">${b.qty}</td>
+                                            <td class="p-2.5 sm:p-3 font-semibold text-gray-900">${b.item}</td>
+                                            <td class="p-2.5 sm:p-3 text-gray-600">${b.specs}</td>
+                                            <td class="p-2.5 sm:p-3 text-center text-gray-500">${b.unit}</td>
+                                            <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">${b.qty}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -949,17 +975,17 @@
                         </div>
                     </div>
 
-                    <!-- CHI TIẾT DỊCH VỤ IT SUPPORT LEVEL 1 & ONSITE SLA -->
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                    <!-- CHI TIẾT DỊCH VỤ IT SUPPORT (1 CỘT TRÊN MOBILE / 3 CỘT TRÊN PC) -->
+                    <div class="space-y-2.5 sm:space-y-3">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
                             <span>🛠️</span> 6.3. Chi Tiết Các Khối Dịch Vụ IT Support & Quản Trị
                         </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
                             ${p.solution.supportServices.map(s => `
-                                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
                                     <div>
-                                        <h5 class="font-bold text-blue-950 text-xs mb-2 pb-1 border-b border-slate-200">${s.title}</h5>
-                                        <ul class="list-disc pl-4 space-y-1.5 text-[11px] text-gray-600">
+                                        <h5 class="font-bold text-blue-950 text-xs mb-1.5 pb-1 border-b border-slate-200">${s.title}</h5>
+                                        <ul class="list-disc pl-4 space-y-1 text-[11px] text-gray-600">
                                             ${s.items.map(i => `<li>${i}</li>`).join('')}
                                         </ul>
                                     </div>
@@ -968,16 +994,16 @@
                         </div>
                     </div>
 
-                    <!-- 9 BƯỚC TRIỂN KHAI M01 - M09 -->
+                    <!-- 9 BƯỚC TRIỂN KHAI M01 - M09 (RESPONSIVE SCROLL) -->
                     <div class="space-y-2">
-                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
                             <span>🚀</span> 5. Danh Mục 9 Hạng Mục Triển Khai Chuẩn Hóa (M01 - M09)
                         </h4>
-                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
-                            <table class="w-full text-xs text-left">
+                        <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[500px]">
                                 <thead class="bg-gray-100 font-bold text-gray-700 border-b">
                                     <tr>
-                                        <th class="p-2.5 text-center w-16">Mã HM</th>
+                                        <th class="p-2.5 text-center w-14 sm:w-16">Mã HM</th>
                                         <th class="p-2.5">Hạng mục Công việc</th>
                                         <th class="p-2.5">Nội dung & Tiêu chuẩn Kỹ thuật Thực hiện</th>
                                     </tr>
@@ -997,27 +1023,27 @@
                 `;
             } else {
                 document.getElementById('sol-content-body').innerHTML = `
-                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950">
+                    <div class="p-3.5 sm:p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950">
                         <h4 class="font-bold mb-1">🏛️ Kiến trúc giải pháp tổng thể:</h4>
                         <p class="text-xs">${p.solution.architectureDesc}</p>
                     </div>
                     <div class="space-y-2">
-                        <h4 class="font-bold text-gray-900 text-sm">📑 Bảng phân rã cấu hình hạ tầng:</h4>
-                        <div class="border rounded-xl overflow-hidden shadow-xs">
-                            <table class="w-full text-xs text-left">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">📑 Bảng phân rã cấu hình hạ tầng:</h4>
+                        <div class="border rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[450px]">
                                 <thead class="bg-gray-100 font-bold text-gray-600 border-b">
                                     <tr>
-                                        <th class="p-3">Hạng mục</th>
-                                        <th class="p-3">Mô tả kỹ thuật</th>
-                                        <th class="p-3 text-center">Số lượng</th>
+                                        <th class="p-2.5 sm:p-3">Hạng mục</th>
+                                        <th class="p-2.5 sm:p-3">Mô tả kỹ thuật</th>
+                                        <th class="p-2.5 sm:p-3 text-center">Số lượng</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     ${p.solution.bom.map(b => `
                                         <tr class="hover:bg-gray-50">
-                                            <td class="p-3 font-semibold text-gray-900">${b.item}</td>
-                                            <td class="p-3 text-gray-600">${b.specs}</td>
-                                            <td class="p-3 text-center text-blue-600 font-bold">${b.qty}</td>
+                                            <td class="p-2.5 sm:p-3 font-semibold text-gray-900">${b.item}</td>
+                                            <td class="p-2.5 sm:p-3 text-gray-600">${b.specs}</td>
+                                            <td class="p-2.5 sm:p-3 text-center text-blue-600 font-bold">${b.qty}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -1028,7 +1054,7 @@
             }
         }
 
-        // --- 7. FULLSCREEN MAP ENGINE & DISPATCHING ---
+        // --- 7. FULLSCREEN MAP ENGINE (AUTO RESIZING & ADAPTIVE SENSING) ---
         function initProjectMap() {
             if (!mapInstance) {
                 mapInstance = L.map('map', { zoomControl: false }).setView([10.8000, 106.6800], 11);
@@ -1052,12 +1078,12 @@
             if (animatedBike) mapInstance.removeLayer(animatedBike);
             if (bikeInterval) clearInterval(bikeInterval);
 
-            // Ghi nhận các Trụ sở (HQ) nếu dự án có
+            // Render HQs
             if (activeProject.hqs) {
                 activeProject.hqs.forEach(hq => {
                     const hqIcon = L.divIcon({
                         className: 'hq-marker-icon',
-                        html: `<div class="w-9 h-9 bg-blue-600 rounded-xl border-2 border-white shadow-xl flex items-center justify-center text-white text-base font-bold">🏢</div>`,
+                        html: `<div class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl border-2 border-white shadow-xl flex items-center justify-center text-white text-sm sm:text-base font-bold">🏢</div>`,
                         iconSize: [36, 36], iconAnchor: [18, 18]
                     });
                     const hqMarker = L.marker([hq.lat, hq.lng], { icon: hqIcon, zIndexOffset: 1000 }).addTo(mapInstance);
@@ -1070,15 +1096,15 @@
 
             sites.forEach(site => {
                 const siteIcon = L.divIcon({
-                    html: `<div class="w-8 h-8 ${activeProject.badgeBg} rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">${activeProject.icon}</div>`,
+                    html: `<div class="w-7 h-7 sm:w-8 sm:h-8 ${activeProject.badgeBg} rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">${activeProject.icon}</div>`,
                     iconSize: [32, 32], iconAnchor: [16, 16]
                 });
 
                 const marker = L.marker([site.lat, site.lng], { icon: siteIcon }).addTo(mapInstance);
                 marker.bindPopup(`
                     <div>
-                        <h4 class="font-bold text-gray-900">${site.name}</h4>
-                        <p class="text-xs text-gray-600 mb-2">${site.address}</p>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">${site.name}</h4>
+                        <p class="text-[11px] sm:text-xs text-gray-600 mb-2 leading-relaxed">${site.address}</p>
                         ${site.pc !== undefined ? `
                             <div class="grid grid-cols-2 gap-1 text-[10px] bg-gray-100 p-2 rounded border">
                                 <div>💻 PC: <b>${site.pc}</b></div>
@@ -1091,17 +1117,17 @@
                 `);
                 activeMarkers.push(marker);
 
-                // Floating Sidebar Card
+                // Floating Card List
                 const card = document.createElement('div');
-                card.className = "p-3 bg-white/95 backdrop-blur-xs rounded-xl border border-gray-200 shadow-xs hover:border-blue-500 hover:shadow-md cursor-pointer transition text-xs";
+                card.className = "p-2.5 sm:p-3 bg-white/95 backdrop-blur-xs rounded-xl border border-gray-200 shadow-xs hover:border-blue-500 hover:shadow-md cursor-pointer transition text-xs";
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-1">
-                        <h4 class="font-bold text-gray-900">${site.name}</h4>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${activeProject.badgeBg} text-white">${activeProject.id.toUpperCase()}</span>
+                        <h4 class="font-bold text-gray-900 truncate pr-1">${site.name}</h4>
+                        <span class="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold ${activeProject.badgeBg} text-white shrink-0">${site.model || activeProject.id.toUpperCase()}</span>
                     </div>
-                    <p class="text-gray-500 text-[11px] line-clamp-2">${site.address}</p>
+                    <p class="text-gray-500 text-[10.5px] sm:text-[11px] line-clamp-2 leading-relaxed">${site.address}</p>
                     ${site.pc !== undefined ? `
-                        <div class="mt-2 grid grid-cols-2 gap-1 text-[10px] text-gray-600 bg-gray-50 p-1.5 rounded">
+                        <div class="mt-1.5 grid grid-cols-2 gap-1 text-[9.5px] sm:text-[10px] text-gray-600 bg-gray-50 p-1.5 rounded">
                             <span>💻 PC: <b>${site.pc}</b></span>
                             <span>📷 Cam: <b>${site.cam}</b></span>
                             <span>📶 Wifi: <b>${site.wifi}</b></span>
@@ -1116,15 +1142,19 @@
                     if (activeProject.hqs) {
                         simulateDispatchRouting(activeProject.hqs[0], site);
                     }
+                    // Trên màn hình điện thoại, tự động thu nhỏ panel để người dùng thấy rõ bản đồ
+                    if (window.innerWidth < 640) {
+                        toggleMapPanel();
+                    }
                 };
                 listEl.appendChild(card);
             });
 
             if (sites.length > 0) {
                 if (activeProject.id === 'starbucks' || activeProject.id === 'uniqlo') {
-                    mapInstance.setView([16.0000, 108.0000], 6);
+                    mapInstance.setView([16.0000, 108.0000], window.innerWidth < 640 ? 5 : 6);
                 } else {
-                    mapInstance.setView([sites[0].lat, sites[0].lng], 11);
+                    mapInstance.setView([sites[0].lat, sites[0].lng], window.innerWidth < 640 ? 10 : 11);
                 }
             }
         }
@@ -1149,7 +1179,7 @@
                     activeRouteLine = L.polyline(coords, { color: '#2563eb', weight: 5, opacity: 0.85 }).addTo(mapInstance);
                     
                     const bikeIcon = L.divIcon({
-                        html: `<div class="w-9 h-9 bg-amber-500 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-black text-sm font-black animate-bounce">🛵</div>`,
+                        html: `<div class="w-8 h-8 sm:w-9 sm:h-9 bg-amber-500 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-black text-sm font-black animate-bounce">🛵</div>`,
                         iconSize: [36, 36], iconAnchor: [18, 18]
                     });
 
@@ -1174,7 +1204,8 @@
             const filtered = activeProject.sites.filter(s => 
                 s.name.toLowerCase().includes(q) || 
                 s.address.toLowerCase().includes(q) ||
-                (s.isp && s.isp.toLowerCase().includes(q))
+                (s.isp && s.isp.toLowerCase().includes(q)) ||
+                (s.model && s.model.toLowerCase().includes(q))
             );
             renderProjectMapSites(filtered);
         }
@@ -1193,11 +1224,26 @@
 
         function toggleBrowserFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => alert("Không thể bật toàn màn hình: " + err.message));
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
             } else {
                 document.exitFullscreen();
             }
         }
+
+        // --- 8. TỰ ĐỘNG SCALE KHI THAY ĐỔI KÍCH THƯỚC HOẶC XOAY MÀN HÌNH (TABLET / PHONE) ---
+        window.addEventListener('resize', () => {
+            if (mapInstance) {
+                mapInstance.invalidateSize();
+            }
+        });
+
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (mapInstance) {
+                    mapInstance.invalidateSize();
+                }
+            }, 300);
+        });
     </script>
 </body>
 </html>
