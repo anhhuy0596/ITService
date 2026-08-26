@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport tối ưu cho iPhone tai thỏ/Dynamic Island và Android -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>Minh Việt Group - Hạ Tầng & Dispatch Portal</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet Maps CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        body {
+            padding-top: var(--sat);
+            padding-bottom: var(--sab);
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
+        .leaflet-popup-content { margin: 10px 12px; font-family: inherit; }
+
+        @keyframes pulse-hq { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .hq-marker-icon { animation: pulse-hq 2s infinite ease-in-out; }
+
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+
+        #route-dispatch-panel {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 92%;
+            max-width: 380px;
+            transition: all 0.3s ease;
+        }
+
+        .traffic-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden text-gray-800 antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- HEADER TOP -->
+    <header class="bg-gray-900 text-white px-3 sm:px-6 py-2.5 sm:py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-gray-800 gap-2">
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-sm shrink-0">
+                🚗
+            </div>
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate max-w-[220px] sm:max-w-md">MINH VIỆT GROUP & VINFAST CARON</h2>
+                    <span id="role-badge" class="text-[9px] sm:text-[10px] bg-blue-900 text-blue-300 border border-blue-700 font-semibold px-1.5 py-0.5 rounded-full uppercase shrink-0">Client</span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-gray-400 truncate">Hạ tầng mạng kho vận & chuỗi xưởng dịch vụ</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button id="btn-back-admin" onclick="window.location.href='admin.html'" class="hidden bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                👑 Về Admin
+            </button>
+            <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                Thoát
+            </button>
+        </div>
+    </header>
+
+    <!-- SUB-NAV TABS -->
+    <nav class="bg-white border-b border-gray-200 px-3 sm:px-6 py-2 flex items-center space-x-2 shrink-0 shadow-xs z-30 overflow-x-auto touch-scroll custom-scrollbar whitespace-nowrap">
+        <button onclick="switchSection('REQ')" id="btn-sec-req" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]">
+            📋 1. Yêu cầu & Hiện trạng
+        </button>
+        <button onclick="switchSection('MAP')" id="btn-sec-map" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            🗺️ 2. Bản đồ các site & Dispatch
+        </button>
+        <button onclick="switchSection('SOL')" id="btn-sec-sol" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            💡 3. Giải pháp đề xuất & BoM
+        </button>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="flex-1 relative overflow-hidden flex bg-gray-100">
+        
+        <!-- ================================================================= -->
+        <!-- SECTION 1: YÊU CẦU DỰ ÁN & HIỆN TRẠNG KỸ THUẬT -->
+        <!-- ================================================================= -->
+        <section id="sec-req" class="flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                <div class="border-b border-gray-200 pb-3 sm:pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-md">Module 1</span>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5 sm:mt-2">Yêu Cầu Dự Án & Đánh Giá Hiện Trạng Kỹ Thuật</h3>
+                    </div>
+                    <span class="self-start sm:self-auto bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full">Sẵn sàng triển khai</span>
+                </div>
+
+                <!-- 1.1 TÓM TẮT BAN LÃNH ĐẠO -->
+                <div class="p-3.5 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 mb-2">
+                        <h4 class="font-bold text-blue-950 text-xs sm:text-sm flex items-center gap-2">
+                            <span>📌</span> Tóm Tắt Dành Cho Ban Lãnh Đạo (Executive Summary)
+                        </h4>
+                        <span class="self-start sm:self-auto text-[10px] sm:text-[11px] font-semibold text-blue-800 bg-white px-2 py-0.5 rounded border border-blue-200">Phiên bản: v1.0 – [24/08/2026]</span>
+                    </div>
+                    <p class="text-xs text-blue-900 leading-relaxed">Minh Việt Group hiện đang vận hành mô hình chuỗi gồm Kho bãi Logistics và Chuỗi Xưởng dịch vụ VinFast CarOn. Hạ tầng mạng hiện hữu ở mức dân dụng (SOHO), gây tắc nghẽn, mất an toàn và gián đoạn vận hành liên tục.</p>
+                </div>
+
+                <!-- 1.2 4 ĐIỂM NGHẼN TRỌNG YẾU -->
+                <div class="space-y-2.5 sm:space-y-3">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>⚠️</span> 4 Điểm Nghẽn Trọng Yếu Hiện Trạng Ghi Nhận Tại Các Site
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+                        <div class="p-3 sm:p-3.5 bg-red-50/60 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Hạ tầng mạng phẳng (Flat Network)</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed">Dùng chung một dải mạng cho PC, máy in, camera CCTV, máy chẩn đoán xe và Wi-Fi khách, tiềm ẩn rủi ro broadcast storm và lây lan mã độc.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-red-50/60 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Gateway & Switch dân dụng</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed">Modem ISP quá tải khi vượt 30-40 kết nối; switch unmanaged cắm daisy-chain gây lặp vòng (Loop) làm sập mạng toàn site.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-red-50/60 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Wi-Fi không hỗ trợ Fast Roaming</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed">AP gia đình rời rạc, rớt sóng liên tục khi kiểm kho hoặc chẩn đoán xe giữa các cầu nâng.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-red-50/60 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Lỗi thiết bị đầu cuối gián đoạn vận hành</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed">Máy in mất kết nối do nhảy IP, phần mềm DMS/ERP chập chờn, camera giám sát an ninh không ổn định.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.3 BẢNG TỔNG HỢP RỦI RO & MỨC ƯU TIÊN -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm">📊 Bảng Tổng Hợp Rủi Ro & Tác Động Vận Hành</h4>
+                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[500px]">
+                            <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-2.5 sm:p-3">Hạng mục Khảo sát</th>
+                                    <th class="p-2.5 sm:p-3">Hiện trạng Ghi nhận</th>
+                                    <th class="p-2.5 sm:p-3">Rủi ro Vận hành Nghiêm trọng</th>
+                                    <th class="p-2.5 sm:p-3 text-center">Mức Ưu tiên</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Hệ thống Gateway</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Modem ISP dân dụng, không chịu tải</td>
+                                    <td class="p-2.5 sm:p-3 text-red-700 font-medium">Treo mạng toàn site, không tự động chuyển đường dự phòng</td>
+                                    <td class="p-2.5 sm:p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">P1 - Rất cao</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Cấu trúc Mạng</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Mạng phẳng 1 lớp, không VLAN</td>
+                                    <td class="p-2.5 sm:p-3 text-red-700 font-medium">Xung đột IP, lặp vòng (Loop), mất an toàn thông tin</td>
+                                    <td class="p-2.5 sm:p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">P1 - Rất cao</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Hạ tầng Wi-Fi</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">AP gia đình, không Fast Roaming</td>
+                                    <td class="p-2.5 sm:p-3 text-amber-700 font-medium">Mất sóng khi kiểm kho và chẩn đoán xe tại xưởng</td>
+                                    <td class="p-2.5 sm:p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">P2 - Cao</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Hệ thống Camera</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Dùng chung dải mạng với PC</td>
+                                    <td class="p-2.5 sm:p-3 text-amber-700 font-medium">Nghẽn băng thông, gián đoạn giám sát an ninh</td>
+                                    <td class="p-2.5 sm:p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">P2 - Cao</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Thiết bị Đầu cuối</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Lỗi máy in, máy quét, máy trạm</td>
+                                    <td class="p-2.5 sm:p-3 text-amber-700 font-medium">Đình trệ xuất nhập kho, chậm tiến độ giao trả xe khách</td>
+                                    <td class="p-2.5 sm:p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">P2 - Cao</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 1.4 4 KHỐI PHẠM VI CÔNG VIỆC -->
+                <div class="space-y-2.5 sm:space-y-3">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🎯</span> 4 Khối Phạm Vi Công Việc (Scope of Work)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">Khối A: Hạ tầng Mạng & Kết nối Internet</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Lắp đặt Router Gateway chuyên dụng Multi-WAN cân bằng tải & Auto-Failover; triển khai Managed Switch phân tách VLAN; quy hoạch hệ thống Enterprise Wi-Fi 6 Fast Roaming (802.11k/v/r).</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">Khối B: Thiết bị Đầu cuối & Ngoại vi</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Xử lý lỗi phần mềm/phần cứng máy trạm cơ bản; chuẩn hóa IP tĩnh cho Máy in hóa đơn/phiếu xuất kho, máy quét mã vạch; tách dải mạng tối ưu luồng truyền Camera CCTV.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">Khối C: Vận hành & Hỗ trợ Onsite SLA</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Giám sát chủ động từ xa 24/7 qua Cloud Controller; tiếp nhận yêu cầu qua Hotline/Ticket Portal/Zalo; Kỹ sư Onsite hiện trường ứng cứu sự cố theo SLA cam kết.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">Khối D: Ngoài phạm vi</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Không can thiệp phần mềm nghiệp vụ nội bộ VinFast/Minh Việt; chi phí linh kiện vật lý thay thế (cháy nổ, hỏng bo mạch) sẽ được báo giá phê duyệt riêng.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.5 MA TRẬN TRÁCH NHIỆM RACI -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm">🤝 Phân Định Trách Nhiệm Giữa Hai Bên (RACI Matrix)</h4>
+                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[550px]">
+                            <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-2.5 sm:p-3 text-center w-10 sm:w-12">STT</th>
+                                    <th class="p-2.5 sm:p-3">Nhiệm vụ / Hoạt động Dự án & Vận hành</th>
+                                    <th class="p-2.5 sm:p-3">Aus Asia Technologies</th>
+                                    <th class="p-2.5 sm:p-3">Minh Việt Group</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">1</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Cung cấp danh sách các Site, mặt bằng và đầu mối phụ trách</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Hỗ trợ biểu mẫu (C)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Chịu trách nhiệm chính (A/R)</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">2</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Khảo sát thực tế hạ tầng và lập phương án kỹ thuật chi tiết</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Chịu trách nhiệm chính (A/R)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Bố trí người dẫn và mở cửa (C)</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">3</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Phê duyệt phương án thiết kế và dự toán kinh phí mua sắm</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Tư vấn kỹ thuật (C)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Chịu trách nhiệm phê duyệt (A)</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">4</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Thi công lắp đặt thiết bị, kéo cáp, cấu hình VLAN, cân bằng tải</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Chịu trách nhiệm chính (A/R)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Giám sát hiện trường (I)</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">5</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Làm việc với các ISP nhà mạng khi xảy ra sự cố đứt cáp</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Đại diện xử lý kỹ thuật (A/R)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Cung cấp hợp đồng ISP (I)</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">6</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Tiếp nhận và xử lý sự cố người dùng (PC, Máy in, Camera, Wi-Fi)</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Thực hiện cam kết theo SLA (A/R)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Gửi yêu cầu qua Ticket (I)</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-gray-500">7</td>
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Nghiệm thu dịch vụ và báo cáo vận hành định kỳ hàng tháng</td>
+                                    <td class="p-2.5 sm:p-3 text-blue-700 font-medium">Lập báo cáo chi tiết (A/R)</td>
+                                    <td class="p-2.5 sm:p-3 text-emerald-700 font-medium">Đánh giá & Nghiệm thu (A)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 1.6 SẢN PHẨM BÀN GIAO -->
+                <div class="p-3.5 sm:p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <h4 class="font-bold text-emerald-950 text-xs mb-1.5 flex items-center gap-1.5">
+                        <span>📦</span> Danh mục Sản phẩm Bàn giao & Hồ sơ Nghiệm thu (Deliverables):
+                    </h4>
+                    <ul class="list-disc pl-4 sm:pl-5 space-y-1 text-xs text-emerald-900">
+                        <li>Bộ Hồ sơ Thiết kế & Hoàn công Hạ tầng (Network As-Built Diagram, Bảng phân bổ IP tĩnh, Bảng quy hoạch VLAN).</li>
+                        <li>Hồ sơ Bàn giao Cấu hình & Toàn bộ Tài khoản Quản trị Cloud Controller, Router, Switch, AP, Camera NVR.</li>
+                        <li>Cổng Thông tin Quản lý Sự cố (Customer Portal / Ticketing SLA Tracker).</li>
+                        <li>Báo cáo Vận hành Định kỳ Hàng tháng (Monthly Service & Health-Check Report).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 2: BẢN ĐỒ CÁC SITE & DISPATCH -->
+        <!-- ================================================================= -->
+        <section id="sec-map" class="hidden flex-1 relative h-full w-full overflow-hidden">
+            <div id="map" class="absolute inset-0 h-full w-full z-0 bg-slate-200"></div>
+
+            <!-- BỘ CHUYỂN ĐỔI CHẾ ĐỘ BẢN ĐỒ -->
+            <div class="absolute top-3 right-14 sm:right-36 z-20 flex bg-white/95 backdrop-blur-md rounded-xl p-1 shadow-xl border border-gray-300 text-xs font-bold">
+                <button id="btn-mode-standard" onclick="setMapMode('standard')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-xs transition flex items-center gap-1">
+                    <span>🗺️</span> <span>Bản đồ thường</span>
+                </button>
+                <button id="btn-mode-traffic" onclick="setMapMode('traffic')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition flex items-center gap-1">
+                    <span>🚦</span> <span>Traffic Real-time</span>
+                </button>
+            </div>
+
+            <!-- NÚT TOÀN MÀN HÌNH -->
+            <button onclick="toggleBrowserFullscreen()" class="absolute top-3 right-3 z-20 bg-white/95 backdrop-blur-md text-gray-700 border border-gray-300 shadow-lg px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 hover:bg-gray-50 transition">
+                <span>⛶ <span class="hidden sm:inline">Toàn màn hình</span></span>
+            </button>
+
+            <!-- BẢNG ĐIỀU KHIỂN NỔI -->
+            <div id="map-floating-panel" class="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-20 w-auto sm:w-[380px] max-h-[45vh] sm:max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
+                <div class="p-3 sm:p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl shrink-0">
+                    <div class="min-w-0 pr-2">
+                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm truncate">9 Site Minh Việt & VinFast</h3>
+                        <p id="map-site-counter" class="text-[10px] sm:text-[11px] font-semibold text-blue-600 truncate">Click icon hoặc danh sách để điều phối</p>
+                    </div>
+                    <button onclick="toggleMapPanel()" title="Thu gọn danh sách" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs shrink-0">
+                        ◀
+                    </button>
+                </div>
+                <div id="map-site-list" class="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 custom-scrollbar touch-scroll"></div>
+            </div>
+
+            <button id="btn-open-panel" onclick="toggleMapPanel()" class="hidden absolute top-3 left-3 z-20 bg-white/95 backdrop-blur-md text-gray-800 border border-gray-300 shadow-xl px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-blue-50 transition">
+                <span>📋 Danh sách Site ▶</span>
+            </button>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 3: GIẢI PHÁP ĐỀ XUẤT & BOM -->
+        <!-- ================================================================= -->
+        <section id="sec-sol" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                <div class="border-b border-gray-200 pb-3 sm:pb-4">
+                    <span class="text-[10px] sm:text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Module 3</span>
+                    <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5 sm:mt-2">Phương Án Đề Xuất Chuẩn Hóa Hạ Tầng & Dịch Vụ IT Support</h3>
+                </div>
+
+                <!-- 3.1 KIẾN TRÚC MẠNG & 5 LỚP VLAN -->
+                <div class="p-3.5 sm:p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 space-y-2.5 sm:space-y-3">
+                    <h4 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                        <span>🏛️</span> 4.1. Kiến Trúc Hạ Tầng Mạng Doanh Nghiệp Mục Tiêu
+                    </h4>
+                    <p class="text-xs text-blue-900 leading-relaxed">Kiến trúc mạng doanh nghiệp phân lớp, tích hợp Router Gateway chịu tải 150-200 users, Multi-WAN Auto-Failover dưới 3s, phân tách 5 phân đoạn VLAN 802.1Q và hạ tầng Wi-Fi 6 Roaming liền mạch.</p>
+                    
+                    <div class="border border-blue-200 rounded-lg overflow-x-auto touch-scroll custom-scrollbar bg-white mt-2">
+                        <table class="w-full text-xs text-left min-w-[450px]">
+                            <thead class="bg-blue-100/70 font-bold text-blue-900 border-b">
+                                <tr>
+                                    <th class="p-2 sm:p-2.5">Phân đoạn VLAN</th>
+                                    <th class="p-2 sm:p-2.5">Tên VLAN</th>
+                                    <th class="p-2 sm:p-2.5">Mục đích & Thiết bị kết nối</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-blue-100 text-gray-700">
+                                <tr>
+                                    <td class="p-2 sm:p-2.5 font-bold text-blue-700">VLAN 10</td>
+                                    <td class="p-2 sm:p-2.5 font-semibold">Management</td>
+                                    <td class="p-2 sm:p-2.5">Quản trị thiết bị mạng (Router, Switch, AP, PDU)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 sm:p-2.5 font-bold text-blue-700">VLAN 20</td>
+                                    <td class="p-2 sm:p-2.5 font-semibold">Office</td>
+                                    <td class="p-2 sm:p-2.5">Máy tính văn phòng, kế toán, phần mềm ERP kho vận, máy in</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 sm:p-2.5 font-bold text-blue-700">VLAN 30</td>
+                                    <td class="p-2 sm:p-2.5 font-semibold">VinFast Workshop / Logistics</td>
+                                    <td class="p-2 sm:p-2.5">Máy tính kỹ thuật xưởng, thiết bị chẩn đoán xe điện, máy quét mã vạch</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 sm:p-2.5 font-bold text-blue-700">VLAN 40</td>
+                                    <td class="p-2 sm:p-2.5 font-semibold">CCTV Security</td>
+                                    <td class="p-2 sm:p-2.5">Hệ thống Camera an ninh kho bãi, xưởng dịch vụ và Đầu ghi NVR</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 sm:p-2.5 font-bold text-blue-700">VLAN 50</td>
+                                    <td class="p-2 sm:p-2.5 font-semibold">Guest Wi-Fi</td>
+                                    <td class="p-2 sm:p-2.5">Mạng dành cho khách hàng (Cách ly hoàn toàn, giới hạn băng thông)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3.2 BẢNG BOM THIẾT BỊ TIÊU CHUẨN 1 SITE -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>📑</span> 6.1. Bảng Định Mức Trang Thiết Bị Mạng Cho 1 Site Tiêu Chuẩn (BoM)
+                    </h4>
+                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[500px]">
+                            <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-2.5 sm:p-3">Hạng mục Thiết bị</th>
+                                    <th class="p-2.5 sm:p-3">Quy cách & Thông số Kỹ thuật Chuẩn</th>
+                                    <th class="p-2.5 sm:p-3 text-center">ĐVT</th>
+                                    <th class="p-2.5 sm:p-3 text-center">Số lượng</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Router Gateway / Load Balancer</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Thiết bị doanh nghiệp, chịu tải 50-100 users, Multi-WAN, VPN Site-to-Site</td>
+                                    <td class="p-2.5 sm:p-3 text-center text-gray-500">Thiết bị</td>
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">01</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Managed Gigabit PoE Switch</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">8-24 Port Gigabit, chuẩn PoE+ 802.3af/at, hỗ trợ VLAN, STP, Cloud</td>
+                                    <td class="p-2.5 sm:p-3 text-center text-gray-500">Thiết bị</td>
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">01 - 02</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Enterprise Wi-Fi 6 Access Point</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Chuẩn 802.11ax Dual-Band, hỗ trợ Fast Roaming, chịu tải cao trong kho/xưởng</td>
+                                    <td class="p-2.5 sm:p-3 text-center text-gray-500">Thiết bị</td>
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">03 - 06</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Tủ mạng Treo tường (Wallmount Rack)</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Tủ Rack 6U/9U - D400/D600 có khóa bảo vệ, thanh nguồn PDU, quạt tản nhiệt</td>
+                                    <td class="p-2.5 sm:p-3 text-center text-gray-500">Bộ</td>
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">01</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Vật tư phụ & Cáp mạng Cat6</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Cáp mạng Cat6 UTP chính hãng, Patch panel, Patch cord, ống gen chống cháy</td>
+                                    <td class="p-2.5 sm:p-3 text-center text-gray-500">Gói</td>
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">01</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 sm:p-3 font-semibold text-gray-900">Dịch vụ IT Support & Onsite SLA</td>
+                                    <td class="p-2.5 sm:p-3 text-gray-600">Gói quản trị định kỳ, giám sát 24/7, Helpdesk từ xa và ứng cứu Onsite theo SLA</td>
+                                    <td class="p-2.5 sm:p-3 text-center text-gray-500">Tháng</td>
+                                    <td class="p-2.5 sm:p-3 text-center font-bold text-blue-600">Theo HĐ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3.3 CHI TIẾT DỊCH VỤ IT SUPPORT -->
+                <div class="space-y-2.5 sm:space-y-3">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🛠️</span> 6.3. Chi Tiết Các Khối Dịch Vụ IT Support & Quản Trị
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <h5 class="font-bold text-blue-950 text-xs mb-1.5 pb-1 border-b border-slate-200">Dịch vụ IT Support (Quản trị Level 1)</h5>
+                                <ul class="list-disc pl-4 space-y-1 text-[11px] text-gray-600">
+                                    <li>Hardware: Kiểm tra On/Off, chẩn đoán lỗi PC, Laptop, Monitor người dùng. Hỗ trợ kết nối máy in/photo, cài đặt driver, xử lý lỗi kẹt giấy/không in được.</li>
+                                    <li>Software: Cài đặt hệ điều hành (OS), phần mềm văn phòng (khách hàng cung cấp license). Xử lý lỗi phần mềm gián đoạn làm việc.</li>
+                                    <li>Hạ tầng: Kiểm tra tín hiệu cáp mạng từ Switch đến port DATA/AP. Phối hợp bên thứ 3 xử lý bảo hành phần cứng.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <h5 class="font-bold text-blue-950 text-xs mb-1.5 pb-1 border-b border-slate-200">IT Infrastructure Management (Quản trị Hạ tầng CNTT)</h5>
+                                <ul class="list-disc pl-4 space-y-1 text-[11px] text-gray-600">
+                                    <li>Kiểm tra nhiệt độ, điện áp, PSU, SMART status ổ cứng, RAM, CPU, mainboard.</li>
+                                    <li>Hỗ trợ chẩn đoán từ xa qua Cloud Controller và điều khiển Remote (UltraViewer/AnyDesk) ngay khi tiếp nhận request.</li>
+                                    <li>Đề xuất nâng cấp linh kiện hỏng hóc hoặc xuống cấp (RAM, SSD, card mạng, module quang).</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <h5 class="font-bold text-blue-950 text-xs mb-1.5 pb-1 border-b border-slate-200">Emergency Onsite (Hỗ trợ Onsite Khẩn cấp theo SLA)</h5>
+                                <ul class="list-disc pl-4 space-y-1 text-[11px] text-gray-600">
+                                    <li>Kỹ sư AAT chủ động di chuyển đến site kiểm tra và khắc phục khi có yêu cầu từ IT Minh Việt.</li>
+                                    <li>Mỗi ticket Onsite bao gồm 2 tiếng xử lý và khắc phục vấn đề tại hiện trường.</li>
+                                    <li>Lập biên bản nghiệm thu và báo cáo kết quả hỗ trợ sau khi hoàn thành cho IT Minh Việt.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3.4 9 BƯỚC TRIỂN KHAI M01 - M09 -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🚀</span> 5. Danh Mục 9 Hạng Mục Triển Khai Chuẩn Hóa (M01 - M09)
+                    </h4>
+                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[500px]">
+                            <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-2.5 text-center w-14 sm:w-16">Mã HM</th>
+                                    <th class="p-2.5">Hạng mục Công việc</th>
+                                    <th class="p-2.5">Nội dung & Tiêu chuẩn Kỹ thuật Thực hiện</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M01</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Khảo sát thực địa chi tiết từng Site</td>
+                                    <td class="p-2.5 text-gray-600">Đo kiểm tín hiệu Wi-Fi, kiểm tra tủ rack, kiểm kê toàn bộ node mạng, PC, máy in, camera.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M02</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Lập bản vẽ & Quy hoạch sơ đồ mạng</td>
+                                    <td class="p-2.5 text-gray-600">Thiết kế sơ đồ nguyên lý đấu nối, bảng phân bổ IP tĩnh và chính sách bảo mật VLAN.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M03</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Lắp đặt Router Gateway & Load Balancing</td>
+                                    <td class="p-2.5 text-gray-600">Thay thế router ISP, cấu hình cân bằng tải đa đường truyền, kích hoạt tự chuyển dự phòng.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M04</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Lắp đặt & Cấu hình Managed Switch</td>
+                                    <td class="p-2.5 text-gray-600">Phân chia VLAN 802.1Q, cấp nguồn PoE cho AP và Camera CCTV.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M05</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Triển khai hệ thống Cloud Wi-Fi AP</td>
+                                    <td class="p-2.5 text-gray-600">Lắp đặt AP tại vị trí tối ưu trong kho/xưởng, cấu hình Fast Roaming (802.11k/v/r).</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M06</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Chuẩn hóa IP thiết bị ngoại vi</td>
+                                    <td class="p-2.5 text-gray-600">Gán IP tĩnh cố định cho toàn bộ máy in và Camera trong hệ thống theo quy hoạch.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M07</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Tích hợp phần mềm giám sát</td>
+                                    <td class="p-2.5 text-gray-600">Cấu hình tích hợp hệ thống giám sát (PRTG/Zabbix), thiết lập ngưỡng cảnh báo Email/Telegram.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M08</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Chuyển đổi hệ thống (Cut-over)</td>
+                                    <td class="p-2.5 text-gray-600">Tiến hành chuyển đổi ngoài giờ làm việc nhằm không làm gián đoạn kinh doanh.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">M09</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Nghiệm thu, Bàn giao & Đào tạo</td>
+                                    <td class="p-2.5 text-gray-600">Bàn giao hồ sơ hoàn công, sơ đồ đấu nối và hướng dẫn quy trình gọi hỗ trợ Helpdesk.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPT DATA & ENGINE -->
+    <script>
+        // AUTH GUARD
+        const session = JSON.parse(sessionStorage.getItem('portal_session'));
+        if (!session) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('role-badge').innerText = session.role;
+            if (session.role === 'ADMIN') {
+                document.getElementById('btn-back-admin').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('portal_session');
+            window.location.href = 'index.html';
+        }
+
+        function switchSection(sec) {
+            ['sec-req', 'sec-map', 'sec-sol'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['btn-sec-req', 'btn-sec-map', 'btn-sec-sol'].forEach(id => {
+                document.getElementById(id).className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]";
+            });
+
+            if (sec === 'REQ') {
+                document.getElementById('sec-req').classList.remove('hidden');
+                document.getElementById('btn-sec-req').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'MAP') {
+                document.getElementById('sec-map').classList.remove('hidden');
+                document.getElementById('btn-sec-map').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]";
+                setTimeout(initMap, 150);
+            } else if (sec === 'SOL') {
+                document.getElementById('sec-sol').classList.remove('hidden');
+                document.getElementById('btn-sec-sol').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition shrink-0 min-h-[36px]";
+            }
+        }
+
+        // DỮ LIỆU ĐỊA ĐIỂM MINH VIỆT & VINFAST CARON (1 TRỤ SỞ AUS ASIA TECH DUY NHẤT + 9 SITES)
+        const projectData = {
+            hqs: [
+                { name: "Aus Asia Tech - HQ", address: "Trụ sở chính Aus Asia Technologies, TP. HCM", lat: 10.800219670429469, lng: 106.6655323191104 }
+            ],
+            sites: [
+                { stt: 1, name: "Vinfast CarOn An Phú", address: "61a QL1A, An Phú Đông, TP. HCM", pc: 30, cam: 29, wifi: 6, isp: "Viettel + FPT", lat: 10.859707998647083, lng: 106.7135134134926 },
+                { stt: 2, name: "Vinfast CarOn Thủ Đức", address: "25 Đường Số 8, Long Trường, TP. HCM", pc: 22, cam: 30, wifi: 5, isp: "VNPT", lat: 10.810296446094233, lng: 106.81283777116421 },
+                { stt: 3, name: "Vinfast CarOn Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 20, cam: 18, wifi: 5, isp: "VNPT", lat: 10.763344611862639, lng: 106.58301728650738 },
+                { stt: 4, name: "Vinfast CarOn Tân Tạo", address: "117/2D3 Hồ Văn Long, Bình Tân, TP. HCM", pc: 4, cam: 16, wifi: 2, isp: "VNPT", lat: 10.767500608319304, lng: 106.58241775783188 },
+                { stt: 5, name: "Vinfast CarOn Tên Lửa", address: "704/1 Đường Tên Lửa, An Lạc, TP. HCM", pc: 6, cam: 8, wifi: "-", isp: "FPT", lat: 10.755718675360846, lng: 106.60639406517551 },
+                { stt: 6, name: "Vinfast CarOn Thới An", address: "418 Tô Ngọc Vân, Thới An, TP. HCM", pc: 5, cam: 14, wifi: "-", isp: "FPT", lat: 10.874114704560474, lng: 106.67535430201174 },
+                { stt: 7, name: "Vinfast CarOn Tân Thới Hiệp", address: "314A Đ. Nguyễn Ảnh Thủ, Tân Thới Hiệp, TP. HCM", pc: 4, cam: 8, wifi: 3, isp: "FPT", lat: 10.879101487018458, lng: 106.63722375120747 },
+                { stt: 8, name: "Kho chung Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 13, cam: 16, wifi: "-", isp: "VNPT", lat: 10.7578590131806, lng: 106.58882024232842 },
+                { stt: 9, name: "Kho chung Bình Chánh", address: "774 Lê Khả Phiếu, Tân Nhựt, TP. HCM", pc: 2, cam: 11, wifi: "-", isp: "-", lat: 10.723346585548063, lng: 106.60149085767158 }
+            ]
+        };
+
+        let map = null, markers = [], routeSegments = [], animatedBike = null, bikeInterval = null;
+        let baseTileLayer = null, trafficTileLayer = null, currentMapMode = 'standard';
+
+        function initMap() {
+            if (!map) {
+                map = L.map('map', { zoomControl: false }).setView([10.800219670429469, 106.6655323191104], 11);
+                
+                baseTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                trafficTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m@221097413,traffic&hl=vi&x={x}&y={y}&z={z}', {
+                    opacity: 0.82,
+                    attribution: 'Traffic © Google'
+                });
+
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+            }
+            map.invalidateSize();
+            renderSites();
+        }
+
+        function setMapMode(mode) {
+            currentMapMode = mode;
+            const btnStandard = document.getElementById('btn-mode-standard');
+            const btnTraffic = document.getElementById('btn-mode-traffic');
+
+            if (mode === 'traffic') {
+                if (!map.hasLayer(trafficTileLayer)) trafficTileLayer.addTo(map);
+                btnTraffic.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-xs transition flex items-center gap-1";
+                btnStandard.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition flex items-center gap-1";
+            } else {
+                if (map.hasLayer(trafficTileLayer)) map.removeLayer(trafficTileLayer);
+                btnStandard.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-xs transition flex items-center gap-1";
+                btnTraffic.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition flex items-center gap-1";
+            }
+        }
+
+        function renderSites() {
+            const listEl = document.getElementById('map-site-list');
+            listEl.innerHTML = '';
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            closeDispatch();
+
+            // Render HQ duy nhất
+            projectData.hqs.forEach(hq => {
+                const icon = L.divIcon({
+                    className: 'hq-marker-icon',
+                    html: `<div class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl border-2 border-white shadow-xl flex items-center justify-center text-white text-sm sm:text-base font-bold">🏢</div>`,
+                    iconSize: [36, 36], iconAnchor: [18, 18]
+                });
+                const marker = L.marker([hq.lat, hq.lng], { icon, zIndexOffset: 1000 }).addTo(map);
+                marker.bindPopup(`<b class="text-blue-900">${hq.name}</b><p class="text-xs text-gray-600">${hq.address}</p>`);
+                markers.push(marker);
+            });
+
+            // Render 9 Site
+            projectData.sites.forEach(site => {
+                const icon = L.divIcon({
+                    html: `<div class="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">🚗</div>`,
+                    iconSize: [32, 32], iconAnchor: [16, 16]
+                });
+
+                const marker = L.marker([site.lat, site.lng], { icon }).addTo(map);
+                marker.bindPopup(`
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">${site.name}</h4>
+                        <p class="text-xs text-gray-600 mb-2 leading-relaxed">${site.address}</p>
+                        <div class="grid grid-cols-2 gap-1 text-[10px] bg-gray-100 p-2 rounded border">
+                            <div>💻 PC: <b>${site.pc}</b></div>
+                            <div>📷 Cam: <b>${site.cam}</b></div>
+                            <div>📶 Wifi: <b>${site.wifi}</b></div>
+                            <div>🌐 ISP: <b>${site.isp}</b></div>
+                        </div>
+                    </div>
+                `);
+                markers.push(marker);
+
+                // Click trực tiếp vào icon marker trên bản đồ
+                marker.on('click', () => {
+                    map.flyTo([site.lat, site.lng], 15);
+                    simulateDispatch(projectData.hqs[0], site);
+                });
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 sm:p-3 bg-white/95 rounded-xl border border-gray-200 shadow-xs hover:border-blue-500 hover:shadow-md cursor-pointer transition text-xs";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-900 truncate pr-1">${site.name}</h4>
+                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-600 text-white shrink-0">SITE 0${site.stt}</span>
+                    </div>
+                    <p class="text-gray-500 text-[11px] line-clamp-2">${site.address}</p>
+                    <div class="mt-1.5 grid grid-cols-2 gap-1 text-[10px] text-gray-600 bg-gray-50 p-1.5 rounded">
+                        <span>💻 PC: <b>${site.pc}</b></span>
+                        <span>📷 Cam: <b>${site.cam}</b></span>
+                        <span>📶 Wifi: <b>${site.wifi}</b></span>
+                        <span class="truncate">🌐 ISP: <b>${site.isp}</b></span>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    map.flyTo([site.lat, site.lng], 15);
+                    marker.openPopup();
+                    simulateDispatch(projectData.hqs[0], site);
+                    if (window.innerWidth < 640) toggleMapPanel();
+                };
+                listEl.appendChild(card);
+            });
+        }
+
+        function simulateDispatch(hq, site) {
+            closeDispatch();
+            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${hq.lng},${hq.lat};${site.lng},${site.lat}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.routes || !data.routes.length) return;
+                    const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    const distanceKm = (data.routes[0].distance / 1000).toFixed(1);
+                    const durationSeconds = data.routes[0].duration;
+
+                    const casing = L.polyline(coords, {
+                        color: '#ffffff', weight: 8, opacity: 0.95, lineCap: 'round', lineJoin: 'round'
+                    }).addTo(map);
+                    routeSegments.push(casing);
+
+                    const totalPoints = coords.length;
+                    const chunkSize = Math.max(2, Math.floor(totalPoints / 8));
+                    let trafficStats = { green: 0, orange: 0, red: 0 };
+
+                    for (let i = 0; i < totalPoints - 1; i += chunkSize) {
+                        const chunk = coords.slice(i, Math.min(i + chunkSize + 1, totalPoints));
+                        if (chunk.length < 2) continue;
+
+                        const rand = Math.random();
+                        let segColor = '#16a34a';
+                        if (rand > 0.82) { segColor = '#dc2626'; trafficStats.red++; }
+                        else if (rand > 0.55) { segColor = '#f59e0b'; trafficStats.orange++; }
+                        else trafficStats.green++;
+
+                        const segLine = L.polyline(chunk, {
+                            color: segColor, weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round'
+                        }).addTo(map);
+                        routeSegments.push(segLine);
+                    }
+
+                    const bikeIcon = L.divIcon({
+                        html: `<div class="w-8 h-8 sm:w-9 sm:h-9 bg-amber-500 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-sm font-black animate-bounce">🛵</div>`,
+                        iconSize: [36, 36], iconAnchor: [18, 18]
+                    });
+
+                    animatedBike = L.marker(coords[0], { icon: bikeIcon, zIndexOffset: 2000 }).addTo(map);
+                    let idx = 0;
+                    bikeInterval = setInterval(() => {
+                        idx++;
+                        if (idx < coords.length) animatedBike.setLatLng(coords[idx]);
+                        else { idx = 0; animatedBike.setLatLng(coords[0]); }
+                    }, Math.max(30, 2000 / coords.length));
+
+                    const delayFactor = 1 + (trafficStats.orange * 0.05 + trafficStats.red * 0.15);
+                    const durationMins = Math.max(1, Math.round((durationSeconds * delayFactor) / 60));
+
+                    renderDispatchPanel(distanceKm, durationMins, site.name);
+                })
+                .catch(e => console.error("OSRM Error:", e));
+        }
+
+        function renderDispatchPanel(dist, time, name) {
+            let p = document.getElementById('route-dispatch-panel');
+            if (!p) {
+                p = document.createElement('div');
+                p.id = 'route-dispatch-panel';
+                document.getElementById('sec-map').appendChild(p);
+            }
+            p.innerHTML = `
+                <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 p-3.5 flex flex-col gap-2.5 relative">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-xl shrink-0">
+                                🛵
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold text-gray-500 uppercase truncate">Lộ trình xe máy → ${name}</div>
+                                <div class="text-sm font-black text-gray-900 mt-0.5">
+                                    <span class="text-blue-600">${time} phút</span> 
+                                    <span class="text-gray-400 font-normal">|</span> 
+                                    <span class="text-gray-600 font-semibold">${dist} km</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="closeDispatch()" title="Đóng lộ trình" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold transition shrink-0">
+                            ✕
+                        </button>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-semibold text-gray-600 px-0.5">
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-emerald-600"></span> Thông thoáng</div>
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-amber-500"></span> Đông xe</div>
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-red-600"></span> Ùn tắc</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeDispatch() {
+            const p = document.getElementById('route-dispatch-panel');
+            if (p) p.remove();
+            routeSegments.forEach(s => map.removeLayer(s));
+            routeSegments = [];
+            if (animatedBike) { map.removeLayer(animatedBike); animatedBike = null; }
+            if (bikeInterval) { clearInterval(bikeInterval); bikeInterval = null; }
+        }
+
+        function toggleMapPanel() {
+            document.getElementById('map-floating-panel').classList.toggle('hidden');
+            document.getElementById('btn-open-panel').classList.toggle('hidden');
+        }
+
+        function toggleBrowserFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
+        window.addEventListener('orientationchange', () => { setTimeout(() => { if (map) map.invalidateSize(); }, 300); });
+    </script>
+</body>
+</html>
