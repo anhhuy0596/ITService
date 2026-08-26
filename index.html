@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Multi-Tenant Project Portal</title>
+    <title>Enterprise Multi-Tenant Project Portal - Minh Viet Group Proposal Integration</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,10 +61,10 @@
 
             <div class="mt-6 pt-4 border-t border-gray-200 text-[11px] text-gray-500 space-y-1 bg-slate-50 p-3 rounded-xl">
                 <p class="font-bold text-gray-700">Tài khoản truy cập:</p>
-                <p>👑 <b>Admin:</b> <code class="bg-gray-200 px-1 rounded">admin</code> / <code class="bg-gray-200 px-1 rounded">admin123</code> (Xem được CẢ 3 dự án & Quản lý User)</p>
-                <p>☕ <b>Starbucks:</b> <code class="bg-gray-200 px-1 rounded">client_starbucks</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (154 Stores)</p>
+                <p>👑 <b>Admin:</b> <code class="bg-gray-200 px-1 rounded">admin</code> / <code class="bg-gray-200 px-1 rounded">admin123</code> (Xem cả 3 dự án & Quản lý User)</p>
+                <p>🚗 <b>Minh Việt Group:</b> <code class="bg-gray-200 px-1 rounded">client_minhviet</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (Proposal Full)</p>
                 <p>👔 <b>Uniqlo:</b> <code class="bg-gray-200 px-1 rounded">client_uniqlo</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (35 Sites + 3 NetNam HQs)</p>
-                <p>🚘 <b>Vinfast:</b> <code class="bg-gray-200 px-1 rounded">client_vinfast</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (9 Showrooms + 3 Aus Asia HQs)</p>
+                <p>☕ <b>Starbucks:</b> <code class="bg-gray-200 px-1 rounded">client_starbucks</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (154 Stores)</p>
             </div>
         </div>
     </section>
@@ -92,17 +92,17 @@
             <!-- ACTION BAR -->
             <div class="flex items-center space-x-3">
                 
-                <!-- BỘ CHỌN DỰ ÁN CHO ADMIN (DROPDOWN PROJECT SWITCHER) -->
+                <!-- BỘ CHỌN DỰ ÁN CHO ADMIN -->
                 <div id="admin-project-selector-container" class="hidden items-center space-x-2 bg-gray-800/90 border border-gray-700 p-1 rounded-xl">
                     <span class="text-[11px] font-semibold text-gray-400 pl-2">📁 Chọn Dự Án:</span>
                     <select id="admin-project-dropdown" onchange="handleAdminChangeProject(this.value)" class="bg-gray-900 text-white text-xs font-bold py-1.5 px-3 rounded-lg border border-gray-600 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                        <option value="starbucks">☕ Starbucks Vietnam (154 Stores)</option>
+                        <option value="minhviet">🚗 Minh Việt Group & VinFast CarOn (Full Proposal)</option>
                         <option value="uniqlo">👔 Uniqlo & NetNam (35 Sites)</option>
-                        <option value="vinfast">🚘 Vinfast & Aus Asia Tech (9 Showrooms)</option>
+                        <option value="starbucks">☕ Starbucks Vietnam (154 Stores)</option>
                     </select>
                 </div>
 
-                <!-- ADMIN TABS (QUẢN LÝ USER / XEM DASHBOARD) -->
+                <!-- ADMIN TABS -->
                 <div id="admin-nav-tab" class="hidden space-x-2">
                     <button onclick="switchAdminView('USERS')" id="btn-tab-users" class="bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs">
                         ⚙️ Quản lý tài khoản
@@ -126,13 +126,13 @@
         <!-- SUB-NAV FOR CLIENT DASHBOARD (3 MỤC TIÊU CHUẨN) -->
         <nav id="client-subnav" class="bg-white border-b border-gray-200 px-6 py-2 flex space-x-2 shrink-0 shadow-xs z-30">
             <button onclick="switchClientSection('REQ')" id="btn-sec-req" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition">
-                📋 1. Yêu cầu dự án
+                📋 1. Yêu cầu dự án & Đánh giá hiện trạng
             </button>
             <button onclick="switchClientSection('MAP')" id="btn-sec-map" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition">
-                🗺️ 2. Bản đồ các site (Toàn màn hình)
+                🗺️ 2. Bản đồ các site & Điều phối Onsite
             </button>
             <button onclick="switchClientSection('SOL')" id="btn-sec-sol" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition">
-                💡 3. Thông tin giải pháp đề xuất
+                💡 3. Thông tin giải pháp đề xuất & BoM
             </button>
         </nav>
 
@@ -168,16 +168,16 @@
             </section>
 
             <!-- VIEW: CLIENT SECTION 1 - PROJECT REQUIREMENTS -->
-            <section id="sec-client-req" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+            <section id="sec-client-req" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full custom-scrollbar">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
                     <div class="border-b border-gray-200 pb-4 flex justify-between items-center">
                         <div>
-                            <span class="text-xs font-bold text-blue-600 uppercase bg-blue-50 px-2 py-1 rounded">Module 1</span>
-                            <h3 id="req-title" class="text-xl font-bold text-gray-900 mt-2">Yêu Cầu & Đặc Tả Kỹ Thuật Dự Án</h3>
+                            <span class="text-xs font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-md">Module 1</span>
+                            <h3 id="req-title" class="text-xl font-bold text-gray-900 mt-2">Yêu Cầu Dự Án & Đánh Giá Hiện Trạng Kỹ Thuật</h3>
                         </div>
-                        <span id="req-status-badge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">Đang vận hành</span>
+                        <span id="req-status-badge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">Sẵn sàng triển khai</span>
                     </div>
-                    <div id="req-content-body" class="text-sm text-gray-700 leading-relaxed space-y-4"></div>
+                    <div id="req-content-body" class="text-sm text-gray-700 leading-relaxed space-y-6"></div>
                 </div>
             </section>
 
@@ -188,7 +188,7 @@
                 <div id="map" class="absolute inset-0 h-full w-full z-0 bg-slate-200"></div>
 
                 <!-- BẢNG ĐIỀU KHIỂN NỔI THU GỌN / MỞ RỘNG -->
-                <div id="map-floating-panel" class="absolute top-4 left-4 z-20 w-[410px] max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
+                <div id="map-floating-panel" class="absolute top-4 left-4 z-20 w-[420px] max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
                     
                     <div class="p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl">
                         <div>
@@ -221,13 +221,13 @@
             </section>
 
             <!-- VIEW: CLIENT SECTION 3 - SOLUTION ARCHITECTURE -->
-            <section id="sec-client-sol" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+            <section id="sec-client-sol" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full custom-scrollbar">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
                     <div class="border-b border-gray-200 pb-4">
-                        <span class="text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2 py-1 rounded">Module 3</span>
-                        <h3 id="sol-title" class="text-xl font-bold text-gray-900 mt-2">Kiến Trúc Giải Pháp Đề Xuất & BoM Hạ Tầng</h3>
+                        <span class="text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Module 3</span>
+                        <h3 id="sol-title" class="text-xl font-bold text-gray-900 mt-2">Phương Án Đề Xuất Chuẩn Hóa Hạ Tầng & Dịch Vụ IT Support</h3>
                     </div>
-                    <div id="sol-content-body" class="text-sm text-gray-700 leading-relaxed space-y-4"></div>
+                    <div id="sol-content-body" class="text-sm text-gray-700 leading-relaxed space-y-6"></div>
                 </div>
             </section>
         </div>
@@ -261,9 +261,9 @@
                 <div>
                     <label class="block font-semibold text-gray-700 mb-1">Dự án phân quyền (Tenant Scope)</label>
                     <select id="modal-tenant" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="starbucks">Dự án Starbucks Vietnam</option>
+                        <option value="minhviet">Dự án Minh Việt Group & VinFast CarOn</option>
                         <option value="uniqlo">Dự án Uniqlo & NetNam</option>
-                        <option value="vinfast">Dự án Vinfast & Aus Asia Tech</option>
+                        <option value="starbucks">Dự án Starbucks Vietnam</option>
                         <option value="all">Tất cả dự án (Admin Only)</option>
                     </select>
                 </div>
@@ -282,192 +282,132 @@
         // --- 1. USER DATABASE (RBAC) ---
         let usersDB = [
             { id: 1, name: "Quản Trị Viên Hệ Thống", username: "admin", password: "admin123", role: "ADMIN", tenantId: "all" },
-            { id: 2, name: "Đại Diện Starbucks VN", username: "client_starbucks", password: "123456", role: "CLIENT", tenantId: "starbucks" },
+            { id: 2, name: "Đại Diện Minh Việt Group", username: "client_minhviet", password: "123456", role: "CLIENT", tenantId: "minhviet" },
             { id: 3, name: "Đại Diện Uniqlo VN", username: "client_uniqlo", password: "123456", role: "CLIENT", tenantId: "uniqlo" },
-            { id: 4, name: "Đại Diện Vinfast CarOn", username: "client_vinfast", password: "123456", role: "CLIENT", tenantId: "vinfast" }
+            { id: 4, name: "Đại Diện Starbucks VN", username: "client_starbucks", password: "123456", role: "CLIENT", tenantId: "starbucks" }
         ];
 
-        // --- 2. PROJECTS DATA REPOSITORY (ĐẦY ĐỦ 100% 154 SITES STARBUCKS, 35 SITES UNIQLO, 9 SITES VINFAST) ---
+        // --- 2. PROJECTS DATA REPOSITORY ---
         const projectsDB = {
-            // === PROJECT 1: STARBUCKS VIETNAM (ĐẦY ĐỦ 154 CỬA HÀNG TỪ EXCEL) ===
-            starbucks: {
-                id: "starbucks",
-                name: "Starbucks Vietnam Store Locator (154 Stores)",
-                clientName: "Starbucks Coffee Company",
-                icon: "☕",
-                badgeBg: "bg-emerald-600",
-                requirements: {
-                    sow: "Xây dựng hệ thống định vị tương tác số toàn diện cho chuỗi 154 cửa hàng Starbucks tại Việt Nam.",
-                    deliverables: [
-                        "Bản đồ tương tác thời gian thực với phân loại mô hình (Core, SE, Modular, Specialist).",
-                        "Kiểm soát số lượng thiết bị kỹ thuật tại từng Store: Desktop PC, Camera giám sát, AP Wifi, POS.",
-                        "Định vị tọa độ GPS chính xác cho toàn bộ 154 cửa hàng trên toàn quốc."
-                    ],
-                    sla: "Thời gian sẵn sàng hệ thống 99.9%, cập nhật thông tin cửa hàng < 24h khi có chi nhánh mới."
+            // === PROJECT 1: MINH VIỆT GROUP (TÍCH HỢP TOÀN BỘ PROPOSAL) ===
+            minhviet: {
+                id: "minhviet",
+                name: "Minh Việt Group - Chuỗi Kho Vận & Xưởng Dịch Vụ VinFast CarOn",
+                clientName: "MINH VIỆT GROUP (Mảng Kho Vận & Chuỗi Xưởng Dịch Vụ VinFast CarOn)",
+                providerName: "Aus Asia Technologies (AAT)",
+                icon: "🚗",
+                badgeBg: "bg-blue-600",
+                proposalMeta: {
+                    version: "v1.0 – [24/08/2026]",
+                    scopeScale: "Toàn bộ hệ thống Site Kho bãi & Xưởng dịch vụ Ô tô / Xe máy điện VinFast"
                 },
-                solution: {
-                    architecture: "Kiến trúc Client-Side Map Engine ứng dụng Leaflet.js & OpenStreetMap dữ liệu mở.",
-                    bom: [
-                        { item: "Interactive Map GIS Engine", qty: "1 License", desc: "Nền tảng hiển thị bản đồ định vị 154 Stores" },
-                        { item: "Store Equipment Tracker", qty: "154 Stores", desc: "Giám sát số lượng PC, Camera, Wifi, POS" },
-                        { item: "Multi-device Responsive UI", qty: "1 Package", desc: "Giao diện tối ưu Mobile/Tablet/Desktop" }
+                requirements: {
+                    executiveSummary: "Minh Việt Group hiện đang vận hành mô hình chuỗi gồm Kho bãi Logistics và Chuỗi Xưởng dịch vụ VinFast CarOn. Hạ tầng mạng hiện hữu ở mức dân dụng (SOHO), gây tắc nghẽn, mất an toàn và gián đoạn vận hành liên tục.",
+                    bottlenecks: [
+                        { title: "Hạ tầng mạng phẳng (Flat Network)", desc: "Dùng chung một dải mạng cho PC, máy in, camera CCTV, máy chẩn đoán xe và Wi-Fi khách, tiềm ẩn rủi ro broadcast storm và lây lan mã độc." },
+                        { title: "Gateway & Switch dân dụng", desc: "Modem ISP quá tải khi vượt 30-40 kết nối; switch unmanaged cắm daisy-chain gây lặp vòng (Loop) làm sập mạng toàn site." },
+                        { title: "Wi-Fi không hỗ trợ Fast Roaming", desc: "AP gia đình rời rạc, rớt sóng liên tục khi kiểm kho hoặc chẩn đoán xe giữa các cầu nâng." },
+                        { title: "Lỗi thiết bị đầu cuối gián đoạn vận hành", desc: "Máy in mất kết nối do nhảy IP, phần mềm DMS/ERP chập chờn, camera giám sát an ninh không ổn định." }
+                    ],
+                    riskTable: [
+                        { item: "Hệ thống Gateway", status: "Modem ISP dân dụng, không chịu tải", risk: "Treo mạng toàn site, không tự động chuyển đường dự phòng", priority: "P1 - Rất cao" },
+                        { item: "Cấu trúc Mạng", status: "Mạng phẳng 1 lớp, không VLAN", risk: "Xung đột IP, lặp vòng (Loop), mất an toàn thông tin", priority: "P1 - Rất cao" },
+                        { item: "Hạ tầng Wi-Fi", status: "AP gia đình, không Fast Roaming", risk: "Mất sóng khi kiểm kho và chẩn đoán xe tại xưởng", priority: "P2 - Cao" },
+                        { item: "Hệ thống Camera", status: "Dùng chung dải mạng với PC", risk: "Nghẽn băng thông, gián đoạn giám sát an ninh", priority: "P2 - Cao" },
+                        { item: "Thiết bị Đầu cuối", status: "Lỗi máy in, máy quét, máy trạm", risk: "Đình trệ xuất nhập kho, chậm tiến độ giao trả xe khách", priority: "P2 - Cao" }
+                    ],
+                    scopeBlocks: [
+                        { block: "Khối A: Hạ tầng Mạng & Kết nối Internet", content: "Lắp đặt Router Gateway chuyên dụng Multi-WAN cân bằng tải & Auto-Failover; triển khai Managed Switch phân tách VLAN; quy hoạch hệ thống Enterprise Wi-Fi 6 Fast Roaming (802.11k/v/r)." },
+                        { block: "Khối B: Thiết bị Đầu cuối & Hệ thống Ngoại vi", content: "Xử lý lỗi phần mềm/phần cứng máy trạm cơ bản; chuẩn hóa IP tĩnh cho Máy in hóa đơn/phiếu xuất kho, máy quét mã vạch; tách dải mạng tối ưu luồng truyền Camera CCTV." },
+                        { block: "Khối C: Dịch vụ Vận hành & Hỗ trợ Onsite SLA", content: "Giám sát chủ động từ xa 24/7 qua Cloud Controller; tiếp nhận yêu cầu qua Hotline/Ticket Portal/Zalo; Kỹ sư Onsite hiện trường ứng cứu sự cố theo SLA cam kết." },
+                        { block: "Khối D: Nội dung Ngoài phạm vi", content: "Không can thiệp phần mềm nghiệp vụ nội bộ VinFast/Minh Việt; chi phí linh kiện vật lý thay thế (cháy nổ, hỏng bo mạch) sẽ được báo giá phê duyệt riêng." }
+                    ],
+                    raciTable: [
+                        { stt: 1, task: "Cung cấp danh sách các Site, mặt bằng và đầu mối phụ trách", aat: "Hỗ trợ biểu mẫu (C)", mv: "Chịu trách nhiệm chính (A/R)" },
+                        { stt: 2, task: "Khảo sát thực tế hạ tầng và lập phương án kỹ thuật chi tiết", aat: "Chịu trách nhiệm chính (A/R)", mv: "Bố trí người dẫn và mở cửa (C)" },
+                        { stt: 3, task: "Phê duyệt phương án thiết kế và dự toán kinh phí mua sắm", aat: "Tư vấn kỹ thuật (C)", mv: "Chịu trách nhiệm phê duyệt (A)" },
+                        { stt: 4, task: "Thi công lắp đặt thiết bị, kéo cáp, cấu hình VLAN, cân bằng tải", aat: "Chịu trách nhiệm chính (A/R)", mv: "Giám sát hiện trường (I)" },
+                        { stt: 5, task: "Làm việc với các ISP nhà mạng khi xảy ra sự cố đứt cáp", aat: "Đại diện xử lý kỹ thuật (A/R)", mv: "Cung cấp thông tin hợp đồng ISP (I)" },
+                        { stt: 6, task: "Tiếp nhận và xử lý sự cố người dùng (PC, Máy in, Camera, Wi-Fi)", aat: "Thực hiện cam kết theo SLA (A/R)", mv: "Gửi yêu cầu qua kênh Ticket (I)" },
+                        { stt: 7, task: "Nghiệm thu dịch vụ và báo cáo vận hành định kỳ hàng tháng", aat: "Lập báo cáo chi tiết (A/R)", mv: "Đánh giá & Nghiệm thu (A)" }
+                    ],
+                    deliverables: [
+                        "Bộ Hồ sơ Thiết kế & Hoàn công Hạ tầng (Network As-Built Diagram, Bảng phân bổ IP tĩnh, Bảng quy hoạch VLAN).",
+                        "Hồ sơ Bàn giao Cấu hình & Toàn bộ Tài khoản Quản trị Cloud Controller, Router, Switch, AP, Camera NVR.",
+                        "Cổng Thông tin Quản lý Sự cố (Customer Portal / Ticketing SLA Tracker).",
+                        "Báo cáo Vận hành Định kỳ Hàng tháng (Monthly Service & Health-Check Report)."
                     ]
                 },
+                solution: {
+                    architectureDesc: "Kiến trúc mạng doanh nghiệp phân lớp, tích hợp Router Gateway chịu tải 150-200 users, Multi-WAN Auto-Failover dưới 3s, phân tách 5 phân đoạn VLAN 802.1Q và hạ tầng Wi-Fi 6 Roaming liền mạch.",
+                    vlanPlan: [
+                        { vlan: "VLAN 10", name: "Management", purpose: "Quản trị thiết bị mạng (Router, Switch, AP, PDU)" },
+                        { vlan: "VLAN 20", name: "Office", purpose: "Máy tính văn phòng, kế toán, phần mềm ERP kho vận, máy in" },
+                        { vlan: "VLAN 30", name: "VinFast Workshop / Logistics", purpose: "Máy tính kỹ thuật xưởng, thiết bị chẩn đoán xe điện, máy quét mã vạch" },
+                        { vlan: "VLAN 40", name: "CCTV Security", purpose: "Hệ thống Camera an ninh kho bãi, xưởng dịch vụ và Đầu ghi NVR" },
+                        { vlan: "VLAN 50", name: "Guest Wi-Fi", purpose: "Mạng dành cho khách hàng (Cách ly hoàn toàn, giới hạn băng thông)" }
+                    ],
+                    implementationSteps: [
+                        { code: "M01", name: "Khảo sát thực địa chi tiết từng Site", desc: "Đo kiểm tín hiệu Wi-Fi, kiểm tra tủ rack, kiểm kê toàn bộ node mạng, PC, máy in, camera." },
+                        { code: "M02", name: "Lập bản vẽ & Quy hoạch sơ đồ mạng", desc: "Thiết kế sơ đồ nguyên lý đấu nối, bảng phân bổ IP tĩnh và chính sách bảo mật VLAN." },
+                        { code: "M03", name: "Lắp đặt Router Gateway & Load Balancing", desc: "Thay thế router ISP, cấu hình cân bằng tải đa đường truyền, kích hoạt tự chuyển dự phòng." },
+                        { code: "M04", name: "Lắp đặt & Cấu hình Managed Switch", desc: "Phân chia VLAN 802.1Q, cấp nguồn PoE cho AP và Camera CCTV." },
+                        { code: "M05", name: "Triển khai hệ thống Cloud Wi-Fi AP", desc: "Lắp đặt AP tại vị trí tối ưu trong kho/xưởng, cấu hình Fast Roaming (802.11k/v/r)." },
+                        { code: "M06", name: "Chuẩn hóa IP thiết bị ngoại vi", desc: "Gán IP tĩnh cố định cho toàn bộ máy in và Camera trong hệ thống theo quy hoạch." },
+                        { code: "M07", name: "Tích hợp phần mềm giám sát", desc: "Cấu hình tích hợp hệ thống giám sát (PRTG/Zabbix), thiết lập ngưỡng cảnh báo Email/Telegram." },
+                        { code: "M08", name: "Chuyển đổi hệ thống (Cut-over)", desc: "Tiến hành chuyển đổi ngoài giờ làm việc nhằm không làm gián đoạn kinh doanh." },
+                        { code: "M09", name: "Nghiệm thu, Bàn giao & Đào tạo", desc: "Bàn giao hồ sơ hoàn công, sơ đồ đấu nối và hướng dẫn quy trình gọi hỗ trợ Helpdesk." }
+                    ],
+                    bom: [
+                        { item: "Router Gateway / Load Balancer", specs: "Thiết bị doanh nghiệp, chịu tải 50-100 users, Multi-WAN, VPN Site-to-Site", unit: "Thiết bị", qty: "01" },
+                        { item: "Managed Gigabit PoE Switch", specs: "8-24 Port Gigabit, chuẩn PoE+ 802.3af/at, hỗ trợ VLAN, STP, Cloud", unit: "Thiết bị", qty: "01 - 02" },
+                        { item: "Enterprise Wi-Fi 6 Access Point", specs: "Chuẩn 802.11ax Dual-Band, hỗ trợ Fast Roaming, chịu tải cao trong kho/xưởng", unit: "Thiết bị", qty: "03 - 06" },
+                        { item: "Tủ mạng Treo tường (Wallmount Rack)", specs: "Tủ Rack 6U/9U - D400/D600 có khóa bảo vệ, thanh nguồn PDU, quạt tản nhiệt", unit: "Bộ", qty: "01" },
+                        { item: "Vật tư phụ & Cáp mạng Cat6", specs: "Cáp mạng Cat6 UTP chính hãng, Patch panel, Patch cord, ống gen chống cháy", unit: "Gói", qty: "01" },
+                        { item: "Dịch vụ IT Support & Onsite SLA", specs: "Gói quản trị định kỳ, giám sát 24/7, Helpdesk từ xa và ứng cứu Onsite theo SLA", unit: "Tháng", qty: "Theo HĐ" }
+                    ],
+                    supportServices: [
+                        {
+                            title: "Dịch vụ IT Support (Quản trị Level 1)",
+                            items: [
+                                "Hardware: Kiểm tra On/Off, chẩn đoán lỗi PC, Laptop, Monitor người dùng. Hỗ trợ kết nối máy in/photo, cài đặt driver, xử lý lỗi kẹt giấy/không in được.",
+                                "Software: Cài đặt hệ điều hành (OS), phần mềm văn phòng (khách hàng cung cấp license). Xử lý lỗi phần mềm gián đoạn làm việc.",
+                                "Hạ tầng: Kiểm tra tín hiệu cáp mạng từ Switch đến port DATA/AP. Phối hợp bên thứ 3 xử lý bảo hành phần cứng."
+                            ]
+                        },
+                        {
+                            title: "IT Infrastructure Management (Quản trị Hạ tầng CNTT)",
+                            items: [
+                                "Kiểm tra nhiệt độ, điện áp, PSU, SMART status ổ cứng, RAM, CPU, mainboard.",
+                                "Hỗ trợ chẩn đoán từ xa qua Cloud Controller và điều khiển Remote (UltraViewer/AnyDesk) ngay khi tiếp nhận request.",
+                                "Đề xuất nâng cấp linh kiện hỏng hóc hoặc xuống cấp (RAM, SSD, card mạng, module quang)."
+                            ]
+                        },
+                        {
+                            title: "Emergency Onsite (Hỗ trợ Onsite Khẩn cấp theo SLA)",
+                            items: [
+                                "Kỹ sư AAT chủ động di chuyển đến site kiểm tra và khắc phục khi có yêu cầu từ IT Minh Việt.",
+                                "Mỗi ticket Onsite bao gồm 2 tiếng xử lý và khắc phục vấn đề tại hiện trường.",
+                                "Lập biên bản nghiệm thu và báo cáo kết quả hỗ trợ sau khi hoàn thành cho IT Minh Việt."
+                            ]
+                        }
+                    ]
+                },
+                hqs: [
+                    { id: "hq_global", shortName: "The Global City", name: "Aus Asia Tech - Trụ sở The Global City", address: "60 Đường N3A, The Global City, TP. HCM", lat: 10.799502969835324, lng: 106.77732925321823 },
+                    { id: "hq_giang", shortName: "Nhà Giang", name: "Aus Asia Tech - Chi nhánh Nhà Giang", address: "Nhà Giang, Bình Thạnh, TP. HCM", lat: 10.812597848515276, lng: 106.71211103001129 },
+                    { id: "hq_hitek", shortName: "VP Hitek", name: "Aus Asia Tech - Văn phòng Hitek", address: "Văn phòng Hitek, Tân Bình, TP. HCM", lat: 10.80947015311697, lng: 106.66395250990621 }
+                ],
                 sites: [
-                    {"stt": 1, "name": "Starbucks NEW WORLD", "model": "Core", "city": "HCM", "address": "Tầng trệt và Tầng 1 khách sạn New World Sài Gòn, 76 Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 18, "wifi": 4, "pos": 2, "lat": 10.7719, "lng": 106.6937},
-                    {"stt": 2, "name": "Starbucks PHAN XICH LONG", "model": "Core", "city": "HCM", "address": "125 - 127 Phan Xích Long, Phường Cầu Kiệu, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 16, "wifi": 6, "pos": 2, "lat": 10.7951, "lng": 106.6853},
-                    {"stt": 3, "name": "Starbucks PANORAMA", "model": "Core", "city": "HCM", "address": "209 Trần Văn Trà, Phường Tân Hưng, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 16, "wifi": 4, "pos": 2, "lat": 10.7259, "lng": 106.7082},
-                    {"stt": 4, "name": "Starbucks VIVO CITY", "model": "SE", "city": "HCM", "address": "Số 01-28a, Tầng 1 Tòa nhà SC Vivocity, số 1058 Đường Nguyễn Văn Linh, Khu Phố 1, Phường Tân Hưng, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 8, "wifi": 2, "pos": 1, "lat": 10.7294, "lng": 106.6797},
-                    {"stt": 5, "name": "Starbucks THAO DIEN", "model": "Core", "city": "HCM", "address": "21 Đường Thảo Điền, Phường An Khánh, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 13, "wifi": 2, "pos": 2, "lat": 10.8043, "lng": 106.7371},
-                    {"stt": 6, "name": "Starbucks KUMHO", "model": "SE", "city": "HCM", "address": "Phòng 1A Tòa nhà mPlaza, 39 Lê Duẩn, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 9, "wifi": 3, "pos": 2, "lat": 10.7821, "lng": 106.7005},
-                    {"stt": 7, "name": "Starbucks NGUYEN HUE", "model": "SE", "city": "HCM", "address": "Tòa nhà Saigoi Garden, Số 99 Nguyễn Huệ, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 8, "wifi": 4, "pos": 2, "lat": 10.7735, "lng": 106.7042},
-                    {"stt": 8, "name": "Starbucks EMART", "model": "SE", "city": "HCM", "address": "Lô F1-01, F2-01 tại tầng 1 và tầng 2, số 366 Phan Văn Trị, Phường An Nhơn, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.8275, "lng": 106.6888},
-                    {"stt": 9, "name": "Starbucks LAKAI", "model": "SE", "city": "HCM", "address": "Một phần tầng 1 thuộc khu thương mại của Tòa nhà Lakai, 98-126 Nguyễn Tri Phương, Phường An Đông, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7578, "lng": 106.6669},
-                    {"stt": 10, "name": "Starbucks TAN SON NHAT DOMESTIC PARKING", "model": "SE", "city": "HCM", "address": "Phòng A2, Tầng trệt, Khu vực Thương mại Nhà giữ xe, Ga Quốc nội, Sân bay Tân Sơn Nhất, Số 45 Đường Trường Sơn, Phường Tân Sơn Hòa, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 7, "wifi": 2, "pos": 2, "lat": 10.8130, "lng": 106.6625},
-                    {"stt": 11, "name": "Starbucks NGUYEN VAN TROI", "model": "SE", "city": "HCM", "address": "Số 66 Đường Nguyễn Văn Trỗi, Phường Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7932, "lng": 106.6806},
-                    {"stt": 12, "name": "Starbucks THE VISTA", "model": "SE", "city": "HCM", "address": "P1.07, tầng trệt Trung tâm thương mại The Oxygen, 628C đường Võ Nguyên Giáp, Phường An Khánh, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 10.8028, "lng": 106.7533},
-                    {"stt": 13, "name": "Starbucks THE LEMAN", "model": "Modular", "city": "HCM", "address": "Tầng trệt, Tòa nhà Léman Luxury Apartments, số 117 Nguyễn Đình Chiểu, Phường Xuân Hòa, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 9, "wifi": 3, "pos": 2, "lat": 10.7788, "lng": 106.6908},
-                    {"stt": 14, "name": "Starbucks IBIS", "model": "Modular", "city": "HCM", "address": "Tầng trệt, Khách sạn Ibis Hà Đô, số 2 Hồng Hà, Phường Tân Sơn Hòa, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 9, "wifi": 3, "pos": 2, "lat": 10.8118, "lng": 106.6665},
-                    {"stt": 15, "name": "Starbucks CACH MANG THANG 8", "model": "SE", "city": "HCM", "address": "241bis Cách Mạng Tháng Tám, Phường Bàn Cờ, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7766, "lng": 106.6811},
-                    {"stt": 16, "name": "Starbucks VAN HANH MALL", "model": "SE", "city": "HCM", "address": "Phòng 1-09A, Tầng 01, Tòa nhà Trung tâm thương mại Vạn Hạnh, Số 11 Đường Sư Vạn Hạnh, Phường Hòa Hưng, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 10.7712, "lng": 106.6685},
-                    {"stt": 17, "name": "Starbucks CRESCENT STRIP", "model": "Core", "city": "HCM", "address": "Phòng CR1-02, Tầng 1, Lô CR3-1-A, Khu A - Đô thị mới Nam Thành phố Hồ Chí Minh, Số 103 Tôn Dật Tiên, Phường Tân Mỹ, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 12, "wifi": 4, "pos": 2, "lat": 10.7196, "lng": 106.7188},
-                    {"stt": 18, "name": "Starbucks BACH DANG", "model": "Core", "city": "DN", "address": "Tầng trệt, Khu phức hợp khách sạn Bạch Đằng, số 50 Bạch Đằng, Phường Hải Châu, Thành phố Đà Nẵng", "pc": 2, "cam": 16, "wifi": 4, "pos": 2, "lat": 16.0718, "lng": 108.2245},
-                    {"stt": 19, "name": "Starbucks ESTELLA", "model": "Core", "city": "HCM", "address": "Lô L1-08, 09, Tầng 1, Trung tâm thương mại Estella Place, Số 88 đường Song Hành,, Phường Bình Trưng, Thành phố Hồ Chí Minh", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 10.8023, "lng": 106.7441},
-                    {"stt": 20, "name": "Starbucks RIVER PARK", "model": "SE", "city": "HCM", "address": "Tầng trệt và Lầu 1, R-05 tòa nhà Riverpark Premier, Số 31 Đường Đặng Đức Thuật, khu phố Riverpark Premier, Phường Tân Hưng, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7224, "lng": 106.7031},
-                    {"stt": 21, "name": "Starbucks LANDMARK 81", "model": "SE", "city": "HCM", "address": "Lô L1-26, Tầng L1, Trung tâm thương mại Vincom Center Landmark 81, số 772 Điện Biên Phủ, Phường Thạnh Mỹ Tây, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7948, "lng": 106.7218},
-                    {"stt": 22, "name": "Starbucks VINCOM DONG KHOI", "model": "SE", "city": "HCM", "address": "Lô B2-02-02A, Tầng B2, Tòa nhà Trung tâm Thương mại Vincom Center Đồng Khởi, Số 72 Lê Thánh Tôn, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.7779, "lng": 106.7020},
-                    {"stt": 23, "name": "Starbucks GOLD VIEW", "model": "SE", "city": "HCM", "address": "Lô L1-02A, Tầng 1, Khu cao ốc Hòa Bình The Gold View, Số 346 Bến Vân Đồn, Phường Vĩnh Hội, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.7585, "lng": 106.6942},
-                    {"stt": 24, "name": "Starbucks SENSE CITY", "model": "SE", "city": "HCM", "address": "T-23 Tầng 1, Trung tâm thương mại Sense City Phạm Văn Đồng, 240-242 đường Kha Vạn Cân, Phường Hiệp Bình, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 10.8273, "lng": 106.7211},
-                    {"stt": 25, "name": "Starbucks SAIGON CENTRE", "model": "SE", "city": "HCM", "address": "L2-01, Tầng 2, Khu cao ốc phức hợp Saigon Center, Số 67 Lê Lợi, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.7725, "lng": 106.7011},
-                    {"stt": 26, "name": "Starbucks BA NA HILLS", "model": "Core", "city": "DN", "address": "Tầng trệt Khách sạn Morin, Cụm đỉnh trung tâm thuộc quần thể KDL sinh thái Bà Nà Suối Mơ, Xã Bà Nà, Thành phố Đà Nẵng, Việt Nam", "pc": 2, "cam": 16, "wifi": 4, "pos": 2, "lat": 15.9995, "lng": 107.9875},
-                    {"stt": 27, "name": "Starbucks HAPPY RESIDENCE", "model": "SE", "city": "HCM", "address": "Số 206 Đường Nguyễn Lương Bằng, Khu Dân Cư Hưng Phúc Tại Lô S10-2, Phường Tân Mỹ, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7155, "lng": 106.7161},
-                    {"stt": 28, "name": "Starbucks ETOWN 5", "model": "SE", "city": "HCM", "address": "Phòng G.2A, Tầng trệt, Cao ốc văn phòng Etown 5, 364 Cộng Hòa, Phường Tân Bình, Thành phố Hồ Chí Minh", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.8021, "lng": 106.6416},
-                    {"stt": 29, "name": "Starbucks BA NA MAIN GATE", "model": "Modular", "city": "DN", "address": "Tầng 2, Cổng Thành, thuộc quần thể khu Du lịch Sinh thái Bà Nà Suối Mơ, Xã Bà Nà, Thành phố Đà Nẵng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 16.0212, "lng": 108.0168},
-                    {"stt": 30, "name": "Starbucks VINCOM NGO QUYEN", "model": "SE", "city": "DN", "address": "Lô L1-11, Tầng L1 Trung tâm thương mại VinCom Center Ngô Quyền Đà Nẵng, số 910A Ngô Quyền, Phường An Hải, Thành phố Đà Nẵng", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 16.0712, "lng": 108.2331},
-                    {"stt": 31, "name": "Starbucks SAIGON MIA", "model": "SE", "city": "HCM", "address": "L1-04, Tầng 1, Đường số 9A, Chung cư Cụm III, IV - Khu dân cư Trung Sơn, Xã Bình Hưng, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7423, "lng": 106.6811},
-                    {"stt": 32, "name": "Starbucks SAIGON PEARL", "model": "SE", "city": "HCM", "address": "GF-01A, Tầng trệt, Khu thương mại dịch vụ Topaz 1 và 2, số 92, Đường Nguyễn Hữu Cảnh, Phường Thạnh Mỹ Tây, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7895, "lng": 106.7185},
-                    {"stt": 33, "name": "Starbucks LOTTE NAM SAIGON", "model": "Core", "city": "HCM", "address": "1F76 +1F77, Tầng 1, Lotte Mart Nam Sài Gòn, 469 Nguyễn Hữu Thọ, Phường Tân Hưng, Thành phố Hồ Chí Minh", "pc": 2, "cam": 12, "wifi": 3, "pos": 2, "lat": 10.7523, "lng": 106.6978},
-                    {"stt": 34, "name": "Starbucks LOTTE PICO", "model": "SE", "city": "HCM", "address": "1F - 02, Tầng 1, Lotte Mart Tân Bình, Số 20, Đường Cộng Hòa, Phường Bảy Hiền, Thành phố Hồ Chí Minh", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.8001, "lng": 106.6528},
-                    {"stt": 35, "name": "Starbucks VINWONDERS NHA TRANG", "model": "SE", "city": "NT", "address": "FB-08, Khu Công viên giải trí Vinwonders Nha Trang, Đảo Hòn Tre, Phường Nha Trang, Khánh Hòa", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 12.2185, "lng": 109.2422},
-                    {"stt": 36, "name": "Starbucks VINPEARL BEACHFRONT", "model": "SE", "city": "NT", "address": "Tầng 1 Vinpearl Condotel Beachfront, số 78, đường Trần Phú, phường Nha Trang, Tỉnh Khánh Hòa", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 12.2388, "lng": 109.1965},
-                    {"stt": 37, "name": "Starbucks ME LINH POINT", "model": "SE", "city": "HCM", "address": "G3, Tầng trệt, Tòa nhà Mê Linh Point, số 2 Đường Ngô Đức Kế, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7741, "lng": 106.7061},
-                    {"stt": 38, "name": "Starbucks URBAN HILL", "model": "SE", "city": "HCM", "address": "Retail 3, Khu phố Urban Hill, Số 51 Nguyễn Văn Linh, Phường Tân Hưng, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7251, "lng": 106.7058},
-                    {"stt": 39, "name": "Starbucks GOLDEN MANSION", "model": "SE", "city": "HCM", "address": "Lô TM 1.01, Tầng 1, Tòa nhà Golden Mansion, Số 119 Phổ Quang, Phường Đức Nhuận, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.8015, "lng": 106.6713},
-                    {"stt": 40, "name": "Starbucks THAO DIEN PEARL", "model": "Modular", "city": "HCM", "address": "L1-04+L1-04T, Số 12 đường Quốc Hương, Phường An Khánh, Thành phố Hồ Chí Minh", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.8033, "lng": 106.7303},
-                    {"stt": 41, "name": "Starbucks SAIGON ROYAL", "model": "SE", "city": "HCM", "address": "Lô TM 1.01, Tầng 1, Tháp SaiGon Royal A, SaiGon Royal, 34-35 Bến Vân Đồn, Phường Xóm Chiếu, Thành phố Hồ Chí Minh, Việt Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7631, "lng": 106.7048},
-                    {"stt": 42, "name": "Starbucks EMPORIUM", "model": "SE", "city": "HCM", "address": "A1-01B Tầng 1, Tòa nhà Bảo Gia, Số 184 Lê Đại Hành, Phường Phú Thọ, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7645, "lng": 106.6533},
-                    {"stt": 43, "name": "Starbucks HUNG PHUOC", "model": "Modular", "city": "HCM", "address": "Tầng trệt, Số 45-47 Đường Nội khu Hưng Phước II, Phường Tân Hưng, Thành phố Hồ Chí Minh", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.7291, "lng": 106.7112},
-                    {"stt": 44, "name": "Starbucks NHA TRANG CENTER", "model": "SE", "city": "NT", "address": "GF24, Tầng trệt, Trung Tâm Thương Mại Nha Trang, số 20 Trần Phú, Phường Nha Trang, Khánh Hòa", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 12.2491, "lng": 109.1958},
-                    {"stt": 45, "name": "Starbucks AEON BINH DUONG", "model": "SE", "city": "BD", "address": "Lô G31, Tầng trệt, Trung tâm mua sắm Aeon - Bình Dương Canary , Số 01, Đại lộ Bình Dương, KP Bình Giao, Phường Thuận Giao, Bình Dương", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.9322, "lng": 106.7128},
-                    {"stt": 46, "name": "Starbucks AEON BINH TAN", "model": "Modular", "city": "HCM", "address": "Lô số G9B, Tầng trệt, Trung tâm thương mại Aeon Mall Bình Tân, Số 01, Đường số 17A, Phường An Lạc, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7428, "lng": 106.6115},
-                    {"stt": 47, "name": "Starbucks FELIZ EN VISTA", "model": "SE", "city": "HCM", "address": "RT-7, Số 1 Phan Văn Đáng, Phường Cát Lái, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7571, "lng": 106.7513},
-                    {"stt": 48, "name": "Starbucks THISO MALL", "model": "SE", "city": "HCM", "address": "L1-06 và L1-07 Tầng trệt Thiso Mall Sala, Số 8-10 đường Mai Chí Thọ, Phường An Khánh, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7711, "lng": 106.7235},
-                    {"stt": 49, "name": "Starbucks HIKARI", "model": "Modular", "city": "BD", "address": "Lô M3, Tầng trệt, khu phức hợp Hikari tại Lô A11, A12, Khu Đô Thị Mới, Bình Dương", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 11.0542, "lng": 106.6665},
-                    {"stt": 50, "name": "Starbucks AEON TAN PHU", "model": "Modular", "city": "HCM", "address": "Lô G23B Tầng trệt Aeon - Tân Phú Celadon, số 30 đường Tân Thắng, Phường Tân Sơn Nhì, Thành phố Hồ Chí Minh", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.8012, "lng": 106.6162},
-                    {"stt": 51, "name": "Starbucks MIDTOWN", "model": "SE", "city": "HCM", "address": "Số 27, Lô M7, đường số 15, Khu A - Đô thị mới Nam thành phố, Phường Tân Mỹ, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7201, "lng": 106.7165},
-                    {"stt": 52, "name": "Starbucks SUN AVENUE", "model": "SE", "city": "HCM", "address": "SAV.2-00.10, Tầng trệt, Tháp SAV2, Số 28 Đại lộ Mai Chí Thọ, Phường Bình Trưng, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7781, "lng": 106.7492},
-                    {"stt": 53, "name": "Starbucks VINHOME CENTRAL 2", "model": "SE", "city": "HCM", "address": "C2-SH.01, tòa Central 2 Vinhomes Central Park, Số 720A Điện Biên Phủ, Phường Thạnh Mỹ Tây, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7925, "lng": 106.7214},
-                    {"stt": 54, "name": "Starbucks NGUYEN THI MINH KHAI", "model": "SE", "city": "HCM", "address": "Số 82 Nguyễn Thị Minh Khai, Phường Xuân Hòa, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7812, "lng": 106.6948},
-                    {"stt": 55, "name": "Starbucks COBI", "model": "SE", "city": "HCM", "address": "GF-102A Tầng Trệt Tòa nhà Cobi Tower II, Số 2-4 Đường Số 8, Phường Tân Mỹ, Thành phố Hồ Chí Minh", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 10.7215, "lng": 106.7118},
-                    {"stt": 56, "name": "Starbucks BA TRIEU", "model": "SE", "city": "HN", "address": "Số 314 phố Bà Triệu, Phường Hai Bà Trưng, Thành phố Hà Nội", "pc": 2, "cam": 12, "wifi": 4, "pos": 2, "lat": 21.0118, "lng": 105.8492},
-                    {"stt": 57, "name": "Starbucks THE LOOP", "model": "SE", "city": "HN", "address": "Ô số 124, Tầng 1, TTTM The Loop (IPH), số 241 Đường Xuân Thủy, Phường Cầu Giấy, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0361, "lng": 105.7825},
-                    {"stt": 58, "name": "Starbucks THE GARDEN", "model": "SE", "city": "HN", "address": "Gian hàng FB-03 tầng G, TTTM The Garden, Khu đô thị The Manor, đường Mễ Trì, Phường Từ Liêm, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 2, "pos": 2, "lat": 21.0165, "lng": 105.7788},
-                    {"stt": 59, "name": "Starbucks VINCOM PHAM NGOC THACH", "model": "SE", "city": "HN", "address": "Lô L1-01-04 TTTM Vincom Phạm Ngọc Thạch, Số 2 Phố Phạm Ngọc Thạch, Phường Kim Liên, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0061, "lng": 105.8322},
-                    {"stt": 60, "name": "Starbucks SOMERSET", "model": "SE", "city": "HN", "address": "Số 2 Phố Tây Hồ, Phường Tây Hồ, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0622, "lng": 105.8285},
-                    {"stt": 61, "name": "Starbucks THE CHURCH", "model": "Specialist", "city": "HN", "address": "Tầng 1 Asia Tower, số 6 phố Nhà Thờ, Phường Hoàn Kiếm, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0285, "lng": 105.8488},
-                    {"stt": 62, "name": "Starbucks TRAN PHU HAI PHONG", "model": "Core", "city": "HP", "address": "Tầng 1 và Tầng 2, số 111 đường Trần Phú, phường Gia Viên, Thành phố Hải Phòng", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 20.8581, "lng": 106.6852},
-                    {"stt": 63, "name": "Starbucks CHARMVIT", "model": "Modular", "city": "HN", "address": "Tầng 1 CharmVit Tower, Số 117 Phố Trần Duy Hưng, Phường Yên Hòa, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0089, "lng": 105.7985},
-                    {"stt": 64, "name": "Starbucks LANDMARK 72", "model": "Core", "city": "HN", "address": "Tầng 1, Keangnam Hanoi Landmark Tower, Khu ĐTM Cầu Giấy, Phường Yên Hòa, Thành phố Hà Nội", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 21.0169, "lng": 105.7839},
-                    {"stt": 65, "name": "Starbucks DUY TAN", "model": "SE", "city": "HN", "address": "Số 32-34 Phố Duy Tân, Phường Cầu Giấy, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0298, "lng": 105.7852},
-                    {"stt": 66, "name": "Starbucks THE LEGEND", "model": "SE", "city": "HN", "address": "Tầng trệt, Tòa nhà The Legend, 109 Nguyễn Tuân, Phường Thanh Xuân, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0002, "lng": 105.8015},
-                    {"stt": 67, "name": "Starbucks SEASON AVENUE", "model": "SE", "city": "HN", "address": "Lô 01, S4 Tower, Chung cư Seasons Avenue, Khu đô thị mới Mỗ Lao, Phường Đại Mỗ, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9789, "lng": 105.7801},
-                    {"stt": 68, "name": "Starbucks VINCOM METROPOLIS", "model": "Core", "city": "HN", "address": "Lô L1-16B, tầng L1 TTTM Vincom Center Liễu Giai, số 29 Liễu Giai, Phường Ngọc Hà, Thành phố Hà Nội", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 21.0322, "lng": 105.8115},
-                    {"stt": 69, "name": "Starbucks VINCOM STAR CITY", "model": "SE", "city": "HN", "address": "Lô L1- 08B, tầng L1 TTTM Vincom Center Trần Duy Hưng, Phường Thanh Xuân, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0078, "lng": 105.7965},
-                    {"stt": 70, "name": "Starbucks NOI BAI DOMESTIC GATE 02", "model": "SE", "city": "HN", "address": "Cánh B, Tầng 2, Khu vực cách ly Nhà ga T1, Cảng HKQT Nội Bài, Xã Nội Bài, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.2215, "lng": 105.8075},
-                    {"stt": 71, "name": "Starbucks VINMEC HANOI", "model": "SE", "city": "HN", "address": "Tầng 1 Vinmec Times City, Số 458 Phố Minh Khai, Phường Vĩnh Tuy, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 20.9961, "lng": 105.8672},
-                    {"stt": 72, "name": "Starbucks VAN CAO", "model": "SE", "city": "HP", "address": "185-187 phố Văn Cao, Phường Gia Viên, Thành phố Hải Phòng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.8465, "lng": 106.6995},
-                    {"stt": 73, "name": "Starbucks AEON HA DONG", "model": "SE", "city": "HN", "address": "T160-161, Tầng 1, Trung tâm thương mại Aeon Mall Hà Đông, Phường Dương Nội, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9795, "lng": 105.7485},
-                    {"stt": 74, "name": "Starbucks VINCOM ROYAL CITY", "model": "SE", "city": "HN", "address": "SO-18, Tòa R3, Vinhomes Royal City - 72 Phố Nguyễn Trãi, Phường Thanh Xuân, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0028, "lng": 105.8152},
-                    {"stt": 75, "name": "Starbucks ECOPARK", "model": "SE", "city": "HY", "address": "Tầng 1, KĐT thương mại và dịch vụ Văn Giang (ECOPARK), Hưng Yên", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9592, "lng": 105.9298},
-                    {"stt": 76, "name": "Starbucks TASCO MALL", "model": "SE", "city": "HN", "address": "Gian 105A, TTTM TASCO Mall, Số 7-9, đường Nguyễn Văn Linh, Phường Việt Hưng, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0528, "lng": 105.8951},
-                    {"stt": 77, "name": "Starbucks TRUNG HOA", "model": "SE", "city": "HN", "address": "101 Trung Hòa, Phường Yên Hòa, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0115, "lng": 105.7972},
-                    {"stt": 78, "name": "Starbucks NOI BAI INTL GATE 28", "model": "Modular", "city": "HN", "address": "Ga quốc tế T2, cảng hàng không quốc tế Nội Bài, Xã Nội Bài, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.2185, "lng": 105.8112},
-                    {"stt": 79, "name": "Starbucks PACIFIC PLACE", "model": "Modular", "city": "HN", "address": "Phòng R105, Tầng 1, Pacific Place, số 83B Lý Thường Kiệt, Phường Cửa Nam, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0252, "lng": 105.8450},
-                    {"stt": 80, "name": "Starbucks AEON LONG BIEN", "model": "Modular", "city": "HN", "address": "T152, Tầng 1 TTTM Aeon Mall Long Biên, số 27 Đường Cổ Linh, Phường Long Biên, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0263, "lng": 105.8972},
-                    {"stt": 81, "name": "Starbucks LE HONG PHONG", "model": "SE", "city": "HP", "address": "Lô 7B Khu đô thị mới Ngã Năm - Sân bay Cát Bi, Phường Gia Viên, Thành phố Hải Phòng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.8512, "lng": 106.7088},
-                    {"stt": 82, "name": "Starbucks VINCOM LONG BIEN", "model": "SE", "city": "HN", "address": "L1-116, TTTM Vincom Long Biên, Phường Phúc Lợi, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0425, "lng": 105.9145},
-                    {"stt": 83, "name": "Starbucks TRAN HUNG DAO HOI AN", "model": "SE", "city": "HA", "address": "40 Trần Hưng Đạo, Phường Hội An, Quảng Nam", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 15.8791, "lng": 108.3285},
-                    {"stt": 84, "name": "Starbucks GOLDEN FIELD", "model": "Core", "city": "HN", "address": "Tầng 01+02, tòa nhà Golden Field, KĐT Mỹ Đình I, Phường Từ Liêm, Thành phố Hà Nội", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 21.0284, "lng": 105.7663},
-                    {"stt": 85, "name": "Starbucks LOTTE WEST LAKE", "model": "SE", "city": "HN", "address": "Lô 167, tầng 1, TTTM Lotte Mall Hà Nội, Số 272 đường Võ Chí Công, phường Tây Hồ, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0745, "lng": 105.8098},
-                    {"stt": 86, "name": "Starbucks NGUYEN HUU HUAN", "model": "SE", "city": "HN", "address": "Số 32 – 34 phố Nguyễn Hữu Huân, Phường Hoàn Kiếm, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0328, "lng": 105.8552},
-                    {"stt": 87, "name": "Starbucks OCEAN PARK HAI AU VILLA", "model": "SE", "city": "HN", "address": "Lô Thương Mại HA01-SP.SB-32, KĐT Vinhomes Ocean Park, Gia Lâm, Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9942, "lng": 105.9495},
-                    {"stt": 88, "name": "Starbucks SORA MALL", "model": "SE", "city": "BD", "address": "Vị trí 102, Tầng 1, Lô C19, Đại lộ Hùng Vương, Phường Bình Dương, Thành phố Mới Bình Dương", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 11.0525, "lng": 106.6622},
-                    {"stt": 89, "name": "Starbucks LOTTE LIEU GIAI", "model": "SE", "city": "HN", "address": "F1-C07, Tầng 1 Lotte Center Hanoi, 54 Liễu Giai, Phường Giảng Võ, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0319, "lng": 105.8118},
-                    {"stt": 90, "name": "Starbucks TRAN HUNG DAO DANANG", "model": "SE", "city": "DN", "address": "Tầng trệt, số 218 Trần Hưng Đạo, Phường An Hải, Thành phố Đà Nẵng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 16.0618, "lng": 108.2295},
-                    {"stt": 91, "name": "Starbucks NESTA HOTEL", "model": "SE", "city": "DN", "address": "Tầng trệt Khách sạn Nesta Đà Nẵng, Số 268 đường Võ Nguyên Giáp, Phường Ngũ Hành Sơn, Thành phố Đà Nẵng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 16.0525, "lng": 108.2464},
-                    {"stt": 92, "name": "Starbucks BA NA GOLDEN BRIDGE", "model": "Modular", "city": "DN", "address": "Khu vực Vòng Xuyến Cầu Vàng - KDL Sun World Ba Na Hills, Thôn An Sơn, Xã Bà Nà, Đà Nẵng", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 15.9981, "lng": 107.9918},
-                    {"stt": 93, "name": "Starbucks SONG HUONG", "model": "Core", "city": "HUE", "address": "Công viên 3/2 đường Lê Lợi, Phường Thuận Hóa, Thành phố Huế", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 16.4678, "lng": 107.5855},
-                    {"stt": 94, "name": "Starbucks NOI BAI DOMESTIC GATE 12", "model": "Modular", "city": "HN", "address": "Tầng 2, Cánh A, Khu cách ly Nhà ga T1, Sân bay Nội Bài, Xã Nội Bài, Thành phố Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.2212, "lng": 105.8072},
-                    {"stt": 95, "name": "Starbucks VINHOMES SKYLAKE", "model": "SE", "city": "HN", "address": "Tòa S2 Vinhomes Skylake, Phạm Hùng, Cầu Giấy, Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0195, "lng": 105.7818},
-                    {"stt": 96, "name": "Starbucks OCEAN PARK S2", "model": "SE", "city": "HN", "address": "Tòa nhà U26 (S2.03) Vinhomes Ocean Park, Gia Lâm, Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9915, "lng": 105.9422},
-                    {"stt": 97, "name": "Starbucks HA NOI POST OFFICE", "model": "SE", "city": "HN", "address": "Tầng 1 Bưu điện Hà Nội, số 87 Đinh Tiên Hoàng, Phường Hoàn Kiếm, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0271, "lng": 105.8524},
-                    {"stt": 98, "name": "Starbucks NGO GIA TU LONG XUYEN", "model": "Core", "city": "AGI", "address": "Số 01 Ngô Gia Tự, Phường Long Xuyên, Tỉnh An Giang", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 10.3732, "lng": 105.4372},
-                    {"stt": 99, "name": "Starbucks TRANG AN", "model": "Modular", "city": "NBI", "address": "Khu Du lịch sinh thái Tràng An, phường Hoa Lư, Tỉnh Ninh Bình", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 20.2528, "lng": 105.8942},
-                    {"stt": 100, "name": "Starbucks VINCOM VINH", "model": "SE", "city": "NAN", "address": "Tòa nhà Vincom Plaza Vinh, Quang Trung, TP. Vinh, Tỉnh Nghệ An", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 18.6735, "lng": 105.6811},
-                    {"stt": 101, "name": "Starbucks DIAMOND PLAZA HO CHI MINH", "model": "SE", "city": "HCM", "address": "Diamond Plaza, 34 Lê Duẩn, phường Sài Gòn, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7818, "lng": 106.6985},
-                    {"stt": 102, "name": "Starbucks VINPEARL SAFARI PHU QUOC", "model": "Modular", "city": "PQ", "address": "Safari Phú Quốc, Gành Dầu, Phú Quốc, Kiên Giang", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.3325, "lng": 103.8925},
-                    {"stt": 103, "name": "Starbucks VAN LANG UNIVERSITY", "model": "Modular", "city": "HCM", "address": "69/68 Đặng Thùy Trâm, Phường Bình Lợi Trung, TP. HCM", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.8251, "lng": 106.6982},
-                    {"stt": 104, "name": "Starbucks AEON TAN AN", "model": "SE", "city": "TNI", "address": "TTTM Aeon Tân An, số 88, Quốc Lộ 1, Phường Long An, Tỉnh Long An", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.5361, "lng": 106.4131},
-                    {"stt": 105, "name": "Starbucks FINE ARTS MUSEUM", "model": "SE", "city": "HN", "address": "Số 66 Nguyễn Thái Học, Phường Ba Đình, Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0305, "lng": 105.8395},
-                    {"stt": 106, "name": "Starbucks VINCOM RACH GIA", "model": "SE", "city": "PQ", "address": "Vincom Plaza Rạch Giá, đường Cô Bắc, TP. Rạch Giá, Kiên Giang", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 9.9658, "lng": 105.0812},
-                    {"stt": 107, "name": "Starbucks VINCOM HA TINH", "model": "SE", "city": "HTH", "address": "Vincom Plaza Hà Tĩnh, Hàm Nghi, Hà Tĩnh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 18.3425, "lng": 105.9042},
-                    {"stt": 108, "name": "Starbucks UNION SQUARE", "model": "SE", "city": "HCM", "address": "171 Đồng Khởi, Bến Nghé, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7758, "lng": 106.7019},
-                    {"stt": 109, "name": "Starbucks VINCOM MEGAMALL THAO DIEN", "model": "Modular", "city": "HCM", "address": "Vincom Mega Mall Thảo Điền, số 161 Xa lộ Hà Nội, TP. HCM", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.8019, "lng": 106.7425},
-                    {"stt": 110, "name": "Starbucks KIM LONG VILLA", "model": "SE", "city": "HCM", "address": "KDC Phú Long, đường Nguyễn Hữu Thọ, Nhà Bè, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7091, "lng": 106.6998},
-                    {"stt": 111, "name": "Starbucks WATERBUS BACH DANG", "model": "SE", "city": "HCM", "address": "10B Tôn Đức Thắng, Phường Sài Gòn, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7722, "lng": 106.7068},
-                    {"stt": 112, "name": "Starbucks Q2 TERRACE", "model": "SE", "city": "HCM", "address": "21 Võ Trường Toản, Phường An Khánh, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.8031, "lng": 106.7408},
-                    {"stt": 113, "name": "Starbucks CELADON BOULEVARD", "model": "Core", "city": "HCM", "address": "Số 3 Đường N1, Phường Tân Sơn Nhì, Quận Tân Phú, TP. HCM", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 10.8005, "lng": 106.6148},
-                    {"stt": 114, "name": "Starbucks GOLDEN PLAZA", "model": "SE", "city": "HCM", "address": "Số 922 Nguyễn Trãi, Phường Chợ Lớn, Quận 5, TP. HCM", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.7519, "lng": 106.6568},
-                    {"stt": 115, "name": "Starbucks CII TOWER", "model": "SE", "city": "HCM", "address": "CII Tower, 152 Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7995, "lng": 106.7135},
-                    {"stt": 116, "name": "Starbucks HUNG VUONG PLAZA", "model": "SE", "city": "HCM", "address": "Số 126 Hồng Bàng, Phường Chợ Lớn, Quận 5, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7562, "lng": 106.6609},
-                    {"stt": 117, "name": "Starbucks VINHOME ORIGAMI", "model": "SE", "city": "HCM", "address": "Vinhomes Grand Park, Phước Thiện, Long Bình, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.8395, "lng": 106.8412},
-                    {"stt": 118, "name": "Starbucks THE WATERFRONT SAIGON", "model": "SE", "city": "HCM", "address": "Số 1-1A-2 Tôn Đức Thắng, Phường Sài Gòn, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7745, "lng": 106.7065},
-                    {"stt": 119, "name": "Starbucks WATERBUS THU THIEM", "model": "SE", "city": "HCM", "address": "Công viên bờ sông Sài Gòn, Nguyễn Thiện Thành, TP. Thủ Đức, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7731, "lng": 106.7168},
-                    {"stt": 120, "name": "Starbucks NOI BAI INTL GATE 40", "model": "Modular", "city": "HN", "address": "Ga T2 Sân bay Nội Bài, Cánh Tây, Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.2188, "lng": 105.8095},
-                    {"stt": 121, "name": "Starbucks NEW HORIZON", "model": "SE", "city": "BD", "address": "230 Đại lộ Bình Dương, Phú Hòa, Thủ Dầu Một, Bình Dương", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.9811, "lng": 106.6672},
-                    {"stt": 122, "name": "Starbucks BEACH HOUSE SUN PRIMAVERA", "model": "SE", "city": "PQ", "address": "Khu đô thị Gateway, Địa Trung Hải, Phú Quốc, Kiên Giang", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.0065, "lng": 104.0182},
-                    {"stt": 123, "name": "Starbucks VINWONDERS PHU QUOC", "model": "SE", "city": "PQ", "address": "VinWonders Phú Quốc, Bãi Dài, Gành Dầu, Kiên Giang", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.3295, "lng": 103.8611},
-                    {"stt": 124, "name": "Starbucks ROX CENTER", "model": "Core", "city": "HN", "address": "136 Hồ Tùng Mậu, Phường Phú Diễn, Hà Nội", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 21.0401, "lng": 105.7682},
-                    {"stt": 125, "name": "Starbucks VINPEARL HABOUR NHA TRANG", "model": "Modular", "city": "NT", "address": "Khu nhà ga cáp treo Vinpearl Phú Quý, Vĩnh Nguyên, Nha Trang", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 12.2178, "lng": 109.2435},
-                    {"stt": 126, "name": "Starbucks SUN WORLD HON THOM", "model": "SE", "city": "PQ", "address": "Nhà Ga Đi Cáp treo Hòn Thơm, An Thới, Phú Quốc, Kiên Giang", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.0268, "lng": 104.0092},
-                    {"stt": 127, "name": "Starbucks GALAXY TULIPS", "model": "SE", "city": "DLA", "address": "Galaxy Tulips, số 05 Nguyễn Thị Minh Khai, Đà Lạt, Lâm Đồng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 11.9422, "lng": 108.4375},
-                    {"stt": 128, "name": "Starbucks SUN WORLD BA DEN", "model": "Modular", "city": "TNI", "address": "Đỉnh Núi Bà Đen - KDL Sun World Ba Den Mountain, Tây Ninh", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 11.3712, "lng": 106.1688},
-                    {"stt": 129, "name": "Starbucks LOTTE DA NANG", "model": "SE", "city": "DN", "address": "Số 06 Nại Nam, Phường Hòa Cường, TP. Đà Nẵng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 16.0335, "lng": 108.2305},
-                    {"stt": 130, "name": "Starbucks PHU QUOC TNTL GATE 05", "model": "Modular", "city": "PQ", "address": "Ga quốc tế, Sân bay Quốc tế Phú Quốc, Kiên Giang", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.1691, "lng": 103.9912},
-                    {"stt": 131, "name": "Starbucks FANSIPAN", "model": "Modular", "city": "LCI", "address": "Ga Cáp treo Fansipan Legend, 89B Nguyễn Chí Thanh, Sa Pa, Lào Cai", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 22.3025, "lng": 103.7821},
-                    {"stt": 132, "name": "Starbucks VO THI SAU", "model": "SE", "city": "DNAI", "address": "Số 49 đường Võ Thị Sáu, Biên Hòa, Đồng Nai", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.9495, "lng": 106.8188},
-                    {"stt": 133, "name": "Starbucks QUANG TRUNG HO CHI MINH", "model": "Core", "city": "HCM", "address": "647 Quang Trung, Phường Thông Tây Hội, Gò Vấp, TP. HCM", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 10.8291, "lng": 106.6612},
-                    {"stt": 134, "name": "Starbucks BITEXCO", "model": "Specialist", "city": "HCM", "address": "Bitexco Financial Tower, số 45 Ngô Đức Kế, Quận 1, TP. HCM", "pc": 2, "cam": 12, "wifi": 4, "pos": 2, "lat": 10.7716, "lng": 106.7044},
-                    {"stt": 135, "name": "Starbucks DRAGON CARP DA NANG", "model": "Specialist", "city": "DN", "address": "Bến du thuyền Marina, Trần Hưng Đạo, Sơn Trà, Đà Nẵng", "pc": 2, "cam": 12, "wifi": 4, "pos": 2, "lat": 16.0610, "lng": 108.2285},
-                    {"stt": 136, "name": "Starbucks SENTOSA HAI PHONG", "model": "SE", "city": "HP", "address": "Sentosa Sky Park, ngã 4 Bùi Viện & Võ Nguyên Giáp, Lê Chân, Hải Phòng", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.8288, "lng": 106.6912},
-                    {"stt": 137, "name": "Starbucks VNG CAMPUS", "model": "Modular", "city": "HCM", "address": "Z06 Đường số 13, KCX Tân Thuận, Quận 7, TP. HCM", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 10.74167, "lng": 106.73711},
-                    {"stt": 138, "name": "Starbucks VINHOME GLORY HEIGHTS", "model": "SE", "city": "HCM", "address": "Glory Heights, Vinhomes Grand Park, Long Bình, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.8381, "lng": 106.8395},
-                    {"stt": 139, "name": "Starbucks TRANG AN BOAT DOCK", "model": "Core", "city": "NBI", "address": "Khu Bến Thuyền du lịch sinh thái Tràng An, Ninh Bình", "pc": 2, "cam": 12, "wifi": 4, "pos": 2, "lat": 20.2533, "lng": 105.8955},
-                    {"stt": 140, "name": "Starbucks NESTA CELIA", "model": "Core", "city": "DN", "address": "254 đường Võ Nguyên Giáp, Phường An Hải, Đà Nẵng", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 16.0545, "lng": 108.2461},
-                    {"stt": 141, "name": "Starbucks HANG DIEU", "model": "Specialist", "city": "HN", "address": "Số 54 Hàng Điếu, Phường Hoàn Kiếm, Thành phố Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0335, "lng": 105.8465},
-                    {"stt": 142, "name": "Starbucks NOI BAI DOMESTIC GATE 6", "model": "Modular", "city": "HN", "address": "Khu vực cách ly Nhà ga T1, Tầng 2, Sân bay Nội Bài, Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.2210, "lng": 105.8068},
-                    {"stt": 143, "name": "Starbucks VIET TOWER", "model": "Modular", "city": "HN", "address": "Tòa nhà Viet Tower, số 1 – 2 Thái Hà, Đống Đa, Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0119, "lng": 105.8235},
-                    {"stt": 144, "name": "Starbucks DIAMOND PLAZA HA NOI", "model": "Modular", "city": "HN", "address": "Diamond Plaza, 25 Lê Văn Lương, Thanh Xuân, Hà Nội", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 21.0068, "lng": 105.8028},
-                    {"stt": 145, "name": "Starbucks SUN PLAZA SAPA", "model": "SE", "city": "LCI", "address": "Sun Plaza, số 01 đường Hoàng Liên, Sa Pa, Lào Cai", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 22.3331, "lng": 103.8428},
-                    {"stt": 146, "name": "Starbucks VINCOM BAC NINH", "model": "SE", "city": "BNI", "address": "Vincom Bắc Ninh, Lý Thái Tổ & Trần Hưng Đạo, Bắc Ninh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.1833, "lng": 106.0667},
-                    {"stt": 147, "name": "Starbucks VINCOM THANH HOA", "model": "SE", "city": "THA", "address": "Vincom Plaza Thanh Hoá, 27 Trần Phú, Thanh Hoá", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 19.8075, "lng": 105.7761},
-                    {"stt": 148, "name": "Starbucks XUAN DIEU QUY NHON", "model": "Core", "city": "BDI", "address": "160 Xuân Diệu, Quy Nhơn, Bình Định", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 13.7756, "lng": 109.2334},
-                    {"stt": 149, "name": "Starbucks QUANG TRUNG HA NOI", "model": "Core", "city": "HN", "address": "6A phố Quang Trung, Phường Cửa Nam, Hà Nội", "pc": 2, "cam": 14, "wifi": 4, "pos": 2, "lat": 21.0235, "lng": 105.8492},
-                    {"stt": 150, "name": "Starbucks VINCOM MY THO", "model": "SE", "city": "TGG", "address": "Vincom Mỹ Tho, 1A Hùng Vương, Mỹ Tho, Tiền Giang", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.3625, "lng": 106.3608},
-                    {"stt": 151, "name": "Starbucks HA NOI CENTRE", "model": "SE", "city": "HN", "address": "Tiến Bộ Plaza, 175 Nguyễn Thái Học, Ba Đình, Hà Nội", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 21.0311, "lng": 105.8335},
-                    {"stt": 152, "name": "Starbucks CAM RANH DOMESTIC GATE 1", "model": "Modular", "city": "NT", "address": "Ga T1, Sân bay quốc tế Cam Ranh, Khánh Hòa", "pc": 2, "cam": 8, "wifi": 2, "pos": 2, "lat": 11.9982, "lng": 109.2195},
-                    {"stt": 153, "name": "Starbucks HA LONG INTL CRUISE PORT", "model": "SE", "city": "HLO", "address": "Cảng tàu khách Quốc tế Hạ Long, Bãi Cháy, Quảng Ninh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9588, "lng": 107.0372},
-                    {"stt": 154, "name": "Starbucks VINCOM HA LONG", "model": "SE", "city": "HLO", "address": "Vincom Plaza Hạ Long, Khu cột Đồng Hồ, Hồng Gai, Quảng Ninh", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 20.9512, "lng": 107.0852}
+                    { stt: 1, name: "Vinfast CarOn An Phú", address: "61a QL1A, An Phú Đông, TP. HCM", pc: 30, cam: 29, wifi: 6, isp: "Viettel + FPT", lat: 10.859707998647083, lng: 106.7135134134926 },
+                    { stt: 2, name: "Vinfast CarOn Thủ Đức", address: "25 Đường Số 8, Long Trường, TP. HCM", pc: 22, cam: 30, wifi: 5, isp: "VNPT", lat: 10.810296446094233, lng: 106.81283777116421 },
+                    { stt: 3, name: "Vinfast CarOn Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 20, cam: 18, wifi: 5, isp: "VNPT", lat: 10.763344611862639, lng: 106.58301728650738 },
+                    { stt: 4, name: "Vinfast CarOn Tân Tạo", address: "117/2D3 Hồ Văn Long, Bình Tân, TP. HCM", pc: 4, cam: 16, wifi: 2, isp: "VNPT", lat: 10.767500608319304, lng: 106.58241775783188 },
+                    { stt: 5, name: "Vinfast CarOn Tên Lửa", address: "704/1 Đường Tên Lửa, An Lạc, TP. HCM", pc: 6, cam: 8, wifi: "-", isp: "FPT", lat: 10.755718675360846, lng: 106.60639406517551 },
+                    { stt: 6, name: "Vinfast CarOn Thới An", address: "418 Tô Ngọc Vân, Thới An, TP. HCM", pc: 5, cam: 14, wifi: "-", isp: "FPT", lat: 10.874114704560474, lng: 106.67535430201174 },
+                    { stt: 7, name: "Vinfast CarOn Tân Thới Hiệp", address: "314A Đ. Nguyễn Ảnh Thủ, Tân Thới Hiệp, TP. HCM", pc: 4, cam: 8, wifi: 3, isp: "FPT", lat: 10.879101487018458, lng: 106.63722375120747 },
+                    { stt: 8, name: "Kho chung Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 13, cam: 16, wifi: "-", isp: "VNPT", lat: 10.7578590131806, lng: 106.58882024232842 },
+                    { stt: 9, name: "Kho chung Bình Chánh", address: "774 Lê Khả Phiếu, Tân Nhựt, TP. HCM", pc: 2, cam: 11, wifi: "-", isp: "-", lat: 10.723346585548063, lng: 106.60149085767158 }
                 ]
             },
 
@@ -479,7 +419,7 @@
                 icon: "👔",
                 badgeBg: "bg-red-600",
                 requirements: {
-                    sow: "Giám sát 35 site cửa hàng Uniqlo trên toàn quốc và điều phối kỹ thuật NetNam tiếp ứng bằng xe máy.",
+                    executiveSummary: "Giám sát 35 site cửa hàng Uniqlo trên toàn quốc và điều phối kỹ thuật NetNam tiếp ứng bằng xe máy.",
                     deliverables: [
                         "3 Trụ sở NetNam: Hà Nội (HITC), Đà Nẵng (Quang Trung), TP.HCM (Tòa nhà VOV - Đài Tiếng nói VN chuẩn GPS).",
                         "Tính toán khoảng cách đường bộ xe máy & thời gian tiếp ứng kỹ thuật SLA.",
@@ -488,11 +428,11 @@
                     sla: "Thời gian kỹ thuật viên có mặt tại hiện trường < 45 phút cho các cửa hàng nội thành."
                 },
                 solution: {
-                    architecture: "Hệ thống Routing Dispatching tự động kết nối OSRM (Open Source Routing Machine).",
+                    architectureDesc: "Hệ thống Routing Dispatching tự động kết nối OSRM (Open Source Routing Machine).",
                     bom: [
-                        { item: "NetNam ISP Dedicated Leased Line", qty: "35 Sites", desc: "Kênh truyền Internet doanh nghiệp tốc độ cao" },
-                        { item: "Automated Field Routing Simulator", qty: "1 System", desc: "Hệ thống dẫn đường kỹ thuật xe máy trực quan" },
-                        { item: "24/7 NOC Monitoring Center", qty: "3 Hubs", desc: "Trung tâm vận hành tại HN, ĐN và TP.HCM" }
+                        { item: "NetNam ISP Dedicated Leased Line", specs: "Kênh truyền Internet doanh nghiệp tốc độ cao", unit: "Line", qty: "35 Sites" },
+                        { item: "Automated Field Routing Simulator", specs: "Hệ thống dẫn đường kỹ thuật xe máy trực quan", unit: "Hệ thống", qty: "01" },
+                        { item: "24/7 NOC Monitoring Center", specs: "Trung tâm vận hành tại HN, ĐN và TP.HCM", unit: "Hub", qty: "03 Hubs" }
                     ]
                 },
                 hqs: [
@@ -539,45 +479,35 @@
                 ]
             },
 
-            // === PROJECT 3: VINFAST & AUS ASIA TECH (9 SHOWROOMS + 3 HQS) ===
-            vinfast: {
-                id: "vinfast",
-                name: "Vinfast CarOn & Aus Asia Tech Dispatch Matrix",
-                clientName: "Vinfast CarOn & Aus Asia Technologies",
-                icon: "🚘",
-                badgeBg: "bg-blue-600",
+            // === PROJECT 3: STARBUCKS VIETNAM (154 SITES) ===
+            starbucks: {
+                id: "starbucks",
+                name: "Starbucks Vietnam Store Locator (154 Stores)",
+                clientName: "Starbucks Coffee Company",
+                icon: "☕",
+                badgeBg: "bg-emerald-600",
                 requirements: {
-                    sow: "Quản trị trang thiết bị IT/Camera hạ tầng 9 Showroom/Kho Vinfast CarOn và so sánh xuất phát từ 3 cơ sở Aus Asia Tech.",
+                    executiveSummary: "Xây dựng hệ thống định vị tương tác số toàn diện cho chuỗi 154 cửa hàng Starbucks tại Việt Nam.",
                     deliverables: [
-                        "3 Cơ sở Aus Asia Tech: The Global City, Nhà Giang, Văn phòng Hitek.",
-                        "Kiểm soát số lượng PC, Camera, Wifi và nhà mạng ISP từng site.",
-                        "Bảng nút chọn so sánh trực tiếp khoảng cách/thời gian xuất phát từ 3 cơ sở Aus Asia."
+                        "Bản đồ tương tác thời gian thực với phân loại mô hình (Core, SE, Modular, Specialist).",
+                        "Kiểm soát số lượng thiết bị kỹ thuật tại từng Store: Desktop PC, Camera giám sát, AP Wifi, POS.",
+                        "Định vị tọa độ GPS chính xác cho toàn bộ 154 cửa hàng trên toàn quốc."
                     ],
-                    sla: "Khắc phục sự cố mạng/camera trong vòng 2 giờ kể từ khi tiếp nhận yêu cầu."
+                    sla: "Thời gian sẵn sàng hệ thống 99.9%, cập nhật thông tin cửa hàng < 24h khi có chi nhánh mới."
                 },
                 solution: {
-                    architecture: "Mô hình Multi-HQ IT Dispatcher với thuật toán ma trận khoảng cách Haversine & OSRM Engine.",
+                    architectureDesc: "Kiến trúc Client-Side Map Engine ứng dụng Leaflet.js & OpenStreetMap dữ liệu mở.",
                     bom: [
-                        { item: "Centralized IT Monitoring System", qty: "9 Showrooms", desc: "Hệ thống quản lý tập trung PC/Camera/Wifi" },
-                        { item: "Multi-HQ Dispatch Matrix", qty: "3 Bases", desc: "Tối ưu hóa điểm xuất phát kỹ thuật viên" },
-                        { item: "On-site SLA Support Package", qty: "24/7", desc: "Gói hỗ trợ ứng cứu kỹ thuật tận nơi" }
+                        { item: "Interactive Map GIS Engine", specs: "Nền tảng hiển thị bản đồ định vị 154 Stores", unit: "License", qty: "01" },
+                        { item: "Store Equipment Tracker", specs: "Giám sát số lượng PC, Camera, Wifi, POS", unit: "Hệ thống", qty: "154 Stores" }
                     ]
                 },
-                hqs: [
-                    { id: "hq_global", shortName: "Global City", name: "Aus Asia Tech - Global City", address: "60 Đường N3A, The Global City, TP. HCM", lat: 10.799502969835324, lng: 106.77732925321823 },
-                    { id: "hq_giang", shortName: "Nhà Giang", name: "Aus Asia Tech - Nhà Giang", address: "Nhà Giang, Bình Thạnh, TP. HCM", lat: 10.812597848515276, lng: 106.71211103001129 },
-                    { id: "hq_hitek", shortName: "VP Hitek", name: "Aus Asia Tech - VP Hitek", address: "Văn phòng Hitek, Tân Bình, TP. HCM", lat: 10.80947015311697, lng: 106.66395250990621 }
-                ],
                 sites: [
-                    { stt: 1, name: "Vinfast CarOn An Phú", address: "61a QL1A, An Phú Đông, TP. HCM", pc: 30, cam: 29, wifi: 6, isp: "Viettel + FPT", lat: 10.859707998647083, lng: 106.7135134134926 },
-                    { stt: 2, name: "Vinfast CarOn Thủ Đức", address: "25 Đường Số 8, Long Trường, TP. HCM", pc: 22, cam: 30, wifi: 5, isp: "VNPT", lat: 10.810296446094233, lng: 106.81283777116421 },
-                    { stt: 3, name: "Vinfast CarOn Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 20, cam: 18, wifi: 5, isp: "VNPT", lat: 10.763344611862639, lng: 106.58301728650738 },
-                    { stt: 4, name: "Vinfast CarOn Tân Tạo", address: "117/2D3 Hồ Văn Long, Bình Tân, TP. HCM", pc: 4, cam: 16, wifi: 2, isp: "VNPT", lat: 10.767500608319304, lng: 106.58241775783188 },
-                    { stt: 5, name: "Vinfast CarOn Tên Lửa", address: "704/1 Đường Tên Lửa, An Lạc, TP. HCM", pc: 6, cam: 8, wifi: "-", isp: "FPT", lat: 10.755718675360846, lng: 106.60639406517551 },
-                    { stt: 6, name: "Vinfast CarOn Thới An", address: "418 Tô Ngọc Vân, Thới An, TP. HCM", pc: 5, cam: 14, wifi: "-", isp: "FPT", lat: 10.874114704560474, lng: 106.67535430201174 },
-                    { stt: 7, name: "Vinfast CarOn Tân Thới Hiệp", address: "314A Đ. Nguyễn Ảnh Thủ, Tân Thới Hiệp, TP. HCM", pc: 4, cam: 8, wifi: 3, isp: "FPT", lat: 10.879101487018458, lng: 106.63722375120747 },
-                    { stt: 8, name: "Kho chung Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 13, cam: 16, wifi: "-", isp: "VNPT", lat: 10.7578590131806, lng: 106.58882024232842 },
-                    { stt: 9, name: "Kho chung Bình Chánh", address: "774 Lê Khả Phiếu, Tân Nhựt, TP. HCM", pc: 2, cam: 11, wifi: "-", isp: "-", lat: 10.723346585548063, lng: 106.60149085767158 }
+                    {"stt": 1, "name": "Starbucks NEW WORLD", "model": "Core", "city": "HCM", "address": "76 Lê Lai, Phường Bến Thành, TP. HCM", "pc": 2, "cam": 18, "wifi": 4, "pos": 2, "lat": 10.7719, "lng": 106.6937},
+                    {"stt": 2, "name": "Starbucks PHAN XICH LONG", "model": "Core", "city": "HCM", "address": "125 - 127 Phan Xích Long, Cầu Kiệu, TP. HCM", "pc": 2, "cam": 16, "wifi": 6, "pos": 2, "lat": 10.7951, "lng": 106.6853},
+                    {"stt": 3, "name": "Starbucks VIVO CITY", "model": "SE", "city": "HCM", "address": "SC Vivocity, 1058 Nguyễn Văn Linh, Tân Hưng, TP. HCM", "pc": 2, "cam": 8, "wifi": 2, "pos": 1, "lat": 10.7294, "lng": 106.6797},
+                    {"stt": 4, "name": "Starbucks LANDMARK 81", "model": "SE", "city": "HCM", "address": "Vincom Center Landmark 81, 772 Điện Biên Phủ, TP. HCM", "pc": 2, "cam": 10, "wifi": 3, "pos": 2, "lat": 10.7948, "lng": 106.7218},
+                    {"stt": 5, "name": "Starbucks BA TRIEU", "model": "SE", "city": "HN", "address": "Số 314 phố Bà Triệu, Hai Bà Trưng, Hà Nội", "pc": 2, "cam": 12, "wifi": 4, "pos": 2, "lat": 21.0118, "lng": 105.8492}
                 ]
             }
         };
@@ -633,38 +563,33 @@
             const clientSubnav = document.getElementById('client-subnav');
 
             if (currentUser.role === 'ADMIN') {
-                // Hiển thị bộ chọn dự án và tab admin
                 adminNav.classList.remove('hidden');
                 adminNav.classList.add('flex');
                 adminProjectSelector.classList.remove('hidden');
                 adminProjectSelector.classList.add('flex');
                 clientSubnav.classList.add('hidden');
 
-                // Mặc định nạp Starbucks trong dropdown
                 const selectedKey = document.getElementById('admin-project-dropdown').value;
                 activeProject = projectsDB[selectedKey];
                 switchAdminView('USERS');
             } else {
-                // Khách hàng thông thường: Giấu hoàn toàn bộ chọn dự án và module Admin
                 adminNav.classList.add('hidden');
                 adminNav.classList.remove('flex');
                 adminProjectSelector.classList.add('hidden');
                 adminProjectSelector.classList.remove('flex');
                 clientSubnav.classList.remove('hidden');
 
-                activeProject = projectsDB[currentUser.tenantId] || projectsDB.starbucks;
+                activeProject = projectsDB[currentUser.tenantId] || projectsDB.minhviet;
                 applyProjectBranding(activeProject);
                 switchClientSection('REQ');
             }
         }
 
-        // XỬ LÝ ADMIN CHUYỂN ĐỔI DỰ ÁN TRỰC TIẾP
         function handleAdminChangeProject(projectKey) {
             if (currentUser.role !== 'ADMIN') return;
             activeProject = projectsDB[projectKey];
             applyProjectBranding(activeProject);
             
-            // Chuyển ngay sang xem Dashboard dự án đó
             const clientSubnav = document.getElementById('client-subnav');
             clientSubnav.classList.remove('hidden');
             switchAdminView('PREVIEW');
@@ -674,11 +599,11 @@
             document.getElementById('app-brand-badge').innerText = proj.icon;
             document.getElementById('app-brand-badge').className = `w-9 h-9 ${proj.badgeBg} rounded-xl flex items-center justify-center font-bold text-white text-base shadow-sm`;
             document.getElementById('app-project-title').innerText = proj.name;
-            document.getElementById('app-project-subtitle').innerText = `Đối tác: ${proj.clientName}`;
+            document.getElementById('app-project-subtitle').innerText = `Khách hàng: ${proj.clientName}`;
             document.getElementById('panel-project-name').innerText = `Các site: ${proj.name}`;
         }
 
-        // --- 5. ADMIN MODULE (CHỈ ADMIN THẤY ĐƯỢC) ---
+        // --- 5. ADMIN MODULE (RBAC CONTROLLER) ---
         function switchAdminView(view) {
             if (currentUser.role !== 'ADMIN') return;
 
@@ -703,11 +628,10 @@
                 btnUsers.className = "bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
                 btnPrev.className = "bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
                 
-                // Đồng bộ dự án đang chọn trong dropdown
                 const selectedKey = document.getElementById('admin-project-dropdown').value;
                 activeProject = projectsDB[selectedKey];
                 applyProjectBranding(activeProject);
-                switchClientSection('MAP');
+                switchClientSection('REQ');
             }
         }
 
@@ -794,7 +718,7 @@
             }
         }
 
-        // --- 6. CLIENT DASHBOARD SECTIONS ---
+        // --- 6. CLIENT DASHBOARD SECTIONS (TÍCH HỢP ĐẦY ĐỦ PROPOSAL MINH VIỆT) ---
         function switchClientSection(sec) {
             const secReq = document.getElementById('sec-client-req');
             const secMap = document.getElementById('sec-client-map');
@@ -823,65 +747,291 @@
             }
         }
 
+        // RENDER MODULE 1: YÊU CẦU DỰ ÁN & HIỆN TRẠNG
         function renderProjectRequirements() {
             const p = activeProject;
-            document.getElementById('req-title').innerText = `Yêu Cầu Kỹ Thuật: ${p.name}`;
-            document.getElementById('req-content-body').innerHTML = `
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-gray-900 mb-1">🎯 Phạm vi công việc (Scope of Work):</h4>
-                    <p>${p.requirements.sow}</p>
-                </div>
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-gray-900 mb-2">📦 Danh mục bàn giao chính (Deliverables):</h4>
-                    <ul class="list-disc pl-5 space-y-1">
-                        ${p.requirements.deliverables.map(d => `<li>${d}</li>`).join('')}
-                    </ul>
-                </div>
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-gray-900 mb-1">⚡ Cam kết chất lượng dịch vụ (SLA):</h4>
-                    <p class="font-medium text-emerald-700">${p.requirements.sla}</p>
-                </div>
-            `;
+            document.getElementById('req-title').innerText = `Yêu Cầu Dự Án & Hiện Trạng: ${p.name}`;
+            
+            if (p.id === 'minhviet') {
+                document.getElementById('req-content-body').innerHTML = `
+                    <!-- TÓM TẮT DÀNH CHO BAN LÃNH ĐẠO -->
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-blue-950 text-sm flex items-center gap-2">
+                                <span>📌</span> Tóm Tắt Dành Cho Ban Lãnh Đạo (Executive Summary)
+                            </h4>
+                            <span class="text-[11px] font-semibold text-blue-800 bg-white px-2 py-0.5 rounded border border-blue-200">Phiên bản: ${p.proposalMeta.version}</span>
+                        </div>
+                        <p class="text-xs text-blue-900 leading-relaxed">${p.requirements.executiveSummary}</p>
+                    </div>
+
+                    <!-- 4 ĐIỂM NGHẼN TRỌNG YẾU TẠI CÁC SITE -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>⚠️</span> 4 Điểm Nghẽn Trọng Yếu Hiện Trạng Ghi Nhận Tại Các Site
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${p.requirements.bottlenecks.map(b => `
+                                <div class="p-3.5 bg-red-50/60 rounded-xl border border-red-200">
+                                    <h5 class="font-bold text-red-950 text-xs mb-1">🔴 ${b.title}</h5>
+                                    <p class="text-xs text-gray-700 leading-relaxed">${b.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- BẢNG TỔNG HỢP RỦI RO & MỨC ƯU TIÊN -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-sm">📊 Bảng Tổng Hợp Rủi Ro & Tác Động Vận Hành</h4>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                    <tr>
+                                        <th class="p-3">Hạng mục Khảo sát</th>
+                                        <th class="p-3">Hiện trạng Ghi nhận</th>
+                                        <th class="p-3">Rủi ro Vận hành Nghiêm trọng</th>
+                                        <th class="p-3 text-center">Mức Ưu tiên</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${p.requirements.riskTable.map(r => `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 font-semibold text-gray-900">${r.item}</td>
+                                            <td class="p-3 text-gray-600">${r.status}</td>
+                                            <td class="p-3 text-red-700 font-medium">${r.risk}</td>
+                                            <td class="p-3 text-center">
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.priority.includes('P1') ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">
+                                                    ${r.priority}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 4 KHỐI PHẠM VI CÔNG VIỆC -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>🎯</span> 4 Khối Phạm Vi Công Việc (Scope of Work)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${p.requirements.scopeBlocks.map(s => `
+                                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                                    <h5 class="font-bold text-gray-900 text-xs mb-1.5">${s.block}</h5>
+                                    <p class="text-xs text-gray-600 leading-relaxed">${s.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- MA TRẬN PHÂN ĐỊNH TRÁCH NHIỆM RACI -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-sm">🤝 Phân Định Trách Nhiệm Giữa Hai Bên (RACI Matrix)</h4>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                    <tr>
+                                        <th class="p-3 text-center w-12">STT</th>
+                                        <th class="p-3">Nhiệm vụ / Hoạt động Dự án & Vận hành</th>
+                                        <th class="p-3">Aus Asia Technologies</th>
+                                        <th class="p-3">Minh Việt Group</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${p.requirements.raciTable.map(item => `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-center font-bold text-gray-500">${item.stt}</td>
+                                            <td class="p-3 font-semibold text-gray-900">${item.task}</td>
+                                            <td class="p-3 text-blue-700 font-medium">${item.aat}</td>
+                                            <td class="p-3 text-emerald-700 font-medium">${item.mv}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SẢN PHẨM GIAO NỘP -->
+                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <h4 class="font-bold text-emerald-950 text-xs mb-2 flex items-center gap-1.5">
+                            <span>📦</span> Danh mục Sản phẩm Bàn giao & Hồ sơ Nghiệm thu (Deliverables):
+                        </h4>
+                        <ul class="list-disc pl-5 space-y-1 text-xs text-emerald-900">
+                            ${p.requirements.deliverables.map(d => `<li>${d}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            } else {
+                // Layout cho Starbucks / Uniqlo
+                document.getElementById('req-content-body').innerHTML = `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-gray-900 mb-1">🎯 Mục tiêu & Phạm vi dự án:</h4>
+                        <p class="text-xs text-gray-700">${p.requirements.executiveSummary}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-gray-900 mb-2">📦 Sản phẩm bàn giao chính:</h4>
+                        <ul class="list-disc pl-5 space-y-1 text-xs text-gray-700">
+                            ${p.requirements.deliverables.map(d => `<li>${d}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-gray-900 mb-1">⚡ Cam kết chất lượng dịch vụ (SLA):</h4>
+                        <p class="text-xs font-semibold text-emerald-700">${p.requirements.sla}</p>
+                    </div>
+                `;
+            }
         }
 
+        // RENDER MODULE 3: GIẢI PHÁP ĐỀ XUẤT & BOM
         function renderProjectSolution() {
             const p = activeProject;
-            document.getElementById('sol-title').innerText = `Kiến Trúc Đề Xuất & BoM: ${p.name}`;
-            document.getElementById('sol-content-body').innerHTML = `
-                <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950">
-                    <h4 class="font-bold mb-1">🏛️ Kiến trúc giải pháp tổng thể:</h4>
-                    <p>${p.solution.architecture}</p>
-                </div>
-                <div class="space-y-2">
-                    <h4 class="font-bold text-gray-900">📑 Bảng phân rã cấu hình hạ tầng (Bill of Materials):</h4>
-                    <div class="border rounded-xl overflow-hidden shadow-xs">
-                        <table class="w-full text-xs text-left">
-                            <thead class="bg-gray-100 font-bold text-gray-600 border-b">
-                                <tr>
-                                    <th class="p-3">Hạng mục</th>
-                                    <th class="p-3">Số lượng</th>
-                                    <th class="p-3">Mô tả kỹ thuật</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                ${p.solution.bom.map(b => `
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3 font-semibold text-gray-900">${b.item}</td>
-                                        <td class="p-3 text-blue-600 font-bold">${b.qty}</td>
-                                        <td class="p-3 text-gray-600">${b.desc}</td>
+            document.getElementById('sol-title').innerText = `Phương Án Đề Xuất & Dịch Vụ: ${p.name}`;
+
+            if (p.id === 'minhviet') {
+                document.getElementById('sol-content-body').innerHTML = `
+                    <!-- KIẾN TRÚC MẠNG MỤC TIÊU & 5 LỚP VLAN -->
+                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 space-y-3">
+                        <h4 class="font-bold text-sm flex items-center gap-2">
+                            <span>🏛️</span> 4.1. Kiến Trúc Hạ Tầng Mạng Doanh Nghiệp Mục Tiêu
+                        </h4>
+                        <p class="text-xs text-blue-900 leading-relaxed">${p.solution.architectureDesc}</p>
+                        
+                        <div class="border border-blue-200 rounded-lg overflow-hidden bg-white mt-2">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-blue-100/70 font-bold text-blue-900 border-b">
+                                    <tr>
+                                        <th class="p-2.5">Phân đoạn VLAN</th>
+                                        <th class="p-2.5">Tên VLAN</th>
+                                        <th class="p-2.5">Mục đích & Thiết bị kết nối</th>
                                     </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="divide-y divide-blue-100 text-gray-700">
+                                    ${p.solution.vlanPlan.map(v => `
+                                        <tr>
+                                            <td class="p-2.5 font-bold text-blue-700">${v.vlan}</td>
+                                            <td class="p-2.5 font-semibold">${v.name}</td>
+                                            <td class="p-2.5">${v.purpose}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            `;
+
+                    <!-- BẢNG BOM THIẾT BỊ TIÊU CHUẨN 1 SITE -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>📑</span> 6.1. Bảng Định Mức Trang Thiết Bị Mạng Cho 1 Site Tiêu Chuẩn (BoM)
+                        </h4>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                    <tr>
+                                        <th class="p-3">Hạng mục Thiết bị</th>
+                                        <th class="p-3">Quy cách & Thông số Kỹ thuật Chuẩn</th>
+                                        <th class="p-3 text-center">ĐVT</th>
+                                        <th class="p-3 text-center">Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${p.solution.bom.map(b => `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 font-semibold text-gray-900">${b.item}</td>
+                                            <td class="p-3 text-gray-600">${b.specs}</td>
+                                            <td class="p-3 text-center text-gray-500">${b.unit}</td>
+                                            <td class="p-3 text-center font-bold text-blue-600">${b.qty}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CHI TIẾT DỊCH VỤ IT SUPPORT LEVEL 1 & ONSITE SLA -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>🛠️</span> 6.3. Chi Tiết Các Khối Dịch Vụ IT Support & Quản Trị
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            ${p.solution.supportServices.map(s => `
+                                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                    <div>
+                                        <h5 class="font-bold text-blue-950 text-xs mb-2 pb-1 border-b border-slate-200">${s.title}</h5>
+                                        <ul class="list-disc pl-4 space-y-1.5 text-[11px] text-gray-600">
+                                            ${s.items.map(i => `<li>${i}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- 9 BƯỚC TRIỂN KHAI M01 - M09 -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>🚀</span> 5. Danh Mục 9 Hạng Mục Triển Khai Chuẩn Hóa (M01 - M09)
+                        </h4>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                    <tr>
+                                        <th class="p-2.5 text-center w-16">Mã HM</th>
+                                        <th class="p-2.5">Hạng mục Công việc</th>
+                                        <th class="p-2.5">Nội dung & Tiêu chuẩn Kỹ thuật Thực hiện</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${p.solution.implementationSteps.map(step => `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-2.5 text-center font-bold text-blue-600 bg-blue-50/50">${step.code}</td>
+                                            <td class="p-2.5 font-semibold text-gray-900">${step.name}</td>
+                                            <td class="p-2.5 text-gray-600">${step.desc}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('sol-content-body').innerHTML = `
+                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950">
+                        <h4 class="font-bold mb-1">🏛️ Kiến trúc giải pháp tổng thể:</h4>
+                        <p class="text-xs">${p.solution.architectureDesc}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-sm">📑 Bảng phân rã cấu hình hạ tầng:</h4>
+                        <div class="border rounded-xl overflow-hidden shadow-xs">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 font-bold text-gray-600 border-b">
+                                    <tr>
+                                        <th class="p-3">Hạng mục</th>
+                                        <th class="p-3">Mô tả kỹ thuật</th>
+                                        <th class="p-3 text-center">Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${p.solution.bom.map(b => `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 font-semibold text-gray-900">${b.item}</td>
+                                            <td class="p-3 text-gray-600">${b.specs}</td>
+                                            <td class="p-3 text-center text-blue-600 font-bold">${b.qty}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
-        // --- 7. FULLSCREEN MAP ENGINE & FLOATING CONTROLS ---
+        // --- 7. FULLSCREEN MAP ENGINE & DISPATCHING ---
         function initProjectMap() {
             if (!mapInstance) {
-                mapInstance = L.map('map', { zoomControl: false }).setView([16.0000, 108.0000], 6);
+                mapInstance = L.map('map', { zoomControl: false }).setView([10.8000, 106.6800], 11);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(mapInstance);
@@ -902,7 +1052,7 @@
             if (animatedBike) mapInstance.removeLayer(animatedBike);
             if (bikeInterval) clearInterval(bikeInterval);
 
-            // Render HQs
+            // Ghi nhận các Trụ sở (HQ) nếu dự án có
             if (activeProject.hqs) {
                 activeProject.hqs.forEach(hq => {
                     const hqIcon = L.divIcon({
@@ -929,13 +1079,12 @@
                     <div>
                         <h4 class="font-bold text-gray-900">${site.name}</h4>
                         <p class="text-xs text-gray-600 mb-2">${site.address}</p>
-                        ${site.model ? `<p class="text-[11px] text-emerald-700 font-bold mb-1">Mô hình: ${site.model}</p>` : ''}
                         ${site.pc !== undefined ? `
                             <div class="grid grid-cols-2 gap-1 text-[10px] bg-gray-100 p-2 rounded border">
                                 <div>💻 PC: <b>${site.pc}</b></div>
                                 <div>📷 Camera: <b>${site.cam}</b></div>
                                 <div>📶 Wifi: <b>${site.wifi}</b></div>
-                                <div>💳 POS: <b>${site.pos || site.isp || '-'}</b></div>
+                                <div>🌐 ISP: <b>${site.isp || '-'}</b></div>
                             </div>
                         ` : ''}
                     </div>
@@ -948,7 +1097,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-1">
                         <h4 class="font-bold text-gray-900">${site.name}</h4>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${activeProject.badgeBg} text-white">${site.model || activeProject.id.toUpperCase()}</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${activeProject.badgeBg} text-white">${activeProject.id.toUpperCase()}</span>
                     </div>
                     <p class="text-gray-500 text-[11px] line-clamp-2">${site.address}</p>
                     ${site.pc !== undefined ? `
@@ -956,7 +1105,7 @@
                             <span>💻 PC: <b>${site.pc}</b></span>
                             <span>📷 Cam: <b>${site.cam}</b></span>
                             <span>📶 Wifi: <b>${site.wifi}</b></span>
-                            <span class="truncate">💳 ${site.pos !== undefined ? `POS: <b>${site.pos}</b>` : `ISP: <b>${site.isp}</b>`}</span>
+                            <span class="truncate">🌐 ISP: <b>${site.isp || '-'}</b></span>
                         </div>
                     ` : ''}
                 `;
@@ -973,7 +1122,7 @@
 
             if (sites.length > 0) {
                 if (activeProject.id === 'starbucks' || activeProject.id === 'uniqlo') {
-                    mapInstance.setView([16.0000, 108.0000], 6); // Toàn cảnh VN
+                    mapInstance.setView([16.0000, 108.0000], 6);
                 } else {
                     mapInstance.setView([sites[0].lat, sites[0].lng], 11);
                 }
@@ -1025,8 +1174,7 @@
             const filtered = activeProject.sites.filter(s => 
                 s.name.toLowerCase().includes(q) || 
                 s.address.toLowerCase().includes(q) ||
-                (s.isp && s.isp.toLowerCase().includes(q)) ||
-                (s.model && s.model.toLowerCase().includes(q))
+                (s.isp && s.isp.toLowerCase().includes(q))
             );
             renderProjectMapSites(filtered);
         }
