@@ -16,13 +16,14 @@
         body {
             padding-top: var(--sat); padding-bottom: var(--sab);
             padding-left: var(--sal); padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
         }
     </style>
 </head>
 <body class="bg-slate-900 font-sans h-[100dvh] flex items-center justify-center px-4 py-6 text-gray-800 antialiased">
 
     <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-slate-700/50 my-auto">
-        <div class="text-center mb-5 sm:mb-6">
+        <div class="text-center mb-6">
             <div class="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
                 🏢
             </div>
@@ -30,7 +31,7 @@
             <p class="text-[11px] sm:text-xs text-gray-500 mt-1">Cổng thông tin dự án & Quản trị hạ tầng phân tán</p>
         </div>
 
-        <form onsubmit="handleLogin(event)" class="space-y-3.5 sm:space-y-4">
+        <form onsubmit="handleLogin(event)" class="space-y-4">
             <div>
                 <label class="block text-[11px] sm:text-xs font-semibold text-gray-700 uppercase mb-1">Tên đăng nhập</label>
                 <input type="text" id="login-username" required placeholder="Nhập username..." 
@@ -48,14 +49,6 @@
                 Đăng nhập hệ thống →
             </button>
         </form>
-
-        <div class="mt-5 pt-3.5 border-t border-gray-200 text-[10.5px] sm:text-[11px] text-gray-500 space-y-1 bg-slate-50 p-3 rounded-xl">
-            <p class="font-bold text-gray-700">Tài khoản mẫu:</p>
-            <p>👑 <b>Admin:</b> <code class="bg-gray-200 px-1 rounded">admin</code> / <code class="bg-gray-200 px-1 rounded">admin123</code> (Trang Quản trị & toàn bộ dự án)</p>
-            <p>🚗 <b>Minh Việt:</b> <code class="bg-gray-200 px-1 rounded">client_minhviet</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (Trang Minh Việt & VinFast)</p>
-            <p>👔 <b>Uniqlo:</b> <code class="bg-gray-200 px-1 rounded">client_uniqlo</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (Trang Uniqlo - 35 Sites)</p>
-            <p>☕ <b>Starbucks:</b> <code class="bg-gray-200 px-1 rounded">client_starbucks</code> / <code class="bg-gray-200 px-1 rounded">123456</code> (Trang Starbucks)</p>
-        </div>
     </div>
 
     <script>
