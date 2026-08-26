@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Multi-Tenant Project Portal</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet Maps CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
+        .leaflet-popup-content { margin: 12px 14px; font-family: inherit; }
+
+        @keyframes pulse-hq { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .hq-marker-icon { animation: pulse-hq 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans h-screen flex flex-col overflow-hidden text-gray-800">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: AUTHENTICATION / LOGIN SCREEN -->
+    <!-- ========================================================================= -->
+    <section id="view-login" class="flex flex-1 items-center justify-center bg-slate-900 px-4">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-slate-700/50">
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
+                    🏢
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">ENTERPRISE PORTAL</h1>
+                <p class="text-xs text-gray-500 mt-1">Cổng thông tin dự án & Quản trị hạ tầng phân tán</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Tên đăng nhập</label>
+                    <input type="text" id="login-username" required placeholder="Nhập username..." 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Mật khẩu</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
+                </div>
+                <div id="login-error" class="hidden text-xs text-red-600 font-medium bg-red-50 p-2.5 rounded-lg border border-red-200">
+                    ⚠️ Tên đăng nhập hoặc mật khẩu không chính xác!
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition duration-200">
+                    Đăng nhập hệ thống →
+                </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-gray-200 text-[11px] text-gray-500 space-y-1 bg-slate-50 p-3 rounded-xl">
+                <p class="font-bold text-gray-700">Tài khoản mẫu:</p>
+                <p>👑 <b>Admin:</b> <code class="bg-gray-200 px-1 rounded">admin</code> / <code class="bg-gray-200 px-1 rounded">admin123</code> (Thấy mục Quản lý User)</p>
+                <p>☕ <b>Starbucks:</b> <code class="bg-gray-200 px-1 rounded">client_starbucks</code> / <code class="bg-gray-200 px-1 rounded">123456</code></p>
+                <p>👔 <b>Uniqlo:</b> <code class="bg-gray-200 px-1 rounded">client_uniqlo</code> / <code class="bg-gray-200 px-1 rounded">123456</code></p>
+                <p>🚘 <b>Vinfast:</b> <code class="bg-gray-200 px-1 rounded">client_vinfast</code> / <code class="bg-gray-200 px-1 rounded">123456</code></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: MAIN APP PORTAL (HEADER + DASHBOARD / ADMIN / FULLSCREEN MAP) -->
+    <!-- ========================================================================= -->
+    <div id="view-app" class="hidden flex-col h-screen overflow-hidden">
+        
+        <!-- TOP NAVIGATION BAR -->
+        <header class="bg-gray-900 text-white px-6 py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-gray-800">
+            <div class="flex items-center space-x-3">
+                <div id="app-brand-badge" class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-base shadow-sm">
+                    P
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 id="app-project-title" class="text-base font-bold uppercase tracking-wide">PORTAL DASHBOARD</h2>
+                        <span id="app-role-badge" class="text-[10px] bg-blue-900 text-blue-300 border border-blue-700 font-semibold px-2 py-0.5 rounded-full uppercase">Role</span>
+                    </div>
+                    <p id="app-project-subtitle" class="text-xs text-gray-400">Không gian quản trị & giám sát hạ tầng phân tán</p>
+                </div>
+            </div>
+
+            <!-- ACTION BAR -->
+            <div class="flex items-center space-x-3">
+                <!-- Chỉ hiển thị cho Admin -->
+                <div id="admin-nav-tab" class="hidden space-x-2">
+                    <button onclick="switchAdminView('USERS')" id="btn-tab-users" class="bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs">
+                        ⚙️ Quản lý tài khoản & Phân quyền
+                    </button>
+                    <button onclick="switchAdminView('PREVIEW')" id="btn-tab-preview" class="bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700">
+                        👁️ Xem Dashboard Khách hàng
+                    </button>
+                </div>
+                <div class="text-right hidden sm:block">
+                    <div id="user-display-name" class="text-xs font-bold text-gray-200">User Name</div>
+                    <div id="user-tenant-name" class="text-[10px] text-gray-400">Tenant Name</div>
+                </div>
+                <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-xs px-3 py-1.5 rounded-lg font-semibold transition">
+                    Đăng xuất
+                </button>
+            </div>
+        </header>
+
+        <!-- SUB-NAV FOR CLIENT DASHBOARD (3 MỤC: YÊU CẦU DỰ ÁN - BẢN ĐỒ - GIẢI PHÁP) -->
+        <nav id="client-subnav" class="bg-white border-b border-gray-200 px-6 py-2 flex space-x-2 shrink-0 shadow-xs z-30">
+            <button onclick="switchClientSection('REQ')" id="btn-sec-req" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition">
+                📋 1. Yêu cầu dự án
+            </button>
+            <button onclick="switchClientSection('MAP')" id="btn-sec-map" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition">
+                🗺️ 2. Bản đồ các site (Toàn màn hình)
+            </button>
+            <button onclick="switchClientSection('SOL')" id="btn-sec-sol" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition">
+                💡 3. Thông tin giải pháp đề xuất
+            </button>
+        </nav>
+
+        <!-- ===================================================================== -->
+        <!-- APP BODY CONTAINER -->
+        <!-- ===================================================================== -->
+        <div class="flex-1 relative overflow-hidden flex bg-gray-100">
+            
+            <!-- VIEW: ADMIN USER MANAGEMENT (CHỈ ADMIN MỚI THẤY) -->
+            <section id="sec-admin-users" class="hidden flex-1 overflow-y-auto p-6 max-w-7xl mx-auto w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Quản Lý Tài Khoản & Phân Quyền Khách Hàng</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Tạo mới, phân quyền Tenant truy cập dự án (Chỉ Admin mới có quyền truy cập trang này)</p>
+                    </div>
+                    <button onclick="openCreateUserModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-xl font-bold shadow-md">
+                        + Tạo tài khoản mới
+                    </button>
+                </div>
+
+                <!-- USERS TABLE -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase font-semibold">
+                            <tr>
+                                <th class="p-4">Tên hiển thị / Username</th>
+                                <th class="p-4">Vai trò (Role)</th>
+                                <th class="p-4">Dự án được gán (Tenant Scope)</th>
+                                <th class="p-4">Trạng thái</th>
+                                <th class="p-4 text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-user-tbody" class="divide-y divide-gray-200">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VIEW: CLIENT SECTION 1 - PROJECT REQUIREMENTS -->
+            <section id="sec-client-req" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
+                    <div class="border-b border-gray-200 pb-4 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-blue-600 uppercase bg-blue-50 px-2 py-1 rounded">Module 1</span>
+                            <h3 id="req-title" class="text-xl font-bold text-gray-900 mt-2">Yêu Cầu & Đặc Tả Kỹ Thuật Dự Án</h3>
+                        </div>
+                        <span id="req-status-badge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">Đang vận hành</span>
+                    </div>
+                    <div id="req-content-body" class="text-sm text-gray-700 leading-relaxed space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: CLIENT SECTION 2 - FULLSCREEN INTERACTIVE MAP -->
+            <section id="sec-client-map" class="hidden flex-1 relative h-full w-full overflow-hidden">
+                
+                <!-- BẢN ĐỒ TOÀN MÀN HÌNH 100% -->
+                <div id="map" class="absolute inset-0 h-full w-full z-0 bg-slate-200"></div>
+
+                <!-- BẢNG ĐIỀU KHIỂN NỔI (FLOATING OVERLAY PANEL) CÓ THỂ THU GỌN -->
+                <div id="map-floating-panel" class="absolute top-4 left-4 z-20 w-[380px] max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
+                    
+                    <!-- PANEL HEADER -->
+                    <div class="p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl">
+                        <div>
+                            <h3 id="panel-project-name" class="font-bold text-gray-900 text-sm">Danh Sách Site Hạ Tầng</h3>
+                            <p id="map-site-counter" class="text-[11px] font-semibold text-blue-600">Đang tải danh sách điểm...</p>
+                        </div>
+                        <button onclick="toggleMapPanel()" title="Thu gọn danh sách" class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs transition">
+                            ◀
+                        </button>
+                    </div>
+
+                    <!-- SEARCH BOX -->
+                    <div class="p-3 border-b border-gray-100">
+                        <div class="relative">
+                            <input type="text" id="map-search-input" oninput="filterMapSites()" placeholder="Tìm site, chi nhánh, đường phố..." 
+                                   class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none">
+                            <span class="absolute left-3 top-2 text-gray-400 text-xs">🔍</span>
+                        </div>
+                    </div>
+
+                    <!-- SITE LIST -->
+                    <div id="map-site-list" class="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
+                        <!-- Site cards -->
+                    </div>
+                </div>
+
+                <!-- NÚT MỞ RỘNG PANEL KHI ĐÃ THU GỌN -->
+                <button id="btn-open-panel" onclick="toggleMapPanel()" class="hidden absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-md text-gray-800 border border-gray-300 shadow-xl px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition">
+                    <span>📋 Danh sách Site</span> <span>▶</span>
+                </button>
+
+                <!-- NÚT TOÀN MÀN HÌNH TRÌNH DUYỆT (FULLSCREEN TOGGLE) -->
+                <button onclick="toggleBrowserFullscreen()" class="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-md text-gray-700 border border-gray-300 shadow-lg px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-gray-50 transition">
+                    <span>⛶ Phóng to toàn màn hình</span>
+                </button>
+            </section>
+
+            <!-- VIEW: CLIENT SECTION 3 - SOLUTION ARCHITECTURE -->
+            <section id="sec-client-sol" class="hidden flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
+                    <div class="border-b border-gray-200 pb-4">
+                        <span class="text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2 py-1 rounded">Module 3</span>
+                        <h3 id="sol-title" class="text-xl font-bold text-gray-900 mt-2">Kiến Trúc Giải Pháp Đề Xuất & BoM Hạ Tầng</h3>
+                    </div>
+                    <div id="sol-content-body" class="text-sm text-gray-700 leading-relaxed space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: CREATE / EDIT USER (ADMIN ONLY) -->
+    <!-- ========================================================================= -->
+    <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <h3 id="modal-user-title" class="text-lg font-bold text-gray-900">Tạo Tài Khoản Người Dùng</h3>
+            <form onsubmit="handleSaveUser(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="modal-user-id">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Tên hiển thị</label>
+                    <input type="text" id="modal-name" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Username</label>
+                    <input type="text" id="modal-username" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Mật khẩu</label>
+                    <input type="password" id="modal-password" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Vai trò (Role)</label>
+                    <select id="modal-role" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="CLIENT">Khách hàng (Client Viewer - Không thấy trang Admin)</option>
+                        <option value="ADMIN">Quản trị viên (Super Admin)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Dự án phân quyền (Tenant Scope)</label>
+                    <select id="modal-tenant" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="starbucks">Dự án Starbucks Vietnam</option>
+                        <option value="uniqlo">Dự án Uniqlo & NetNam</option>
+                        <option value="vinfast">Dự án Vinfast & Aus Asia Tech</option>
+                        <option value="all">Tất cả dự án (Admin Only)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t">
+                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200">Hủy</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">Lưu thông tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- APPLICATION JAVASCRIPT LOGIC -->
+    <!-- ========================================================================= -->
+    <script>
+        // --- 1. USER DATABASE (RBAC) ---
+        let usersDB = [
+            { id: 1, name: "Quản Trị Viên Hệ Thống", username: "admin", password: "admin123", role: "ADMIN", tenantId: "all" },
+            { id: 2, name: "Đại Diện Starbucks VN", username: "client_starbucks", password: "123456", role: "CLIENT", tenantId: "starbucks" },
+            { id: 3, name: "Đại Diện Uniqlo VN", username: "client_uniqlo", password: "123456", role: "CLIENT", tenantId: "uniqlo" },
+            { id: 4, name: "Đại Diện Vinfast CarOn", username: "client_vinfast", password: "123456", role: "CLIENT", tenantId: "vinfast" }
+        ];
+
+        // --- 2. PROJECTS DATA REPOSITORY ---
+        const projectsDB = {
+            starbucks: {
+                id: "starbucks",
+                name: "Starbucks Vietnam Store Locator",
+                clientName: "Starbucks Coffee Company",
+                icon: "☕",
+                badgeBg: "bg-emerald-600",
+                requirements: {
+                    sow: "Xây dựng hệ thống định vị tương tác số toàn diện cho chuỗi cửa hàng Starbucks tại Việt Nam.",
+                    deliverables: [
+                        "Bản đồ tương tác thời gian thực với phân loại mô hình (Core, SE, Modular, Specialist).",
+                        "Lọc cửa hàng theo thành phố (Hồ Chí Minh, Hà Nội, Đà Nẵng, Hải Phòng, Nha Trang...).",
+                        "Định vị tọa độ GPS chính xác cho 67+ cửa hàng trọng điểm."
+                    ],
+                    sla: "Thời gian sẵn sàng hệ thống 99.9%, cập nhật thông tin cửa hàng < 24h khi có chi nhánh mới."
+                },
+                solution: {
+                    architecture: "Kiến trúc Client-Side Map Engine ứng dụng Leaflet.js & OpenStreetMap dữ liệu mở.",
+                    bom: [
+                        { item: "Interactive Map GIS Engine", qty: "1 License", desc: "Nền tảng hiển thị bản đồ định vị" },
+                        { item: "Real-time Store Geocoding", qty: "Full Database", desc: "Bộ tọa độ chuẩn xác toàn quốc" },
+                        { item: "Multi-device Responsive UI", qty: "1 Package", desc: "Giao diện tối ưu Mobile/Tablet/Desktop" }
+                    ]
+                },
+                sites: [
+                    {"name": "Starbucks New World", "model": "Core", "address": "76 Lê Lai, Quận 1, TP. HCM", "lat": 10.7719, "lng": 106.6937},
+                    {"name": "Starbucks Phan Xích Long", "model": "Core", "address": "214 - 216 Phan Xích Long, Phú Nhuận, TP. HCM", "lat": 10.7951, "lng": 106.6853},
+                    {"name": "Starbucks Landmark 81", "model": "SE", "address": "772 Điện Biên Phủ, Bình Thạnh, TP. HCM", "lat": 10.7948, "lng": 106.7218},
+                    {"name": "Starbucks Lý Thường Kiệt HN", "model": "Core", "address": "83B Lý Thường Kiệt, Hoàn Kiếm, Hà Nội", "lat": 21.0252, "lng": 105.8450},
+                    {"name": "Starbucks Dragon Carp Đà Nẵng", "model": "Specialist", "address": "Bến du thuyền Marina, Sơn Trà, Đà Nẵng", "lat": 16.0610, "lng": 108.2285}
+                ]
+            },
+            uniqlo: {
+                id: "uniqlo",
+                name: "Uniqlo Retail & NetNam Field Engineer Network",
+                clientName: "Uniqlo Vietnam & NetNam Telecom",
+                icon: "👔",
+                badgeBg: "bg-red-600",
+                requirements: {
+                    sow: "Giám sát 35 site cửa hàng Uniqlo trên toàn quốc và điều phối kỹ thuật NetNam tiếp ứng bằng xe máy.",
+                    deliverables: [
+                        "3 Trụ sở NetNam: Hà Nội (HITC), Đà Nẵng (Quang Trung), TP.HCM (Tòa nhà VOV - Đài Tiếng nói VN chuẩn GPS).",
+                        "Tính toán khoảng cách đường bộ xe máy & thời gian tiếp ứng kỹ thuật SLA.",
+                        "Mô phỏng đường đi xe máy tuân thủ luật giao thông Việt Nam qua OSRM Engine API."
+                    ],
+                    sla: "Thời gian kỹ thuật viên có mặt tại hiện trường < 45 phút cho các cửa hàng nội thành."
+                },
+                solution: {
+                    architecture: "Hệ thống Routing Dispatching tự động kết nối OSRM (Open Source Routing Machine).",
+                    bom: [
+                        { item: "NetNam ISP Dedicated Leased Line", qty: "35 Sites", desc: "Kênh truyền Internet doanh nghiệp tốc độ cao" },
+                        { item: "Automated Field Routing Simulator", qty: "1 System", desc: "Hệ thống dẫn đường kỹ thuật xe máy trực quan" },
+                        { item: "24/7 NOC Monitoring Center", qty: "3 Hubs", desc: "Trung tâm vận hành tại HN, ĐN và TP.HCM" }
+                    ]
+                },
+                hqs: [
+                    { name: "NetNam Trụ Sở Chính (Hà Nội)", address: "Tầng 2, HITC, 239 Xuân Thủy, Cầu Giấy, HN", lat: 21.0368, lng: 105.7831 },
+                    { name: "NetNam Chi Nhánh HCM (Tòa nhà VOV)", address: "Tầng 12, Tòa nhà VOV, 7 Nguyễn Thị Minh Khai, Q.1, TP. HCM", lat: 10.78827, lng: 106.70339 },
+                    { name: "NetNam TTKD Miền Trung (Đà Nẵng)", address: "Số 02 Quang Trung, Hải Châu, Đà Nẵng", lat: 16.0748, lng: 108.2231 }
+                ],
+                sites: [
+                    { name: "Uniqlo Parkson Saigon Tourist", city: "TP. HCM", address: "35Bis-45 Lê Thánh Tôn, Quận 1, TP. HCM", lat: 10.7780, lng: 106.7018 },
+                    { name: "Uniqlo Vincom Landmark 81", city: "TP. HCM", address: "772 Điện Biên Phủ, Bình Thạnh, TP. HCM", lat: 10.7948, lng: 106.7218 },
+                    { name: "Uniqlo Vincom Bà Triệu", city: "Hà Nội", address: "191 Bà Triệu, Hai Bà Trưng, Hà Nội", lat: 21.0118, lng: 105.8492 },
+                    { name: "Uniqlo 46 Điện Biên Phủ ĐN", city: "Đà Nẵng", address: "46 Điện Biên Phủ, Thanh Khê, Đà Nẵng", lat: 16.0682, lng: 108.2085 }
+                ]
+            },
+            vinfast: {
+                id: "vinfast",
+                name: "Vinfast CarOn & Aus Asia Tech Dispatch Matrix",
+                clientName: "Vinfast CarOn & Aus Asia Technologies",
+                icon: "🚘",
+                badgeBg: "bg-blue-600",
+                requirements: {
+                    sow: "Quản trị trang thiết bị IT/Camera hạ tầng 9 Showroom/Kho Vinfast CarOn và so sánh xuất phát từ 3 cơ sở Aus Asia Tech.",
+                    deliverables: [
+                        "3 Cơ sở Aus Asia Tech: The Global City, Nhà Giang, Văn phòng Hitek.",
+                        "Kiểm soát số lượng PC, Camera, Wifi và nhà mạng ISP từng site.",
+                        "Bảng nút chọn so sánh trực tiếp khoảng cách/thời gian xuất phát từ 3 cơ sở Aus Asia."
+                    ],
+                    sla: "Khắc phục sự cố mạng/camera trong vòng 2 giờ kể từ khi tiếp nhận yêu cầu."
+                },
+                solution: {
+                    architecture: "Mô hình Multi-HQ IT Dispatcher với thuật toán ma trận khoảng cách Haversine & OSRM Engine.",
+                    bom: [
+                        { item: "Centralized IT Monitoring System", qty: "9 Showrooms", desc: "Hệ thống quản lý tập trung PC/Camera/Wifi" },
+                        { item: "Multi-HQ Dispatch Matrix", qty: "3 Bases", desc: "Tối ưu hóa điểm xuất phát kỹ thuật viên" },
+                        { item: "On-site SLA Support Package", qty: "24/7", desc: "Gói hỗ trợ ứng cứu kỹ thuật tận nơi" }
+                    ]
+                },
+                hqs: [
+                    { id: "hq_global", shortName: "Global City", name: "Aus Asia Tech - Global City", address: "60 Đường N3A, The Global City, TP. HCM", lat: 10.79950, lng: 106.77732 },
+                    { id: "hq_giang", shortName: "Nhà Giang", name: "Aus Asia Tech - Nhà Giang", address: "Nhà Giang, Bình Thạnh, TP. HCM", lat: 10.81259, lng: 106.71211 },
+                    { id: "hq_hitek", shortName: "VP Hitek", name: "Aus Asia Tech - VP Hitek", address: "Văn phòng Hitek, Tân Bình, TP. HCM", lat: 10.80947, lng: 106.66395 }
+                ],
+                sites: [
+                    { stt: 1, name: "Vinfast CarOn An Phú", address: "61a QL1A, An Phú Đông, TP. HCM", pc: 30, cam: 29, wifi: 6, isp: "Viettel + FPT", lat: 10.85970, lng: 106.71351 },
+                    { stt: 2, name: "Vinfast CarOn Thủ Đức", address: "25 Đường Số 8, Long Trường, TP. HCM", pc: 22, cam: 30, wifi: 5, isp: "VNPT", lat: 10.81029, lng: 106.81283 },
+                    { stt: 3, name: "Vinfast CarOn Bình Tân", address: "117/2D1 Hồ Văn Long, Bình Tân, TP. HCM", pc: 20, cam: 18, wifi: 5, isp: "VNPT", lat: 10.76334, lng: 106.58301 },
+                    { stt: 4, name: "Vinfast CarOn Tân Tạo", address: "117/2D3 Hồ Văn Long, Bình Tân, TP. HCM", pc: 4, cam: 16, wifi: 2, isp: "VNPT", lat: 10.76750, lng: 106.58241 },
+                    { stt: 5, name: "Kho chung Bình Chánh", address: "774 Lê Khả Phiếu, Tân Nhựt, TP. HCM", pc: 2, cam: 11, wifi: "-", isp: "-", lat: 10.72334, lng: 106.60149 }
+                ]
+            }
+        };
+
+        // --- 3. RUNTIME STATE ---
+        let currentUser = null;
+        let activeProject = null;
+        let mapInstance = null;
+        let activeMarkers = [];
+        let activeRouteLine = null;
+        let animatedBike = null;
+        let bikeInterval = null;
+
+        // --- 4. AUTHENTICATION & STRICT RBAC ACCESS ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+            const errBox = document.getElementById('login-error');
+
+            const foundUser = usersDB.find(user => user.username === u && user.password === p);
+
+            if (foundUser) {
+                errBox.classList.add('hidden');
+                currentUser = foundUser;
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-app').classList.remove('hidden');
+                document.getElementById('view-app').classList.add('flex');
+
+                setupUserEnvironment();
+            } else {
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            activeProject = null;
+            if (bikeInterval) clearInterval(bikeInterval);
+            document.getElementById('view-app').classList.add('hidden');
+            document.getElementById('view-app').classList.remove('flex');
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('login-password').value = '';
+        }
+
+        function setupUserEnvironment() {
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            document.getElementById('user-tenant-name').innerText = `Role: ${currentUser.role} | Tenant: ${currentUser.tenantId.toUpperCase()}`;
+            document.getElementById('app-role-badge').innerText = currentUser.role;
+
+            const adminNav = document.getElementById('admin-nav-tab');
+            const clientSubnav = document.getElementById('client-subnav');
+
+            // BẢO MẬT: Chỉ Admin mới thấy nút Admin. Khách hàng chỉ thấy 3 mục Dashboard
+            if (currentUser.role === 'ADMIN') {
+                adminNav.classList.remove('hidden');
+                adminNav.classList.add('flex');
+                clientSubnav.classList.add('hidden');
+                switchAdminView('USERS');
+            } else {
+                adminNav.classList.add('hidden');
+                adminNav.classList.remove('flex');
+                clientSubnav.classList.remove('hidden');
+                activeProject = projectsDB[currentUser.tenantId] || projectsDB.starbucks;
+                applyProjectBranding(activeProject);
+                switchClientSection('REQ');
+            }
+        }
+
+        function applyProjectBranding(proj) {
+            document.getElementById('app-brand-badge').innerText = proj.icon;
+            document.getElementById('app-brand-badge').className = `w-9 h-9 ${proj.badgeBg} rounded-xl flex items-center justify-center font-bold text-white text-base shadow-sm`;
+            document.getElementById('app-project-title').innerText = proj.name;
+            document.getElementById('app-project-subtitle').innerText = `Đối tác: ${proj.clientName}`;
+            document.getElementById('panel-project-name').innerText = `Các site: ${proj.name}`;
+        }
+
+        // --- 5. ADMIN MODULE (CHỈ ADMIN MỚI ĐƯỢC PHÉP TRUY CẬP) ---
+        function switchAdminView(view) {
+            if (currentUser.role !== 'ADMIN') return; // Chặn cứng
+
+            const secUsers = document.getElementById('sec-admin-users');
+            const secReq = document.getElementById('sec-client-req');
+            const secMap = document.getElementById('sec-client-map');
+            const secSol = document.getElementById('sec-client-sol');
+            const clientSubnav = document.getElementById('client-subnav');
+            const btnUsers = document.getElementById('btn-tab-users');
+            const btnPrev = document.getElementById('btn-tab-preview');
+
+            if (view === 'USERS') {
+                secUsers.classList.remove('hidden');
+                [secReq, secMap, secSol].forEach(el => el.classList.add('hidden'));
+                clientSubnav.classList.add('hidden');
+                btnUsers.className = "bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
+                btnPrev.className = "bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
+                renderAdminUsersTable();
+            } else {
+                secUsers.classList.add('hidden');
+                clientSubnav.classList.remove('hidden');
+                btnUsers.className = "bg-gray-800 text-gray-300 hover:text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold border border-gray-700";
+                btnPrev.className = "bg-blue-600 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold shadow-xs";
+                activeProject = projectsDB.vinfast; // Preview mẫu
+                applyProjectBranding(activeProject);
+                switchClientSection('MAP');
+            }
+        }
+
+        function renderAdminUsersTable() {
+            const tbody = document.getElementById('admin-user-tbody');
+            tbody.innerHTML = '';
+
+            usersDB.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                tr.innerHTML = `
+                    <td class="p-4">
+                        <div class="font-bold text-gray-900">${user.name}</div>
+                        <div class="text-gray-400 font-mono text-[11px]">${user.username}</div>
+                    </td>
+                    <td class="p-4">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td class="p-4 font-semibold text-gray-700 uppercase">
+                        ${user.tenantId}
+                    </td>
+                    <td class="p-4">
+                        <span class="inline-flex items-center text-emerald-600 text-[11px] font-semibold">● Hoạt động</span>
+                    </td>
+                    <td class="p-4 text-right space-x-2">
+                        <button onclick="openEditUserModal(${user.id})" class="text-blue-600 hover:underline font-semibold">Sửa / Đổi Pass</button>
+                        ${user.role !== 'ADMIN' ? `<button onclick="handleDeleteUser(${user.id})" class="text-red-600 hover:underline font-semibold">Xóa</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openCreateUserModal() {
+            document.getElementById('modal-user-title').innerText = "Tạo Tài Khoản Mới";
+            document.getElementById('modal-user-id').value = '';
+            document.getElementById('modal-name').value = '';
+            document.getElementById('modal-username').value = '';
+            document.getElementById('modal-password').value = '';
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function openEditUserModal(id) {
+            const user = usersDB.find(u => u.id === id);
+            if (!user) return;
+            document.getElementById('modal-user-title').innerText = "Chỉnh Sửa & Đổi Pass";
+            document.getElementById('modal-user-id').value = user.id;
+            document.getElementById('modal-name').value = user.name;
+            document.getElementById('modal-username').value = user.username;
+            document.getElementById('modal-password').value = user.password;
+            document.getElementById('modal-role').value = user.role;
+            document.getElementById('modal-tenant').value = user.tenantId;
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-modal').classList.add('hidden');
+        }
+
+        function handleSaveUser(e) {
+            e.preventDefault();
+            const id = document.getElementById('modal-user-id').value;
+            const name = document.getElementById('modal-name').value.trim();
+            const username = document.getElementById('modal-username').value.trim();
+            const password = document.getElementById('modal-password').value.trim();
+            const role = document.getElementById('modal-role').value;
+            const tenantId = document.getElementById('modal-tenant').value;
+
+            if (id) {
+                const user = usersDB.find(u => u.id == id);
+                if (user) {
+                    user.name = name; user.username = username; user.password = password;
+                    user.role = role; user.tenantId = tenantId;
+                }
+            } else {
+                usersDB.push({ id: Date.now(), name, username, password, role, tenantId });
+            }
+            closeUserModal();
+            renderAdminUsersTable();
+        }
+
+        function handleDeleteUser(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi hệ thống?")) {
+                usersDB = usersDB.filter(u => u.id !== id);
+                renderAdminUsersTable();
+            }
+        }
+
+        // --- 6. CLIENT DASHBOARD SECTIONS (YÊU CẦU - BẢN ĐỒ TOÀN MÀN HÌNH - GIẢI PHÁP) ---
+        function switchClientSection(sec) {
+            const secReq = document.getElementById('sec-client-req');
+            const secMap = document.getElementById('sec-client-map');
+            const secSol = document.getElementById('sec-client-sol');
+            const secUsers = document.getElementById('sec-admin-users');
+
+            const btnReq = document.getElementById('btn-sec-req');
+            const btnMap = document.getElementById('btn-sec-map');
+            const btnSol = document.getElementById('btn-sec-sol');
+
+            [secReq, secMap, secSol, secUsers].forEach(el => el.classList.add('hidden'));
+            [btnReq, btnMap, btnSol].forEach(b => b.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition");
+
+            if (sec === 'REQ') {
+                secReq.classList.remove('hidden');
+                btnReq.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition";
+                renderProjectRequirements();
+            } else if (sec === 'MAP') {
+                secMap.classList.remove('hidden');
+                btnMap.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition";
+                setTimeout(initProjectMap, 150); // Khởi tạo toàn màn hình
+            } else if (sec === 'SOL') {
+                secSol.classList.remove('hidden');
+                btnSol.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-200 transition";
+                renderProjectSolution();
+            }
+        }
+
+        function renderProjectRequirements() {
+            const p = activeProject;
+            document.getElementById('req-title').innerText = `Yêu Cầu Kỹ Thuật: ${p.name}`;
+            document.getElementById('req-content-body').innerHTML = `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-gray-900 mb-1">🎯 Phạm vi công việc (Scope of Work):</h4>
+                    <p>${p.requirements.sow}</p>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-gray-900 mb-2">📦 Danh mục bàn giao chính (Deliverables):</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        ${p.requirements.deliverables.map(d => `<li>${d}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-gray-900 mb-1">⚡ Cam kết chất lượng dịch vụ (SLA):</h4>
+                    <p class="font-medium text-emerald-700">${p.requirements.sla}</p>
+                </div>
+            `;
+        }
+
+        function renderProjectSolution() {
+            const p = activeProject;
+            document.getElementById('sol-title').innerText = `Kiến Trúc Đề Xuất & BoM: ${p.name}`;
+            document.getElementById('sol-content-body').innerHTML = `
+                <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-blue-950">
+                    <h4 class="font-bold mb-1">🏛️ Kiến trúc giải pháp tổng thể:</h4>
+                    <p>${p.solution.architecture}</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900">📑 Bảng phân rã cấu hình hạ tầng (Bill of Materials):</h4>
+                    <div class="border rounded-xl overflow-hidden shadow-xs">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-gray-100 font-bold text-gray-600 border-b">
+                                <tr>
+                                    <th class="p-3">Hạng mục</th>
+                                    <th class="p-3">Số lượng</th>
+                                    <th class="p-3">Mô tả kỹ thuật</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${p.solution.bom.map(b => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 font-semibold text-gray-900">${b.item}</td>
+                                        <td class="p-3 text-blue-600 font-bold">${b.qty}</td>
+                                        <td class="p-3 text-gray-600">${b.desc}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 7. FULLSCREEN MAP ENGINE & FLOATING CONTROLS ---
+        function initProjectMap() {
+            if (!mapInstance) {
+                mapInstance = L.map('map', { zoomControl: false }).setView([10.8000, 106.6800], 11);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(mapInstance);
+                L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+            }
+
+            mapInstance.invalidateSize(); // Tối ưu kích thước tràn viền toàn màn hình
+            renderProjectMapSites(activeProject.sites);
+        }
+
+        function renderProjectMapSites(sites) {
+            const listEl = document.getElementById('map-site-list');
+            listEl.innerHTML = '';
+
+            activeMarkers.forEach(m => mapInstance.removeLayer(m));
+            activeMarkers = [];
+            if (activeRouteLine) mapInstance.removeLayer(activeRouteLine);
+            if (animatedBike) mapInstance.removeLayer(animatedBike);
+            if (bikeInterval) clearInterval(bikeInterval);
+
+            // Render HQs
+            if (activeProject.hqs) {
+                activeProject.hqs.forEach(hq => {
+                    const hqIcon = L.divIcon({
+                        className: 'hq-marker-icon',
+                        html: `<div class="w-9 h-9 bg-blue-600 rounded-xl border-2 border-white shadow-xl flex items-center justify-center text-white text-base font-bold">🏢</div>`,
+                        iconSize: [36, 36], iconAnchor: [18, 18]
+                    });
+                    const hqMarker = L.marker([hq.lat, hq.lng], { icon: hqIcon, zIndexOffset: 1000 }).addTo(mapInstance);
+                    hqMarker.bindPopup(`<b class="text-blue-900">${hq.name}</b><p class="text-xs text-gray-600">${hq.address}</p>`);
+                    activeMarkers.push(hqMarker);
+                });
+            }
+
+            document.getElementById('map-site-counter').innerText = `Tổng cộng: ${sites.length} điểm hạ tầng`;
+
+            sites.forEach(site => {
+                const siteIcon = L.divIcon({
+                    html: `<div class="w-8 h-8 ${activeProject.badgeBg} rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">${activeProject.icon}</div>`,
+                    iconSize: [32, 32], iconAnchor: [16, 16]
+                });
+
+                const marker = L.marker([site.lat, site.lng], { icon: siteIcon }).addTo(mapInstance);
+                marker.bindPopup(`
+                    <div>
+                        <h4 class="font-bold text-gray-900">${site.name}</h4>
+                        <p class="text-xs text-gray-600 mb-2">${site.address}</p>
+                        ${site.pc ? `<div class="text-[10px] bg-gray-100 p-1.5 rounded">💻 PC: <b>${site.pc}</b> | 📷 Cam: <b>${site.cam}</b> | 🌐 ISP: <b>${site.isp}</b></div>` : ''}
+                    </div>
+                `);
+                activeMarkers.push(marker);
+
+                // Floating Sidebar Card
+                const card = document.createElement('div');
+                card.className = "p-3 bg-white/90 backdrop-blur-xs rounded-xl border border-gray-200 shadow-xs hover:border-blue-500 hover:shadow-md cursor-pointer transition text-xs";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-900">${site.name}</h4>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${activeProject.badgeBg} text-white">${activeProject.id.toUpperCase()}</span>
+                    </div>
+                    <p class="text-gray-500 text-[11px] line-clamp-2">${site.address}</p>
+                    ${site.pc ? `<div class="mt-2 text-[10px] text-gray-600">💻 ${site.pc} PC | 📷 ${site.cam} Cam | 🌐 ${site.isp}</div>` : ''}
+                `;
+
+                card.onclick = () => {
+                    mapInstance.flyTo([site.lat, site.lng], 15);
+                    marker.openPopup();
+                    if (activeProject.hqs) {
+                        simulateDispatchRouting(activeProject.hqs[0], site);
+                    }
+                };
+                listEl.appendChild(card);
+            });
+
+            if (sites.length > 0) {
+                mapInstance.setView([sites[0].lat, sites[0].lng], 11);
+            }
+        }
+
+        function simulateDispatchRouting(hq, site) {
+            if (activeRouteLine) mapInstance.removeLayer(activeRouteLine);
+            if (animatedBike) mapInstance.removeLayer(animatedBike);
+            if (bikeInterval) clearInterval(bikeInterval);
+
+            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${hq.lng},${hq.lat};${site.lng},${site.lat}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(r => r.json())
+                .then(data => {
+                    let coords = [];
+                    if (data.routes && data.routes.length > 0) {
+                        coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    } else {
+                        coords = [[hq.lat, hq.lng], [site.lat, site.lng]];
+                    }
+
+                    activeRouteLine = L.polyline(coords, { color: '#2563eb', weight: 5, opacity: 0.85 }).addTo(mapInstance);
+                    
+                    const bikeIcon = L.divIcon({
+                        html: `<div class="w-9 h-9 bg-amber-500 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-black text-sm font-black animate-bounce">🛵</div>`,
+                        iconSize: [36, 36], iconAnchor: [18, 18]
+                    });
+
+                    animatedBike = L.marker(coords[0], { icon: bikeIcon, zIndexOffset: 2000 }).addTo(mapInstance);
+                    
+                    let idx = 0;
+                    bikeInterval = setInterval(() => {
+                        idx++;
+                        if (idx < coords.length) {
+                            animatedBike.setLatLng(coords[idx]);
+                        } else {
+                            idx = 0;
+                            animatedBike.setLatLng(coords[0]);
+                        }
+                    }, Math.max(30, 2000 / coords.length));
+                })
+                .catch(e => console.error("OSRM Error:", e));
+        }
+
+        function filterMapSites() {
+            const q = document.getElementById('map-search-input').value.toLowerCase().trim();
+            const filtered = activeProject.sites.filter(s => 
+                s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q)
+            );
+            renderProjectMapSites(filtered);
+        }
+
+        // Bật / Tắt bảng điều khiển nổi của Bản đồ
+        function toggleMapPanel() {
+            const panel = document.getElementById('map-floating-panel');
+            const openBtn = document.getElementById('btn-open-panel');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                openBtn.classList.add('hidden');
+            } else {
+                panel.classList.add('hidden');
+                openBtn.classList.remove('hidden');
+            }
+        }
+
+        // Bật / Tắt chế độ Fullscreen trình duyệt
+        function toggleBrowserFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => alert("Không thể bật toàn màn hình: " + err.message));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>
