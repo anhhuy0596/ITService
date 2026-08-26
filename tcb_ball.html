@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>TCB Ball - Đánh Giá Hiện Trạng & Giám Sát Hạ Tầng CNTT</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet Maps CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        body {
+            padding-top: var(--sat); padding-bottom: var(--sab);
+            padding-left: var(--sal); padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
+        .leaflet-popup-content { margin: 10px 12px; font-family: inherit; }
+
+        @keyframes pulse-hq { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .hq-marker-icon { animation: pulse-hq 2s infinite ease-in-out; }
+
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+
+        #route-dispatch-panel {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; width: 92%; max-width: 380px; transition: all 0.3s ease;
+        }
+
+        .traffic-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden text-gray-800 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- HEADER TOP -->
+    <header class="bg-gray-900 text-white px-3 sm:px-6 py-2.5 sm:py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-gray-800 gap-2">
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-sm shrink-0">
+                🏭
+            </div>
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate max-w-[220px] sm:max-w-md">TCB BALL BEVERAGE CAN VIỆT NAM</h2>
+                    <span id="role-badge" class="text-[9px] sm:text-[10px] bg-indigo-900 text-indigo-300 border border-indigo-700 font-semibold px-1.5 py-0.5 rounded-full uppercase shrink-0">Client</span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-gray-400 truncate">Dự án Đánh giá hiện trạng & Thiết lập Giám sát Hệ thống Hạ tầng CNTT (MISP)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button id="btn-back-admin" onclick="window.location.href='admin.html'" class="hidden bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                👑 Về Admin
+            </button>
+            <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                Thoát
+            </button>
+        </div>
+    </header>
+
+    <!-- SUB-NAV TABS -->
+    <nav class="bg-white border-b border-gray-200 px-3 sm:px-6 py-2 flex items-center space-x-2 shrink-0 shadow-xs z-30 overflow-x-auto touch-scroll custom-scrollbar whitespace-nowrap">
+        <button onclick="switchSection('REQ')" id="btn-sec-req" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 transition shrink-0 min-h-[36px]">
+            📋 1. Yêu cầu & Hiện trạng
+        </button>
+        <button onclick="switchSection('MAP')" id="btn-sec-map" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            🗺️ 2. Bản đồ site & Dispatch
+        </button>
+        <button onclick="switchSection('SOL')" id="btn-sec-sol" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            💡 3. Kế hoạch triển khai & BoM
+        </button>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="flex-1 relative overflow-hidden flex bg-gray-100">
+        
+        <!-- ================================================================= -->
+        <!-- SECTION 1: YÊU CẦU DỰ ÁN & HIỆN TRẠNG KỸ THUẬT -->
+        <!-- ================================================================= -->
+        <section id="sec-req" class="flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                <div class="border-b border-gray-200 pb-3 sm:pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-indigo-600 uppercase bg-indigo-50 px-2.5 py-1 rounded-md">Module 1</span>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5 sm:mt-2">Yêu Cầu Đánh Giá Hiện Trạng & Thiết Lập Giám Sát (MISP)</h3>
+                    </div>
+                    <span class="self-start sm:self-auto bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full">Triển khai: 07/09/2026 - 21/09/2026 (15 ngày)</span>
+                </div>
+
+                <!-- 1.1 TÓM TẮT DÀNH CHO BAN LÃNH ĐẠO -->
+                <div class="p-3.5 sm:p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 mb-2">
+                        <h4 class="font-bold text-indigo-950 text-xs sm:text-sm flex items-center gap-2">
+                            <span>📌</span> Tóm Tắt Dành Cho Ban Lãnh Đạo (Executive Summary)
+                        </h4>
+                        <span class="self-start sm:self-auto text-[10px] sm:text-[11px] font-semibold text-indigo-800 bg-white px-2 py-0.5 rounded border border-indigo-200">Kế hoạch: v1.0 – [21/08/2026]</span>
+                    </div>
+                    <p class="text-xs text-indigo-900 leading-relaxed">
+                        Dự án thực hiện khảo sát toàn diện, đo kiểm chất lượng vật lý cáp mạng tại xưởng cũ, rà soát cấu hình thiết bị mạng, máy chủ Server, hệ thống lưu trữ SAN Storage, Camera PoE và đo kiểm vùng phủ sóng Wi-Fi Heatmap. Đồng thời thiết lập trạm giám sát thời gian thực (Live Dashboard 24/7) trong 15 ngày nhằm phát hiện các điểm nghẽn tiềm ẩn và đưa ra báo cáo khuyến nghị chuẩn hóa hạ tầng.
+                    </p>
+                </div>
+
+                <!-- 1.2 5 KHỐI NHIỆM VỤ KHẢO SÁT TRỌNG YẾU -->
+                <div class="space-y-2.5 sm:space-y-3">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🔍</span> 5 Khối Hạng Mục Đánh Giá Hiện Trạng Kỹ Thuật
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">🔌 1. Hạ tầng Cáp Mạng & Port Mapping</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Đo kiểm 100% các line cáp tại xưởng cũ (đủ 8 sợi, đạt 1GB/100MB), bấm lại đầu mạng lỗi, dán nhãn định danh 2 đầu cáp và lập sơ đồ Port Mapping chi tiết.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">🌐 2. Cấu trúc Mạng & Routing/VLAN</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Thu thập và backup cấu hình Core/Access Switch, Router, Firewall; rà soát dải IP Schema, chính sách VLAN, băng thông Uplink và cơ chế dự phòng HA.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">🖥️ 3. Hệ thống Server & SAN Storage</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Ghi nhận thông số phần cứng, OS, Network Interface, tình trạng cập nhật; kiểm tra cấu hình SAN Storage, phân vùng LUN và cơ chế bảo vệ RAID.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-gray-900 text-xs mb-1">📶 4. Đo Kiểm Sóng Wi-Fi (Heatmap Survey)</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Sử dụng thiết bị chuyên dụng đo kiểm bản đồ nhiệt toàn bộ xưởng và văn phòng; phân tích nhiễu kênh (Interference), điểm chết sóng (dead zone) và test Roaming.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.3 PHÂN CÔNG 06 NHÂN SỰ ON-SITE NETNAM -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm">👥 Đội Ngũ Nhân Sự On-Site Chuyên Trách (06 Kỹ Sư)</h4>
+                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[550px]">
+                            <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-2.5 sm:p-3 text-center w-12">STT</th>
+                                    <th class="p-2.5 sm:p-3">Bộ phận</th>
+                                    <th class="p-2.5 sm:p-3">Vị trí / Vai trò</th>
+                                    <th class="p-2.5 sm:p-3 text-center">SL</th>
+                                    <th class="p-2.5 sm:p-3">Phạm vi công việc On-site</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-gray-500">1</td>
+                                    <td class="p-2.5 font-bold text-indigo-700">INF</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Kỹ thuật viên Hạ tầng cáp</td>
+                                    <td class="p-2.5 text-center font-bold text-blue-600">02</td>
+                                    <td class="p-2.5 text-gray-600">Đo kiểm cáp xưởng cũ, bấm lại hạt mạng, dán nhãn chuẩn hóa 2 đầu cáp và lập bảng Port Mapping.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-gray-500">2</td>
+                                    <td class="p-2.5 font-bold text-indigo-700">CC</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Kỹ sư Mạng & Wi-Fi Heatmap</td>
+                                    <td class="p-2.5 text-center font-bold text-blue-600">01</td>
+                                    <td class="p-2.5 text-gray-600">Đo bản đồ nhiệt Wi-Fi toàn xưởng/văn phòng bằng Ekahau, xác định vùng chết và phân tích nhiễu kênh.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-gray-500">3</td>
+                                    <td class="p-2.5 font-bold text-indigo-700">CC</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Kỹ sư Mạng & Thu thập Config</td>
+                                    <td class="p-2.5 text-center font-bold text-blue-600">01</td>
+                                    <td class="p-2.5 text-gray-600">Trích xuất cấu hình Switch/Router/Firewall, kiểm tra Camera PoE/QoS, cấu hình Trunk port & SNMP.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-gray-500">4</td>
+                                    <td class="p-2.5 font-bold text-indigo-700">SYS</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Kỹ sư Hệ thống Máy chủ (System)</td>
+                                    <td class="p-2.5 text-center font-bold text-blue-600">01</td>
+                                    <td class="p-2.5 text-gray-600">Kiểm tra thông số cụm Server, cấu hình phân vùng SAN Storage, cài đặt NUC & Agent giám sát.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-gray-500">5</td>
+                                    <td class="p-2.5 font-bold text-indigo-700">TSL / PM</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Quản lý Dự án & Lead Giải pháp</td>
+                                    <td class="p-2.5 text-center font-bold text-blue-600">01</td>
+                                    <td class="p-2.5 text-gray-600">Trưởng đoàn On-site, điều phối làm việc trực tiếp với IT TCB Ball, tổng hợp báo cáo kỹ thuật hoàn chỉnh.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 1.4 DANH MỤC SẢN PHẨM GIAO NỘP (DELIVERABLES MATRIX) -->
+                <div class="p-3.5 sm:p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <h4 class="font-bold text-emerald-950 text-xs mb-1.5 flex items-center gap-1.5">
+                        <span>📦</span> 09 Sản Phẩm Bàn Giao & Hồ Sơ Nghiệm Thu (Deliverables Matrix):
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-emerald-900 mt-2">
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>1. Báo cáo đo cáp & Port Mapping:</b> Kết quả đo suy hao/băng thông pass/fail 100% line cáp xưởng cũ (Excel/PDF).</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>2. Hệ thống nhãn định danh:</b> Dán nhãn chuẩn hóa tại 2 đầu cáp (đầu Switch và đầu node máy móc on-site).</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>3. Sơ đồ mạng vật lý & Logic:</b> Cập nhật phân bổ Switch/Router/Firewall, VLAN, IP Schema, HA (Visio/PDF).</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>4. Bảng kiểm kê Server & Storage:</b> Thông số chi tiết phần cứng, OS, LUN/RAID trên SAN Storage.</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>5. Báo cáo Camera & PoE/QoS:</b> Danh sách IP/MAC Camera, công suất nguồn PoE và cấu hình QoS ưu tiên.</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>6. Bản đồ nhiệt sóng Wi-Fi (Heatmap):</b> Layout vùng phủ sóng, danh sách điểm chết sóng và phân tích nhiễu.</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>7. Tệp sao lưu cấu hình (Backup):</b> Toàn bộ file config Switch, Router, Firewall, Controller (.cfg/.txt/ZIP).</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100"><b>8. Live Dashboard giám sát:</b> Hệ thống theo dõi thời gian thực 24/7 qua NUC/PC trong suốt 15 ngày.</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-emerald-100 md:col-span-2"><b>9. BỘ BÁO CÁO TỔNG HỢP & ĐỀ XUẤT TỐI ƯU:</b> Báo cáo phân tích chuyên sâu hiệu năng hạ tầng, chỉ ra điểm nghẽn tiềm ẩn và phương án nâng cấp tối ưu (PDF/Word).</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 2: BẢN ĐỒ SITE & DISPATCH -->
+        <!-- ================================================================= -->
+        <section id="sec-map" class="hidden flex-1 relative h-full w-full overflow-hidden">
+            <div id="map" class="absolute inset-0 h-full w-full z-0 bg-slate-200"></div>
+
+            <!-- BỘ CHUYỂN ĐỔI CHẾ ĐỘ BẢN ĐỒ (BẢN ĐỒ THƯỜNG / TRAFFIC REAL-TIME) -->
+            <div class="absolute top-3 right-14 sm:right-36 z-20 flex bg-white/95 backdrop-blur-md rounded-xl p-1 shadow-xl border border-gray-300 text-xs font-bold">
+                <button id="btn-mode-standard" onclick="setMapMode('standard')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs transition flex items-center gap-1">
+                    <span>🗺️</span> <span>Bản đồ thường</span>
+                </button>
+                <button id="btn-mode-traffic" onclick="setMapMode('traffic')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-indigo-600 transition flex items-center gap-1">
+                    <span>🚦</span> <span>Traffic Real-time</span>
+                </button>
+            </div>
+
+            <!-- NÚT TOÀN MÀN HÌNH -->
+            <button onclick="toggleBrowserFullscreen()" class="absolute top-3 right-3 z-20 bg-white/95 backdrop-blur-md text-gray-700 border border-gray-300 shadow-lg px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 hover:bg-gray-50 transition">
+                <span>⛶ <span class="hidden sm:inline">Toàn màn hình</span></span>
+            </button>
+
+            <!-- BẢNG ĐIỀU KHIỂN NỔI -->
+            <div id="map-floating-panel" class="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-20 w-auto sm:w-[380px] max-h-[45vh] sm:max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
+                <div class="p-3 sm:p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl shrink-0">
+                    <div class="min-w-0 pr-2">
+                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm truncate">Nhà Máy TCB Ball & Trụ Sở NetNam</h3>
+                        <p id="map-site-counter" class="text-[10px] sm:text-[11px] font-semibold text-indigo-600 truncate">Click icon hoặc danh sách để điều phối</p>
+                    </div>
+                    <button onclick="toggleMapPanel()" title="Thu gọn danh sách" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs shrink-0">
+                        ◀
+                    </button>
+                </div>
+                <div id="map-site-list" class="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 custom-scrollbar touch-scroll"></div>
+            </div>
+
+            <button id="btn-open-panel" onclick="toggleMapPanel()" class="hidden absolute top-3 left-3 z-20 bg-white/95 backdrop-blur-md text-gray-800 border border-gray-300 shadow-xl px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-indigo-50 transition">
+                <span>📋 Danh sách Site ▶</span>
+            </button>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 3: KẾ HOẠCH TRIỂN KHAI & TIÊU CHUẨN KỸ THUẬT -->
+        <!-- ================================================================= -->
+        <section id="sec-sol" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                <div class="border-b border-gray-200 pb-3 sm:pb-4">
+                    <span class="text-[10px] sm:text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Module 3</span>
+                    <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5 sm:mt-2">Kế Hoạch Triển Khai Chi Tiết & Trang Thiết Bị Đo Kiểm</h3>
+                </div>
+
+                <!-- 3.1 TIMELINE 3 GIAI ĐOẠN -->
+                <div class="p-3.5 sm:p-4 bg-indigo-50 rounded-xl border border-indigo-200 text-indigo-950 space-y-2">
+                    <h4 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                        <span>🗓️</span> Kế Hoạch Triển Khai 3 Giai Đoạn (07/09/2026 - 21/09/2026)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-1">
+                        <div class="p-2.5 bg-white rounded-lg border border-indigo-100">
+                            <span class="font-bold text-indigo-700">Giai đoạn 1: On-site & Setup</span>
+                            <p class="text-[11px] text-gray-600 mt-0.5"><b>07/09 - 08/09 (D1-D2):</b> 06 kỹ sư khảo sát cáp, thu thập config Network/Server, đo Heatmap và cài đặt NUC giám sát.</p>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-lg border border-indigo-100">
+                            <span class="font-bold text-indigo-700">Giai đoạn 2: Giám sát 24/7</span>
+                            <p class="text-[11px] text-gray-600 mt-0.5"><b>08/09 - 20/09 (D2-D14):</b> Giám sát liên tục lưu lượng mạng, tải CPU/RAM Server, dung lượng Storage và mật độ Wi-Fi.</p>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-lg border border-indigo-100">
+                            <span class="font-bold text-indigo-700">Giai đoạn 3: Báo cáo & Bàn giao</span>
+                            <p class="text-[11px] text-gray-600 mt-0.5"><b>20/09 - 21/09 (D14-D15):</b> Xử lý số liệu log, phân tích biểu đồ, họp thuyết minh và bàn giao toàn bộ Deliverables.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3.2 BẢNG DANH MỤC CÔNG VIỆC CHI TIẾT -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>📑</span> Danh Mục 8 Hạng Mục Công Việc Triển Khai Chi Tiết
+                    </h4>
+                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[550px]">
+                            <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-2.5 text-center w-12">STT</th>
+                                    <th class="p-2.5">Hạng mục Công việc</th>
+                                    <th class="p-2.5">Nội dung Thực hiện chi tiết</th>
+                                    <th class="p-2.5 text-center">Nhân lực</th>
+                                    <th class="p-2.5 text-center">Thời gian</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">1</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Kiểm tra, test tín hiệu & dán nhãn cáp xưởng cũ</td>
+                                    <td class="p-2.5 text-gray-600">Đo kiểm vật lý cáp; Bấm lại đầu mạng hỏng và dán nhãn định danh 2 đầu cáp; Lập bảng Port Mapping.</td>
+                                    <td class="p-2.5 text-center text-gray-500">2 Kỹ sư</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">07/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">2</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Thu thập cấu hình thiết bị mạng nội bộ</td>
+                                    <td class="p-2.5 text-gray-600">Thu thập cấu hình Switch, Router, Firewall; Rà soát phân chia VLAN, IP schema, Routing, Uplink & HA.</td>
+                                    <td class="p-2.5 text-center text-gray-500">2 Kỹ sư</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">07/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">3</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Thu thập cấu hình Server và Storage nội bộ</td>
+                                    <td class="p-2.5 text-gray-600">Ghi nhận thông số phần cứng, OS, Network Interface Server; Kiểm tra cấu hình SAN Storage, RAID, LUN.</td>
+                                    <td class="p-2.5 text-center text-gray-500">1 Kỹ sư</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">07/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">4</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Thu thập cấu hình hệ thống Camera giám sát</td>
+                                    <td class="p-2.5 text-gray-600">Quét toàn bộ dải IP/MAC Camera; Kiểm tra công suất nguồn PoE và thông số QoS ưu tiên video trên Switch.</td>
+                                    <td class="p-2.5 text-center text-gray-500">1 Kỹ sư</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">08/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">5</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Thu thập cấu hình Wi-Fi & Đo kiểm Heatmap</td>
+                                    <td class="p-2.5 text-gray-600">Backup cấu hình AP/Controller; Dùng thiết bị đo sóng Heatmap toàn bộ layout; Phân tích nhiễu & Roaming.</td>
+                                    <td class="p-2.5 text-center text-gray-500">1 Kỹ sư</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">08/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">6</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Lắp đặt thiết bị NUC & Thiết lập Giám sát</td>
+                                    <td class="p-2.5 text-gray-600">Lắp đặt NUC/PC (BIOS Always-on), cấu hình IP tĩnh, cài đặt OS & phần mềm agent giám sát; Mở Trunk & SNMP.</td>
+                                    <td class="p-2.5 text-center text-gray-500">2 Kỹ sư</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">08/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">7</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Giám sát vận hành 24/7 & Lập báo cáo kỹ thuật</td>
+                                    <td class="p-2.5 text-gray-600">Theo dõi 24/7 tải CPU/RAM, băng thông Uplink, packet drop; Trích xuất log, tổng hợp báo cáo đánh giá hiện trạng.</td>
+                                    <td class="p-2.5 text-center text-gray-500">Team NOC</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">08/09 - 21/09</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2.5 text-center font-bold text-indigo-600 bg-indigo-50/50">8</td>
+                                    <td class="p-2.5 font-semibold text-gray-900">Họp thuyết minh & Bàn giao nghiệm thu dự án</td>
+                                    <td class="p-2.5 text-gray-600">Trình bày báo cáo đánh giá với Ban quản lý TCB Ball; Bàn giao toàn bộ 9 sản phẩm Deliverables.</td>
+                                    <td class="p-2.5 text-center text-gray-500">Lead PM</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-600">21/09/2026</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3.3 BẢNG TRANG THIẾT BỊ & CÔNG CỤ NETNAM MANG THEO -->
+                <div class="space-y-2.5 sm:space-y-3">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🛠️</span> Trang Thiết Bị, Dụng Cụ & Phần Cứng NetNam Chuẩn Bị
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-indigo-950 text-xs mb-1">Máy đo cáp & Dán nhãn</h5>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">Máy đo Fluke Networks chuyên dụng đo suy hao/8 sợi cáp, máy in nhãn bọc cáp Brother/Dymo, kìm bấm hạt mạng RJ45.</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-indigo-950 text-xs mb-1">Đo sóng Heatmap & Console</h5>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">Laptop/Tablet cài phần mềm Ekahau AI Pro / NetSpot, Adapter Wi-Fi chuyên dụng, 02 cáp Console đa năng (USB-RJ45/Type-C).</p>
+                        </div>
+                        <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-indigo-950 text-xs mb-1">NUC Hardware & Agent</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-600 leading-relaxed">Mini PC Intel NUC (Core i5/i7, 16GB RAM, SSD NVMe, BIOS Always-on), Docker/Zabbix Agent, 02 USB Boot cứu hộ.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPT DATA & ENGINE -->
+    <script>
+        // AUTH GUARD
+        const session = JSON.parse(sessionStorage.getItem('portal_session'));
+        if (!session) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('role-badge').innerText = session.role;
+            if (session.role === 'ADMIN') {
+                document.getElementById('btn-back-admin').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('portal_session');
+            window.location.href = 'index.html';
+        }
+
+        function switchSection(sec) {
+            ['sec-req', 'sec-map', 'sec-sol'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['btn-sec-req', 'btn-sec-map', 'btn-sec-sol'].forEach(id => {
+                document.getElementById(id).className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]";
+            });
+
+            if (sec === 'REQ') {
+                document.getElementById('sec-req').classList.remove('hidden');
+                document.getElementById('btn-sec-req').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'MAP') {
+                document.getElementById('sec-map').classList.remove('hidden');
+                document.getElementById('btn-sec-map').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 transition shrink-0 min-h-[36px]";
+                setTimeout(initMap, 150);
+            } else if (sec === 'SOL') {
+                document.getElementById('sec-sol').classList.remove('hidden');
+                document.getElementById('btn-sec-sol').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 transition shrink-0 min-h-[36px]";
+            }
+        }
+
+        // DỮ LIỆU ĐỊA ĐIỂM TCB BALL & NETNAM
+        const projectData = {
+            hqs: [
+                { name: "NetNam Chi Nhánh HCM (Tòa nhà VOV)", address: "Tầng 12, Tòa nhà VOV, 7 Nguyễn Thị Minh Khai, Q.1, TP. HCM", lat: 10.788250339850007, lng: 106.70341765264693 }
+            ],
+            sites: [
+                { stt: 1, name: "Nhà máy TCB Ball Beverage Can", address: "Văn phòng & Nhà xưởng TCB Ball, Bến Cát, Bình Dương", lat: 11.117194780070493, lng: 106.70040866045485, scale: "Xưởng sản xuất & Văn phòng", duration: "15 ngày (07/09 - 21/09/2026)" }
+            ]
+        };
+
+        let map = null, markers = [], routeSegments = [], animatedBike = null, bikeInterval = null;
+        let baseTileLayer = null, trafficTileLayer = null, currentMapMode = 'standard';
+
+        function initMap() {
+            if (!map) {
+                map = L.map('map', { zoomControl: false }).setView([10.9500, 106.7000], 10);
+                
+                baseTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                trafficTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m@221097413,traffic&hl=vi&x={x}&y={y}&z={z}', {
+                    opacity: 0.82,
+                    attribution: 'Traffic © Google'
+                });
+
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+            }
+            map.invalidateSize();
+            renderSites();
+        }
+
+        function setMapMode(mode) {
+            currentMapMode = mode;
+            const btnStandard = document.getElementById('btn-mode-standard');
+            const btnTraffic = document.getElementById('btn-mode-traffic');
+
+            if (mode === 'traffic') {
+                if (!map.hasLayer(trafficTileLayer)) trafficTileLayer.addTo(map);
+                btnTraffic.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs transition flex items-center gap-1";
+                btnStandard.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-indigo-600 transition flex items-center gap-1";
+            } else {
+                if (map.hasLayer(trafficTileLayer)) map.removeLayer(trafficTileLayer);
+                btnStandard.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs transition flex items-center gap-1";
+                btnTraffic.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-indigo-600 transition flex items-center gap-1";
+            }
+        }
+
+        function renderSites() {
+            const listEl = document.getElementById('map-site-list');
+            listEl.innerHTML = '';
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            closeDispatch();
+
+            // Render Trụ sở NetNam HQ
+            projectData.hqs.forEach(hq => {
+                const icon = L.divIcon({
+                    className: 'hq-marker-icon',
+                    html: `<div class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl border-2 border-white shadow-xl flex items-center justify-center text-white text-sm sm:text-base font-bold">🏢</div>`,
+                    iconSize: [36, 36], iconAnchor: [18, 18]
+                });
+                const marker = L.marker([hq.lat, hq.lng], { icon, zIndexOffset: 1000 }).addTo(map);
+                marker.bindPopup(`<b class="text-blue-900">${hq.name}</b><p class="text-xs text-gray-600">${hq.address}</p>`);
+                markers.push(marker);
+            });
+
+            // Render Nhà máy TCB Ball
+            projectData.sites.forEach(site => {
+                const icon = L.divIcon({
+                    html: `<div class="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">🏭</div>`,
+                    iconSize: [32, 32], iconAnchor: [16, 16]
+                });
+
+                const marker = L.marker([site.lat, site.lng], { icon }).addTo(map);
+                marker.bindPopup(`
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">${site.name}</h4>
+                        <p class="text-xs text-gray-600 mb-2 leading-relaxed">${site.address}</p>
+                        <div class="text-[10px] bg-indigo-50 p-2 rounded border border-indigo-100 text-indigo-900">
+                            <div>📋 Phạm vi: <b>${site.scale}</b></div>
+                            <div>⏳ Thời gian: <b>${site.duration}</b></div>
+                        </div>
+                    </div>
+                `);
+                markers.push(marker);
+
+                // Click trực tiếp vào marker
+                marker.on('click', () => {
+                    map.flyTo([site.lat, site.lng], 14);
+                    simulateDispatch(projectData.hqs[0], site);
+                });
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 sm:p-3 bg-white/95 rounded-xl border border-gray-200 shadow-xs hover:border-indigo-500 hover:shadow-md cursor-pointer transition text-xs";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-900 truncate pr-1">${site.name}</h4>
+                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-100 text-indigo-700 shrink-0">BÌNH DƯƠNG</span>
+                    </div>
+                    <p class="text-gray-500 text-[11px] line-clamp-2">${site.address}</p>
+                    <div class="mt-1.5 text-[10px] text-gray-600 bg-gray-50 p-1.5 rounded flex justify-between">
+                        <span>⏳ Thời gian: <b>15 Ngày</b></span>
+                        <span class="text-indigo-600 font-bold">06 Kỹ sư On-site</span>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    map.flyTo([site.lat, site.lng], 14);
+                    marker.openPopup();
+                    simulateDispatch(projectData.hqs[0], site);
+                    if (window.innerWidth < 640) toggleMapPanel();
+                };
+                listEl.appendChild(card);
+            });
+        }
+
+        function simulateDispatch(hq, site) {
+            closeDispatch();
+            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${hq.lng},${hq.lat};${site.lng},${site.lat}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.routes || !data.routes.length) return;
+                    const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    const distanceKm = (data.routes[0].distance / 1000).toFixed(1);
+                    const durationSeconds = data.routes[0].duration;
+
+                    // Viền nền trắng nổi bật
+                    const casing = L.polyline(coords, {
+                        color: '#ffffff', weight: 8, opacity: 0.95, lineCap: 'round', lineJoin: 'round'
+                    }).addTo(map);
+                    routeSegments.push(casing);
+
+                    // Phân đoạn màu sắc tương ứng tình trạng giao thông
+                    const totalPoints = coords.length;
+                    const chunkSize = Math.max(2, Math.floor(totalPoints / 8));
+                    let trafficStats = { green: 0, orange: 0, red: 0 };
+
+                    for (let i = 0; i < totalPoints - 1; i += chunkSize) {
+                        const chunk = coords.slice(i, Math.min(i + chunkSize + 1, totalPoints));
+                        if (chunk.length < 2) continue;
+
+                        const rand = Math.random();
+                        let segColor = '#16a34a';
+                        if (rand > 0.82) { segColor = '#dc2626'; trafficStats.red++; }
+                        else if (rand > 0.55) { segColor = '#f59e0b'; trafficStats.orange++; }
+                        else trafficStats.green++;
+
+                        const segLine = L.polyline(chunk, {
+                            color: segColor, weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round'
+                        }).addTo(map);
+                        routeSegments.push(segLine);
+                    }
+
+                    // Bike Animation
+                    const bikeIcon = L.divIcon({
+                        html: `<div class="w-8 h-8 sm:w-9 sm:h-9 bg-amber-500 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-sm font-black animate-bounce">🛵</div>`,
+                        iconSize: [36, 36], iconAnchor: [18, 18]
+                    });
+
+                    animatedBike = L.marker(coords[0], { icon: bikeIcon, zIndexOffset: 2000 }).addTo(map);
+                    let idx = 0;
+                    bikeInterval = setInterval(() => {
+                        idx++;
+                        if (idx < coords.length) animatedBike.setLatLng(coords[idx]);
+                        else { idx = 0; animatedBike.setLatLng(coords[0]); }
+                    }, Math.max(30, 2000 / coords.length));
+
+                    const delayFactor = 1 + (trafficStats.orange * 0.05 + trafficStats.red * 0.15);
+                    const durationMins = Math.max(1, Math.round((durationSeconds * delayFactor) / 60));
+
+                    renderDispatchPanel(distanceKm, durationMins, site.name, hq.name);
+                })
+                .catch(e => console.error("OSRM Error:", e));
+        }
+
+        function renderDispatchPanel(dist, time, siteName, hqName) {
+            let p = document.getElementById('route-dispatch-panel');
+            if (!p) {
+                p = document.createElement('div');
+                p.id = 'route-dispatch-panel';
+                document.getElementById('sec-map').appendChild(p);
+            }
+            p.innerHTML = `
+                <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 p-3.5 flex flex-col gap-2.5 relative">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-xl shrink-0">
+                                🛵
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold text-gray-500 uppercase truncate">Lộ trình NetNam On-site → TCB Ball</div>
+                                <div class="text-sm font-black text-gray-900 mt-0.5 truncate">
+                                    <span class="text-indigo-600">${time} phút</span> 
+                                    <span class="text-gray-400 font-normal">|</span> 
+                                    <span class="text-gray-600 font-semibold">${dist} km</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="closeDispatch()" title="Đóng lộ trình" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold transition shrink-0">
+                            ✕
+                        </button>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-semibold text-gray-600 px-0.5">
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-emerald-600"></span> Thông thoáng</div>
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-amber-500"></span> Đông xe</div>
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-red-600"></span> Ùn tắc</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeDispatch() {
+            const p = document.getElementById('route-dispatch-panel');
+            if (p) p.remove();
+            routeSegments.forEach(s => map.removeLayer(s));
+            routeSegments = [];
+            if (animatedBike) { map.removeLayer(animatedBike); animatedBike = null; }
+            if (bikeInterval) { clearInterval(bikeInterval); bikeInterval = null; }
+        }
+
+        function toggleMapPanel() {
+            document.getElementById('map-floating-panel').classList.toggle('hidden');
+            document.getElementById('btn-open-panel').classList.toggle('hidden');
+        }
+
+        function toggleBrowserFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
+        window.addEventListener('orientationchange', () => { setTimeout(() => { if (map) map.invalidateSize(); }, 300); });
+    </script>
+</body>
+</html>
