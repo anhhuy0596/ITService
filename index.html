@@ -53,25 +53,35 @@
     </div>
 
     <script>
-        // Danh sách tài khoản mặc định của các dự án
+        // Danh sách tài khoản mặc định chuẩn của tất cả dự án
         const defaultUsers = [
             { id: 1, name: "Quản Trị Viên Hệ Thống", username: "admin", password: "admin123", role: "ADMIN", tenantId: "all", targetPage: "admin.html" },
             { id: 2, name: "Đại Diện Minh Việt Group", username: "client_minhviet", password: "123456", role: "CLIENT", tenantId: "minhviet", targetPage: "minhviet.html" },
             { id: 3, name: "Đại Diện Uniqlo VN", username: "client_uniqlo", password: "123456", role: "CLIENT", tenantId: "uniqlo", targetPage: "uniqlo.html" },
             { id: 4, name: "Đại Diện Starbucks VN", username: "client_starbucks", password: "123456", role: "CLIENT", tenantId: "starbucks", targetPage: "starbucks.html" },
-            { id: 5, name: "Đại Diện TCB Ball", username: "client_tcbball", password: "123456", role: "CLIENT", tenantId: "tcbball", targetPage: "tcb_ball.html" }
-			{ id: 6, name: "Đại Diện Vietsopetro (ESS)", username: "client_vsp", password: "123456", role: "CLIENT", tenantId: "vietsopetro", targetPage: "vietsopetro.html" }
+            { id: 5, name: "Đại Diện TCB Ball", username: "client_tcbball", password: "123456", role: "CLIENT", tenantId: "tcbball", targetPage: "tcb_ball.html" },
+            { id: 6, name: "Đại Diện Vietsopetro (VSP)", username: "client_vsp", password: "123456", role: "CLIENT", tenantId: "vietsopetro", targetPage: "vietsopetro.html" }
         ];
 
-        // Khởi tạo hoặc tự động cập nhật thêm tài khoản TCB Ball vào localStorage
-        if (!localStorage.getItem('portal_usersDB')) {
-            localStorage.setItem('portal_usersDB', JSON.stringify(defaultUsers));
-        } else {
+        // Khởi tạo và tự động đồng bộ tài khoản mới vào localStorage
+        try {
             let currentUsers = JSON.parse(localStorage.getItem('portal_usersDB'));
-            if (!currentUsers.some(u => u.username === 'client_tcbball')) {
-                currentUsers.push({ id: 5, name: "Đại Diện TCB Ball", username: "client_tcbball", password: "123456", role: "CLIENT", tenantId: "tcbball", targetPage: "tcb_ball.html" });
+            if (!currentUsers || !Array.isArray(currentUsers)) {
+                localStorage.setItem('portal_usersDB', JSON.stringify(defaultUsers));
+            } else {
+                defaultUsers.forEach(defUser => {
+                    const idx = currentUsers.findIndex(u => u.username === defUser.username);
+                    if (idx === -1) {
+                        currentUsers.push(defUser);
+                    } else {
+                        currentUsers[idx].targetPage = defUser.targetPage;
+                        currentUsers[idx].tenantId = defUser.tenantId;
+                    }
+                });
                 localStorage.setItem('portal_usersDB', JSON.stringify(currentUsers));
             }
+        } catch (err) {
+            localStorage.setItem('portal_usersDB', JSON.stringify(defaultUsers));
         }
 
         function handleLogin(e) {
@@ -80,15 +90,20 @@
             const p = document.getElementById('login-password').value.trim();
             const errBox = document.getElementById('login-error');
 
-            const usersDB = JSON.parse(localStorage.getItem('portal_usersDB'));
+            let usersDB = defaultUsers;
+            try {
+                const stored = JSON.parse(localStorage.getItem('portal_usersDB'));
+                if (stored && Array.isArray(stored)) usersDB = stored;
+            } catch (err) {
+                usersDB = defaultUsers;
+            }
+
             const user = usersDB.find(x => x.username === u && x.password === p);
 
             if (user) {
                 errBox.classList.add('hidden');
-                // Lưu session đăng nhập
                 sessionStorage.setItem('portal_session', JSON.stringify(user));
                 
-                // Điều hướng chính xác theo phân quyền và dự án
                 if (user.role === 'ADMIN') {
                     window.location.href = 'admin.html';
                 } else {
