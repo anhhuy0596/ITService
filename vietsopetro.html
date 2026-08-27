@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>Vietsopetro - Đề Xuất Giải Pháp Hạ Tầng PEWS (On-Premise vs AWS Cloud)</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        body {
+            padding-top: var(--sat); padding-bottom: var(--sab);
+            padding-left: var(--sal); padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans h-[100dvh] flex flex-col overflow-hidden text-slate-800 antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- HEADER TOP -->
+    <header class="bg-gray-900 text-white px-3 sm:px-6 py-2.5 sm:py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-gray-800 gap-2">
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 bg-cyan-600 rounded-xl flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-sm shrink-0">
+                🛢️
+            </div>
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate max-w-[240px] sm:max-w-md">LIÊN DOANH VIỆT - NGA VIETSOPETRO (VSP)</h2>
+                    <span id="role-badge" class="text-[9px] sm:text-[10px] bg-cyan-900 text-cyan-300 border border-cyan-700 font-semibold px-1.5 py-0.5 rounded-full uppercase shrink-0">PEWS Project</span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-gray-400 truncate">Hồ sơ Đề xuất Giải pháp Kỹ thuật & So sánh 02 Phương án Hạ tầng (HPE On-Premise vs AWS Public Cloud)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button id="btn-back-admin" onclick="window.location.href='admin.html'" class="hidden bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                👑 Về Admin
+            </button>
+            <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                Thoát
+            </button>
+        </div>
+    </header>
+
+    <!-- SUB-NAV TABS (3 MODULES) -->
+    <nav class="bg-white border-b border-gray-200 px-3 sm:px-6 py-2 flex items-center space-x-2 shrink-0 shadow-xs z-30 overflow-x-auto touch-scroll custom-scrollbar whitespace-nowrap">
+        <button onclick="switchSection('REQ')" id="btn-sec-req" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-cyan-50 text-cyan-800 border border-cyan-300 transition shrink-0 min-h-[36px]">
+            📋 1. Tổng quan & So sánh chiến lược
+        </button>
+        <button onclick="switchSection('SOL')" id="btn-sec-sol" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            💡 2. Kiến trúc giải pháp & Bảng BoM (02 Phương án)
+        </button>
+        <button onclick="switchSection('TIMELINE')" id="btn-sec-timeline" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            ⏳ 3. Lộ trình mở rộng & Phân tích TCO
+        </button>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="flex-1 relative overflow-hidden flex bg-slate-100">
+        
+        <!-- ================================================================= -->
+        <!-- SECTION 1: TỔNG QUAN & SO SÁNH CHIẾN LƯỢC -->
+        <!-- ================================================================= -->
+        <section id="sec-req" class="flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-5">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-5">
+                
+                <!-- TIÊU ĐỀ MODULE -->
+                <div class="border-b border-gray-200 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-cyan-700 uppercase bg-cyan-50 px-2.5 py-1 rounded-md border border-cyan-200">Module 1</span>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Báo Cáo Tổng Quan & Ma Trận So Sánh Chiến Lược</h3>
+                    </div>
+                    <span class="self-start sm:self-auto bg-cyan-50 text-cyan-800 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full border border-cyan-200">Phiên bản: v2.0 (Tháng 08/2026)</span>
+                </div>
+
+                <!-- BẢNG THÔNG TIN DỰ ÁN TỔNG QUAN -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                    <table class="w-full text-xs text-left min-w-[500px]">
+                        <tbody class="divide-y divide-slate-200 text-slate-700">
+                            <tr class="bg-slate-50/70"><td class="p-3 font-semibold text-slate-600 w-52">Chủ đầu tư / Đơn vị yêu cầu</td><td class="p-3 font-bold text-slate-900">Liên doanh Việt - Nga Vietsopetro (VSP) — Trung tâm CNTT & Tự động hóa</td></tr>
+                            <tr><td class="p-3 font-semibold text-slate-600">Tên hệ thống</td><td class="p-3 font-bold text-cyan-800">Hệ thống Cảnh báo sớm lắng đọng paraffin (PEWS)</td></tr>
+                            <tr class="bg-slate-50/70"><td class="p-3 font-semibold text-slate-600">Mục đích tài liệu</td><td class="p-3 text-slate-800">Phân tích kỹ thuật, lập bảng dự toán BoM chi tiết và so sánh toàn diện giữa 02 mô hình: <b>On-Premise (CapEx)</b> và <b>AWS Public Cloud (OpEx)</b></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 1.1 TÓM TẮT BAN LÃNH ĐẠO -->
+                <div class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl border border-cyan-200 space-y-2">
+                    <h4 class="font-bold text-cyan-950 text-xs sm:text-sm flex items-center gap-2">
+                        <span>📌</span> A.1. Bối Cảnh Hệ Thống & Thách Thức Kiến Trúc
+                    </h4>
+                    <p class="text-xs text-cyan-900 leading-relaxed">
+                        Hệ thống PEWS tiếp nhận dữ liệu đo vận hành giếng khoan từ ngoài khơi và các giàn khai thác của Vietsopetro (khoảng 0.1 – 1 triệu bản ghi/ngày, dung lượng tăng &lt; 20 GB/năm sau nén), kết hợp suy luận mô hình AI/LLM để cảnh báo sớm hiện tượng lắng đọng paraffin, giúp tối ưu hóa chi phí xử lý hóa chất và bảo vệ giếng khai thác.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-cyan-950 font-medium">
+                        <div class="p-2 bg-white/80 rounded-lg border border-cyan-100">🎯 <b>Tải GPU:</b> Chuyên phục vụ suy luận mô hình (Inference) có sẵn trọng số.</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-cyan-100">⚙️ <b>Nền tảng:</b> Cụm Kubernetes sẵn sàng cao (HA), tích hợp CSI Driver & GPU Operator.</div>
+                        <div class="p-2 bg-white/80 rounded-lg border border-cyan-100">🔒 <b>Môi trường:</b> Phân tách Prod & Staging, có vùng cô lập an ninh thu thập dữ liệu giếng.</div>
+                    </div>
+                </div>
+
+                <!-- 1.2 MA TRẬN SO SÁNH CHIẾN LƯỢC (ON-PREM VS AWS CLOUD) -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>⚖️</span> A.3. Bảng Ma Trận So Sánh Chiến Lược (CapEx vs OpEx)
+                    </h4>
+                    <div class="border border-slate-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[650px]">
+                            <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-[11px]">
+                                <tr>
+                                    <th class="p-3 w-48">Tiêu chí So sánh</th>
+                                    <th class="p-3 w-60 text-cyan-950 bg-cyan-50/70 border-l border-slate-200 font-bold">Phương án 1: On-Premise (HPE Bare-metal)</th>
+                                    <th class="p-3 w-60 text-slate-900 bg-slate-50 border-l border-slate-200 font-bold">Phương án 2: AWS Public Cloud</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Mô hình Tài chính</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-cyan-900 bg-cyan-50/20"><b>CapEx (Chi phí Đầu tư):</b> Trả trước toàn bộ thiết bị phần cứng, khấu hao tài sản trong 3–5 năm.</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-slate-800"><b>OpEx (Chi phí Vận hành):</b> Trả theo mức sử dụng thực tế (Pay-as-you-go / Savings Plans), không cần vốn lớn ban đầu.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Bảo mật & Tuân thủ</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-cyan-900 bg-cyan-50/20"><b>Tuyệt đối (Air-gapped 100%):</b> Dữ liệu giếng và trọng số AI nằm trọn vẹn trong DC nội bộ, không có kết nối Internet.</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-slate-800"><b>Bảo mật Đám mây (Shared Responsibility):</b> Dữ liệu mã hóa KMS, kết nối qua VPN IPsec chuyên dụng / Direct Connect.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Khả năng Co giãn</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-slate-700 bg-cyan-50/20">Phải dự trù và mua sắm phần cứng trước (mất 6–10 tuần đặt hàng nhập khẩu linh kiện).</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-emerald-800 font-medium"><b>Co giãn tức thì (Elastic):</b> Bật/tắt hoặc nâng cấp loại GPU/Instance tính toán chỉ trong vài phút.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Quản trị Phần cứng</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-slate-700 bg-cyan-50/20">Đội ngũ VSP tự quản trị vòng đời vật lý (nguồn, quạt, ổ đĩa, nhiệt độ phòng máy, cáp mạng).</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-emerald-800 font-medium"><b>Không quản trị vật lý:</b> AWS chịu trách nhiệm 100% hạ tầng trung tâm dữ liệu, nguồn điện và làm mát.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Thời gian Triển khai</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-slate-700 bg-cyan-50/20">3 – 6 tháng (Order - Phụ thuộc vào tình hình linh kiện của hãng, Vận chuyển linh kiện, lắp rack, kéo cáp, nghiệm thu).</td>
+                                    <td class="p-2.5 border-l border-slate-200 text-emerald-800 font-bold"><b>1 – 2 tuần</b> (Khởi tạo tự động bằng Terraform / AWS CDK IaC).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 1.3 MA TRẬN RACI & SẢN PHẨM BÀN GIAO -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                        <h5 class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                            <span>🤝</span> Phân Định Trách Nhiệm (RACI)
+                        </h5>
+                        <ul class="list-disc pl-4 space-y-1 text-[11px] text-slate-700">
+                            <li><b>Vietsopetro (A/R):</b> Phê duyệt phương án, cung cấp hạ tầng phòng DC (On-prem) hoặc tài khoản AWS (Cloud), triển khai K8s & ứng dụng PEWS.</li>
+                            <li><b>Đơn vị Tư vấn (A/R):</b> Cung cấp thiết bị phần cứng, setup hạ tầng mạng/lưu trữ/OS hoặc thiết kế Landing Zone IaC trên AWS, kiểm thử nghiệm thu HA.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                        <h5 class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                            <span>📦</span> Hồ Sơ Bàn Giao Hoàn Công (Deliverables)
+                        </h5>
+                        <ul class="list-disc pl-4 space-y-1 text-[11px] text-slate-700">
+                            <li><b>Hồ sơ As-Built:</b> Sơ đồ Network/Cloud Architecture, Bảng phân bổ IP/VPC Subnets, Bảng thông số cấu hình chi tiết.</li>
+                            <li><b>Hồ sơ An toàn & Bản quyền:</b> File SBOM & Checksum SHA-256 (On-prem) hoặc AWS KMS Policy & IAM Security Audit (Cloud).</li>
+                            <li><b>Biên bản Nghiệm thu HA:</b> Báo cáo kết quả kiểm thử chịu lỗi phần cứng N-1 / Multi-AZ Failover.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 2: KIẾN TRÚC GIẢI PHÁP & BẢNG BOM (02 PHƯƠNG ÁN) -->
+        <!-- ================================================================= -->
+        <section id="sec-sol" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-5">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-5">
+                
+                <div class="border-b border-gray-200 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md border border-purple-200">Module 2</span>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Kiến Trúc Kỹ Thuật & Bảng Định Mức BoM Chi Tiết</h3>
+                    </div>
+                    
+                    <!-- BỘ CHUYỂN TAB XEM PHƯƠNG ÁN -->
+                    <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-300 text-xs font-bold self-start sm:self-auto">
+                        <button id="btn-tab-onprem" onclick="switchOptionTab('ONPREM')" class="px-3 py-1.5 rounded-lg bg-cyan-700 text-white shadow-xs transition">
+                            🏢 Phương Án 1: On-Premise (HPE)
+                        </button>
+                        <button id="btn-tab-cloud" onclick="switchOptionTab('CLOUD')" class="px-3 py-1.5 rounded-lg text-slate-700 hover:text-cyan-700 transition">
+                            ☁️ Phương Án 2: AWS Public Cloud
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= TAB CONTENT 1: ON-PREMISE (HPE) ================= -->
+                <div id="tab-content-onprem" class="space-y-4">
+                    
+                    <!-- 7 TIÊU CHUẨN AIR-GAPPED -->
+                    <div class="p-3.5 bg-cyan-50 rounded-xl border border-cyan-200 text-cyan-950 space-y-2">
+                        <h4 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                            <span>🔒</span> Đáp Ứng Tuyệt Đối 7 Tiêu Chuẩn Cách Ly Mạng Air-Gapped (AG-1 → AG-7)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-cyan-900 pt-1">
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100"><b>AG-1. Bản quyền Offline:</b> 100% bản quyền nạp key XML vĩnh viễn, không xác thực online.</div>
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100"><b>AG-2. Triệt tiêu Telemetry:</b> Tắt sạch HPE InfoSight, Insight Remote Support & NVIDIA Call-home.</div>
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100"><b>AG-3. Firmware Ngoại tuyến:</b> Cập nhật qua gói HPE SPP ISO từ Virtual Media iLO 6.</div>
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100"><b>AG-4. Quản trị On-Premise:</b> OneView và SMU chạy cục bộ, không dùng SaaS Cloud Portal.</div>
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100"><b>AG-5. Hỗ trợ tại chỗ:</b> Trích xuất AHS log offline, kỹ sư L3 có mặt xử lý tại Vũng Tàu ≤ 4h.</div>
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100"><b>AG-6. An toàn Chuỗi cung ứng:</b> Cung cấp đầy đủ file SBOM chuẩn SPDX và mã băm SHA-256.</div>
+                            <div class="p-2 bg-white rounded-lg border border-cyan-100 md:col-span-2"><b>AG-7. Đồng bộ Thời gian:</b> Máy chủ đồng bộ từ Local NTP và Local DNS nội bộ của Data Center VSP.</div>
+                        </div>
+                    </div>
+
+                    <!-- BẢNG BOM THIẾT BỊ PHẦN CỨNG ON-PREMISE (GIAI ĐOẠN 1) -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                            <span>📑</span> B.2. Bảng BOM Thiết Bị Phần Cứng On-Premise Giai Đoạn 1 (HPE Ecosystem)
+                        </h4>
+                        <div class="border border-slate-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[700px]">
+                                <thead class="bg-slate-100 font-bold text-slate-800 border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5 text-center w-12">Gói</th>
+                                        <th class="p-2.5 w-48">Model Thiết bị</th>
+                                        <th class="p-2.5 min-w-[320px]">Quy cách Kỹ thuật Chi tiết</th>
+                                        <th class="p-2.5 text-center w-20">ĐVT</th>
+                                        <th class="p-2.5 text-center w-20">SL GĐ1</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 text-slate-700">
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói A</td><td class="p-2.5 font-semibold text-slate-900">HPE ProLiant DL380a Gen11 (PA1)</td><td class="p-2.5 text-slate-600">Server AI 2U: 2x Xeon Gold 6430 (64C), 256GB RAM DDR5, <b>1x NVIDIA H100 NVL 94GB PCIe</b>, 2x 1.92TB NVMe RAID1, Dual 25GbE, Dual 32Gb FC, iLO 6.</td><td class="p-2.5 text-center text-slate-500">Bộ</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói B</td><td class="p-2.5 font-semibold text-slate-900">HPE ProLiant DL360 Gen11</td><td class="p-2.5 text-slate-600">04x Node K8s Prod 1U: 2x Xeon Silver 4410Y (24C/máy), 128GB RAM DDR5, 2x 480GB SSD M.2 Boot RAID1, Dual 25GbE, Dual 32Gb FC HBA.</td><td class="p-2.5 text-center text-slate-500">Bộ</td><td class="p-2.5 text-center font-bold text-cyan-800">04</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói C</td><td class="p-2.5 font-semibold text-slate-900">HPE ProLiant DL20 Gen11</td><td class="p-2.5 text-slate-600">02x Máy chủ Mạng Tách biệt 1U: 1x Xeon E-2434 (4C), 16GB RAM, 2x 480GB SSD RAID1, Dual 10GbE / 1GbE, iLO 6.</td><td class="p-2.5 text-center text-slate-500">Bộ</td><td class="p-2.5 text-center font-bold text-cyan-800">02</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói D</td><td class="p-2.5 font-semibold text-slate-900">HPE ProLiant DL360 Gen11 (Staging)</td><td class="p-2.5 text-slate-600">02x Node Staging 1U: 2x Xeon Silver 4410Y (24C), 96GB–128GB RAM, 2x 480GB SSD RAID1 Boot, Dual 25GbE, Dual 32Gb FC HBA.</td><td class="p-2.5 text-center text-slate-500">Bộ</td><td class="p-2.5 text-center font-bold text-cyan-800">02</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói E</td><td class="p-2.5 font-semibold text-slate-900">HPE Alletra 5000 / MP All-Flash</td><td class="p-2.5 text-slate-600">SAN Storage All-Flash Dual Controller: 6x 1.92TB NVMe SSD (Usable > 4TB SSD), 4x 32Gb FC + 4x 25GbE iSCSI, CSI Driver K8s.</td><td class="p-2.5 text-center text-slate-500">HT</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói E</td><td class="p-2.5 font-semibold text-slate-900">HPE MSA 2060 Storage (Backup/NAS)</td><td class="p-2.5 text-slate-600">Tủ lưu trữ độc lập: Dual Controller, 8x 2.4TB SAS HDD (Usable > 10TB RAID6), 4x 10GbE Ports, NFS v3/v4 & Backup LUN.</td><td class="p-2.5 text-center text-slate-500">HT</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói F</td><td class="p-2.5 font-semibold text-slate-900">Aruba CX 8325-48Y8C (JL626A)</td><td class="p-2.5 text-slate-600">02x Switch ToR 25G: 48x 25GbE SFP28 + 8x 100GbE QSFP28, Aruba VSX (MLAG HA) (Đủ cổng GĐ 1→3 + >25% spare).</td><td class="p-2.5 text-center text-slate-500">Chiếc</td><td class="p-2.5 text-center font-bold text-cyan-800">02</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói F</td><td class="p-2.5 font-semibold text-slate-900">HPE StoreFabric SN3600B 32Gb FC</td><td class="p-2.5 text-slate-600">02x SAN Switch FC 32Gbps độc lập (Fabric A/B), Fabric Vision, Redundant PSU.</td><td class="p-2.5 text-center text-slate-500">Chiếc</td><td class="p-2.5 text-center font-bold text-cyan-800">02</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói F</td><td class="p-2.5 font-semibold text-slate-900">Aruba CX 6000 48G (R8N85A)</td><td class="p-2.5 text-slate-600">01x Switch Management Out-of-band: 48x 1GbE RJ45 kết nối iLO 6, PDU, Console.</td><td class="p-2.5 text-center text-slate-500">Chiếc</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói G</td><td class="p-2.5 font-semibold text-slate-900">Tủ Rack HPE G2 42U + PDU Metered</td><td class="p-2.5 text-slate-600">01x Tủ Rack 42U 600x1075mm; 02x PDU HPE Metered 16A A/B; 01x Bộ KVM Console 1U LCD 17-inch.</td><td class="p-2.5 text-center text-slate-500">Bộ</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói H</td><td class="p-2.5 font-semibold text-slate-900">Bản quyền RHEL & iLO Advanced</td><td class="p-2.5 text-slate-600">08x RHEL Server 2-Socket (3 năm offline) + 08x License HPE iLO 6 Advanced Perpetual.</td><td class="p-2.5 text-center text-slate-500">Gói</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 text-center font-bold text-cyan-800">Gói I</td><td class="p-2.5 font-semibold text-slate-900">Dịch vụ Triển khai & Nghiệm thu HA</td><td class="p-2.5 text-slate-600">Lắp rack, đi cáp nguồn A/B & cáp quang nhãn chuẩn, nạp SPP firmware offline, setup VSX/SAN, test failover N-1.</td><td class="p-2.5 text-center text-slate-500">Gói</td><td class="p-2.5 text-center font-bold text-cyan-800">01</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB CONTENT 2: AWS PUBLIC CLOUD ================= -->
+                <div id="tab-content-cloud" class="hidden space-y-4">
+                    
+                    <!-- KIẾN TRÚC AWS WELL-ARCHITECTED -->
+                    <div class="p-3.5 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 space-y-2">
+                        <h4 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                            <span>☁️</span> C.1. Kiến Trúc AWS Multi-AZ High Availability & Hybrid Connect
+                        </h4>
+                        <p class="text-xs text-blue-900 leading-relaxed">
+                            Cụm Kubernetes chạy trên dịch vụ <b>Amazon EKS Managed Control Plane (Multi-AZ)</b> kết hợp cụm Worker Nodes chạy EC2 GPU & Compute trong <b>Private Subnets</b>. Kết nối bảo mật từ Data Center VSP qua kênh <b>AWS Site-to-Site VPN (Dual IPsec Tunnels)</b> hoặc <b>AWS Direct Connect 1Gbps</b>. Dữ liệu lưu trữ được mã hóa toàn diện bằng <b>AWS KMS Customer Managed Keys</b>.
+                        </p>
+                    </div>
+
+                    <!-- BẢNG BOM DỊCH VỤ AWS PUBLIC CLOUD (PHASE 1) -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                            <span>📑</span> C.3. Bảng BOM Dịch Vụ AWS Cloud Chi Tiết (Phase 1 Pilot)
+                        </h4>
+                        <div class="border border-slate-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                            <table class="w-full text-xs text-left min-w-[700px]">
+                                <thead class="bg-slate-100 font-bold text-slate-800 border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5 w-36">Nhóm Dịch vụ</th>
+                                        <th class="p-2.5 w-44">Dịch vụ AWS Đề xuất</th>
+                                        <th class="p-2.5 min-w-[300px]">Cấu hình & Thông số Kỹ thuật Chi tiết</th>
+                                        <th class="p-2.5 text-center w-20">ĐVT</th>
+                                        <th class="p-2.5 text-center w-20">SL GĐ1</th>
+                                        <th class="p-2.5 w-36">Cơ chế Thanh toán</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 text-slate-700">
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">EKS Cluster</td><td class="p-2.5 font-semibold text-slate-900">Amazon EKS</td><td class="p-2.5 text-slate-600">Managed Kubernetes Control Plane SLA 99.95%, Multi-AZ, tự động vá lỗi bảo mật k8s master.</td><td class="p-2.5 text-center text-slate-500">Cluster</td><td class="p-2.5 text-center font-bold text-indigo-700">01</td><td class="p-2.5 text-slate-600">$0.10/giờ (~$73/tháng)</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">GPU Node (Prod)</td><td class="p-2.5 font-semibold text-slate-900">EC2 g6e.4xlarge</td><td class="p-2.5 text-slate-600">16 vCPUs, 64 GB RAM, <b>1x NVIDIA L40S 48GB</b>, Network 25 Gbps, EBS-optimized.</td><td class="p-2.5 text-center text-slate-500">Instance</td><td class="p-2.5 text-center font-bold text-indigo-700">01</td><td class="p-2.5 text-slate-600">1-Yr / 3-Yr Savings Plans</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">K8s Nodes (Prod)</td><td class="p-2.5 font-semibold text-slate-900">EC2 m6i.2xlarge</td><td class="p-2.5 text-slate-600">8 vCPUs, 32 GB RAM DDR5 per node (Tổng 4 node = 32 vCPUs, 128 GB RAM) chạy Worker Pods & DB.</td><td class="p-2.5 text-center text-slate-500">Instance</td><td class="p-2.5 text-center font-bold text-indigo-700">04</td><td class="p-2.5 text-slate-600">1-Yr / 3-Yr Savings Plans</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Isolated Zone</td><td class="p-2.5 font-semibold text-slate-900">EC2 c6i.xlarge</td><td class="p-2.5 text-slate-600">4 vCPUs, 8 GB RAM, đặt tại VPC/Subnet riêng biệt, thu thập dữ liệu giếng qua NLB.</td><td class="p-2.5 text-center text-slate-500">Instance</td><td class="p-2.5 text-center font-bold text-indigo-700">02</td><td class="p-2.5 text-slate-600">Reserved Instances</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Staging Nodes</td><td class="p-2.5 font-semibold text-slate-900">EC2 m6i.xlarge</td><td class="p-2.5 text-slate-600">4 vCPUs, 16 GB RAM per node (Tổng 2 node = 8 vCPUs, 32 GB RAM), môi trường kiểm thử.</td><td class="p-2.5 text-center text-slate-500">Instance</td><td class="p-2.5 text-center font-bold text-indigo-700">02</td><td class="p-2.5 text-slate-600">On-Demand / Spot</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Lưu trữ Block SSD</td><td class="p-2.5 font-semibold text-slate-900">Amazon EBS gp3</td><td class="p-2.5 text-slate-600">1,000 GB (1 TB) SSD gp3 Provisioned (3,000 IOPS, 125 MB/s throughput) cho DB & Persistent Volumes.</td><td class="p-2.5 text-center text-slate-500">GB/tháng</td><td class="p-2.5 text-center font-bold text-indigo-700">1,000</td><td class="p-2.5 text-slate-600">Dung lượng thực dùng</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Lưu trữ Dung lượng</td><td class="p-2.5 font-semibold text-slate-900">Amazon EBS gp3</td><td class="p-2.5 text-slate-600">4,000 GB (4 TB) SSD gp3 cho Data Processing & Logs.</td><td class="p-2.5 text-center text-slate-500">GB/tháng</td><td class="p-2.5 text-center font-bold text-indigo-700">4,000</td><td class="p-2.5 text-slate-600">Dung lượng thực dùng</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Lưu trữ Chia sẻ NAS</td><td class="p-2.5 font-semibold text-slate-900">Amazon EFS</td><td class="p-2.5 text-slate-600">3,000 GB (3 TB) EFS Standard (NFS v4 Multi-AZ RWX) cho Kubernetes Pods chia sẻ file.</td><td class="p-2.5 text-center text-slate-500">GB/tháng</td><td class="p-2.5 text-center font-bold text-indigo-700">3,000</td><td class="p-2.5 text-slate-600">Dung lượng thực dùng</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Sao lưu & Lưu trữ</td><td class="p-2.5 font-semibold text-slate-900">AWS Backup + S3 Glacier</td><td class="p-2.5 text-slate-600">4,000 GB (4 TB) Backup LUN/DB + S3 Glacier Vault với chính sách Object Lock (WORM).</td><td class="p-2.5 text-center text-slate-500">GB/tháng</td><td class="p-2.5 text-center font-bold text-indigo-700">4,000</td><td class="p-2.5 text-slate-600">Dung lượng thực dùng</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Mạng & Kết nối</td><td class="p-2.5 font-semibold text-slate-900">AWS Site-to-Site VPN</td><td class="p-2.5 text-slate-600">02 VPN Tunnels kết nối liên tục 24/7 từ AWS VPC về VSP Data Center + Data Transfer Out.</td><td class="p-2.5 text-center text-slate-500">Gói</td><td class="p-2.5 text-center font-bold text-indigo-700">01</td><td class="p-2.5 text-slate-600">Cước cố định + Egress</td></tr>
+                                    <tr class="hover:bg-slate-50"><td class="p-2.5 font-bold text-indigo-700">Dịch vụ Triển khai</td><td class="p-2.5 font-semibold text-slate-900">AWS Landing Zone & IaC</td><td class="p-2.5 text-slate-600">Thiết kế Landing Zone, viết mã Terraform/IaC, dựng EKS Cluster, cấu hình EBS/EFS CSI, GPU Operator, VPN.</td><td class="p-2.5 text-center text-slate-500">Gói</td><td class="p-2.5 text-center font-bold text-indigo-700">01</td><td class="p-2.5 text-slate-600">Trọn gói dịch vụ ban đầu</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BẢNG SO SÁNH CẤU HÌNH TƯƠNG ĐƯƠNG 1-1 -->
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🔄</span> D.1. Bảng So Sánh Cấu Hình Tương Đương (On-Premise vs AWS Cloud)
+                    </h4>
+                    <div class="border border-slate-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[650px]">
+                            <thead class="bg-slate-100 font-bold text-slate-800 border-b border-slate-200 text-[11px]">
+                                <tr>
+                                    <th class="p-2.5 w-44">Hạng mục Chức năng</th>
+                                    <th class="p-2.5 w-56 text-cyan-900 bg-cyan-50/70 border-l border-slate-200">Phương án 1: On-Premise (HPE Bare-metal)</th>
+                                    <th class="p-2.5 w-56 text-slate-900 bg-slate-50 border-l border-slate-200">Phương án 2: AWS Public Cloud</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr class="hover:bg-slate-50"><td class="p-2 font-semibold text-slate-900">GPU Inference Server</td><td class="p-2 border-l border-slate-200 text-cyan-900 bg-cyan-50/20">01x HPE DL380a Gen11 + 1x NVIDIA H100 94GB (hoặc L40S)</td><td class="p-2 border-l border-slate-200">01x EC2 Instance <code>g6e.4xlarge</code> (1x NVIDIA L40S 48GB)</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2 font-semibold text-slate-900">Cụm K8s Cluster</td><td class="p-2 border-l border-slate-200 text-cyan-900 bg-cyan-50/20">04x HPE DL360 Gen11 (96 Cores, 512GB RAM bare-metal)</td><td class="p-2 border-l border-slate-200">Amazon EKS + 04x EC2 <code>m6i.2xlarge</code> (32 vCPUs, 128GB RAM)</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2 font-semibold text-slate-900">Vùng Mạng Tách biệt</td><td class="p-2 border-l border-slate-200 text-cyan-900 bg-cyan-50/20">02x HPE DL20 Gen11 (VLAN riêng, Switch vật lý)</td><td class="p-2 border-l border-slate-200">02x EC2 <code>c6i.xlarge</code> trong VPC cô lập + Network Load Balancer</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2 font-semibold text-slate-900">Lưu trữ Block SSD</td><td class="p-2 border-l border-slate-200 text-cyan-900 bg-cyan-50/20">HPE Alletra 5000 SAN All-Flash (NVMe RAID, Controller kép)</td><td class="p-2 border-l border-slate-200">Amazon EBS gp3 / io2 Block Storage gắn qua EBS CSI Driver</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2 font-semibold text-slate-900">Lưu trữ Chia sẻ & Backup</td><td class="p-2 border-l border-slate-200 text-cyan-900 bg-cyan-50/20">HPE MSA 2060 SAS HDD (Tủ đĩa NAS/Backup tách rời vật lý)</td><td class="p-2 border-l border-slate-200">Amazon EFS (NFS v4) + AWS Backup & Amazon S3 Glacier (WORM)</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2 font-semibold text-slate-900">Hạ tầng Mạng</td><td class="p-2 border-l border-slate-200 text-cyan-900 bg-cyan-50/20">02x Switch Aruba CX 8325 25G VSX + 02x Switch FC SN3600B</td><td class="p-2 border-l border-slate-200">AWS VPC Virtual Network, Multi-AZ routing, Site-to-Site VPN</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 3: LỘ TRÌNH SCALE-OUT & PHÂN TÍCH TCO (CAPEX VS OPEX) -->
+        <!-- ================================================================= -->
+        <section id="sec-timeline" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-7xl mx-auto w-full custom-scrollbar space-y-5">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-6">
+                
+                <!-- HEADER MODULE 3 -->
+                <div class="border-b border-slate-200 pb-3 flex flex-col md:flex-row justify-between md:items-center gap-2">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-cyan-700 uppercase bg-cyan-50 px-2.5 py-1 rounded-md border border-cyan-200">Module 3</span>
+                        <h3 class="text-base sm:text-xl font-bold text-slate-900 mt-1.5">Lộ Trình Mở Rộng 3 Giai Đoạn & Phân Tích Chi Phí TCO</h3>
+                    </div>
+                    <span class="self-start md:self-auto bg-emerald-50 text-emerald-800 text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
+                        Bảo toàn 100% Vốn Đầu Tư
+                    </span>
+                </div>
+
+                <!-- 3.1 LỘ TRÌNH 3 GIAI ĐOẠN SCALE-OUT (SO SÁNH 2 PHƯƠNG ÁN) -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>📈</span> So Sánh Lộ Trình Mở Rộng 3 Giai Đoạn (On-Prem Scale-Out vs Cloud Elastic)
+                    </h4>
+                    
+                    <div class="border border-slate-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[720px]">
+                            <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-[11px]">
+                                <tr>
+                                    <th class="p-3 w-48">Hạng mục Hạ tầng</th>
+                                    <th class="p-3 w-56 bg-slate-50/80 text-cyan-950 font-bold border-l border-slate-200">Giai đoạn 1 — Pilot (~100 giếng)</th>
+                                    <th class="p-3 w-56 bg-slate-50/80 text-slate-900 font-bold border-l border-slate-200">Giai đoạn 2 — Mở rộng (+9 tháng)</th>
+                                    <th class="p-3 w-56 bg-slate-50/80 text-slate-900 font-bold border-l border-slate-200">Giai đoạn 3 — Toàn bộ (+18 tháng)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Quy mô phục vụ</td>
+                                    <td class="p-2.5 font-bold text-cyan-800 bg-cyan-50/20 border-l border-slate-200">~100 giếng, 20 users</td>
+                                    <td class="p-2.5 font-semibold text-slate-800 border-l border-slate-200">~200 giếng, 50 users</td>
+                                    <td class="p-2.5 font-semibold text-slate-800 border-l border-slate-200">~500 giếng, 100 users</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Phương án 1 (HPE On-Prem)</td>
+                                    <td class="p-2.5 font-bold text-cyan-800 bg-cyan-50/20 border-l border-slate-200">1x DL380a GPU + 4x DL360 K8s + 1TB SSD + 4TB HDD</td>
+                                    <td class="p-2.5 text-slate-700 border-l border-slate-200">+1 DL360 K8s (Tổng 5 máy) + Cắm thêm đĩa (1.5TB SSD, 6TB HDD)</td>
+                                    <td class="p-2.5 font-bold text-indigo-700 border-l border-slate-200">+1 DL380a GPU (Tổng 2 GPU) + 6x K8s + 3TB SSD + 10TB HDD</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-2.5 font-semibold text-slate-900">Phương án 2 (AWS Cloud)</td>
+                                    <td class="p-2.5 text-slate-700 bg-cyan-50/20 border-l border-slate-200">1x EC2 g6e (L40S) + 4x m6i + 1TB EBS + 3TB EFS + 4TB S3</td>
+                                    <td class="p-2.5 text-slate-700 border-l border-slate-200">+1 EC2 m6i + Tự động giãn EBS 1.5TB, EFS 4TB, S3 5TB</td>
+                                    <td class="p-2.5 font-bold text-indigo-700 border-l border-slate-200">+1 EC2 GPU Node + 6x m6i + EBS 3TB, EFS 5TB, S3 8TB</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3.2 PHÂN TÍCH CHI PHÍ TỔNG THỂ TCO (CAPEX VS OPEX) -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>💰</span> D.2. Bảng Phân Tích Cơ Cấu Chi Phí Tổng Thể TCO (1 Năm & 3 Năm)
+                    </h4>
+                    <div class="border border-slate-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                        <table class="w-full text-xs text-left min-w-[700px]">
+                            <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-[11px]">
+                                <tr>
+                                    <th class="p-2.5 w-48">Hạng mục Chi phí</th>
+                                    <th class="p-2.5 w-60 text-cyan-950 bg-cyan-50/70 border-l border-slate-200">Phương án 1: On-Premise (HPE Bare-metal)</th>
+                                    <th class="p-2.5 w-60 text-slate-900 bg-slate-50 border-l border-slate-200">Phương án 2: AWS Public Cloud</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr class="hover:bg-slate-50"><td class="p-2.5 font-semibold text-slate-900">Chi phí Ban đầu (CapEx)</td><td class="p-2.5 border-l border-slate-200 text-red-700 font-bold bg-cyan-50/20">Rất Cao (Mua 100% Server, GPU, SAN, Switch, Rack, License 3 năm).</td><td class="p-2.5 border-l border-slate-200 text-emerald-800 font-bold">Rất Thấp (Chỉ có phí setup Landing Zone & IaC ban đầu).</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2.5 font-semibold text-slate-900">Chi phí Hàng tháng (OpEx)</td><td class="p-2.5 border-l border-slate-200 text-slate-700 bg-cyan-50/20">Thấp (Điện, làm mát DC, bảo trì phòng máy định kỳ).</td><td class="p-2.5 border-l border-slate-200 text-amber-800 font-bold">Trung bình / Định kỳ (Thanh toán EC2, EKS, Storage, Egress data).</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2.5 font-semibold text-slate-900">Mở rộng GĐ 2 & 3</td><td class="p-2.5 border-l border-slate-200 text-slate-700 bg-cyan-50/20">Mua thêm Server & Đĩa cứng mới (Phát sinh CapEx đợt 2 & 3).</td><td class="p-2.5 border-l border-slate-200 text-emerald-800 font-medium">Tự động tăng instance/storage trong vài phút (Tăng OpEx tương ứng).</td></tr>
+                                <tr class="hover:bg-slate-50"><td class="p-2.5 font-semibold text-slate-900">Rủi ro Lỗi thời Phần cứng</td><td class="p-2.5 border-l border-slate-200 text-slate-700 bg-cyan-50/20">Phần cứng khấu hao 3–5 năm, hết vòng đời cần tái đầu tư mua mới.</td><td class="p-2.5 border-l border-slate-200 text-emerald-800 font-medium">Không lo lỗi thời; liên tục nâng cấp dòng chip/GPU mới nhất của AWS.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3.3 KẾT LUẬN & ĐỀ XUẤT HƯỚNG TRIỂN KHAI CHO VIETSOPETRO -->
+                <div class="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200 space-y-2">
+                    <h4 class="font-bold text-emerald-950 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🎯</span> E. Kết Luận & Đề Xuất Hướng Triển Khai Cho Vietsopetro (VSP)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-emerald-950 pt-1">
+                        <div class="p-3 bg-white/90 rounded-lg border border-emerald-200 space-y-1">
+                            <span class="font-bold text-cyan-900 uppercase">Hướng 1: Tuân thủ tuyệt đối Cách ly mạng (Air-gapped 100%)</span>
+                            <p class="text-[11px] text-slate-600 leading-relaxed">
+                                <b>Lựa chọn Phương án 1 (On-Premise HPE Ecosystem):</b> Đây là giải pháp tối ưu và an toàn nhất cho dữ liệu chiến lược ngành dầu khí, kiểm soát hoàn toàn I/O nội bộ và đáp ứng trọn vẹn tiêu chuẩn RFQ.
+                            </p>
+                        </div>
+                        <div class="p-3 bg-white/90 rounded-lg border border-emerald-200 space-y-1">
+                            <span class="font-bold text-indigo-900 uppercase">Hướng 2: Thử nghiệm Pilot nhanh & Tối ưu chi phí (OpEx-First)</span>
+                            <p class="text-[11px] text-slate-600 leading-relaxed">
+                                <b>Lựa chọn Phương án 2 (AWS Public Cloud):</b> Triển khai nhanh trong 1–2 tuần để chạy thử nghiệm Pilot 6–9 tháng. Sau khi mô hình AI hoàn thiện, VSP có thể tiếp tục mở rộng hoặc chuyển đổi (lift-and-shift) về cụm On-Premise.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPT ENGINE -->
+    <script>
+        const session = JSON.parse(sessionStorage.getItem('portal_session'));
+        if (!session) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('role-badge').innerText = session.role;
+            if (session.role === 'ADMIN') document.getElementById('btn-back-admin').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('portal_session');
+            window.location.href = 'index.html';
+        }
+
+        function switchSection(sec) {
+            ['sec-req', 'sec-sol', 'sec-timeline'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['btn-sec-req', 'btn-sec-sol', 'btn-sec-timeline'].forEach(id => {
+                document.getElementById(id).className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]";
+            });
+
+            if (sec === 'REQ') {
+                document.getElementById('sec-req').classList.remove('hidden');
+                document.getElementById('btn-sec-req').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-cyan-50 text-cyan-800 border border-cyan-300 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'SOL') {
+                document.getElementById('sec-sol').classList.remove('hidden');
+                document.getElementById('btn-sec-sol').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-cyan-50 text-cyan-800 border border-cyan-300 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'TIMELINE') {
+                document.getElementById('sec-timeline').classList.remove('hidden');
+                document.getElementById('btn-sec-timeline').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-cyan-50 text-cyan-800 border border-cyan-300 transition shrink-0 min-h-[36px]";
+            }
+        }
+
+        function switchOptionTab(tab) {
+            const tabOnPrem = document.getElementById('tab-content-onprem');
+            const tabCloud = document.getElementById('tab-content-cloud');
+            const btnOnPrem = document.getElementById('btn-tab-onprem');
+            const btnCloud = document.getElementById('btn-tab-cloud');
+
+            if (tab === 'ONPREM') {
+                tabOnPrem.classList.remove('hidden');
+                tabCloud.classList.add('hidden');
+                btnOnPrem.className = "px-3 py-1.5 rounded-lg bg-cyan-700 text-white shadow-xs transition";
+                btnCloud.className = "px-3 py-1.5 rounded-lg text-slate-700 hover:text-cyan-700 transition";
+            } else {
+                tabOnPrem.classList.add('hidden');
+                tabCloud.classList.remove('hidden');
+                btnCloud.className = "px-3 py-1.5 rounded-lg bg-indigo-700 text-white shadow-xs transition";
+                btnOnPrem.className = "px-3 py-1.5 rounded-lg text-slate-700 hover:text-indigo-700 transition";
+            }
+        }
+    </script>
+</body>
+</html>
