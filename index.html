@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport tối ưu cho iPhone tai thỏ/Dynamic Island và Android -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
     <title>Enterprise Portal - Authentication</title>
@@ -52,16 +53,24 @@
     </div>
 
     <script>
-        // Khởi tạo User DB vào localStorage nếu chưa có
+        // Danh sách tài khoản mặc định của các dự án
         const defaultUsers = [
             { id: 1, name: "Quản Trị Viên Hệ Thống", username: "admin", password: "admin123", role: "ADMIN", tenantId: "all", targetPage: "admin.html" },
             { id: 2, name: "Đại Diện Minh Việt Group", username: "client_minhviet", password: "123456", role: "CLIENT", tenantId: "minhviet", targetPage: "minhviet.html" },
             { id: 3, name: "Đại Diện Uniqlo VN", username: "client_uniqlo", password: "123456", role: "CLIENT", tenantId: "uniqlo", targetPage: "uniqlo.html" },
-            { id: 4, name: "Đại Diện Starbucks VN", username: "client_starbucks", password: "123456", role: "CLIENT", tenantId: "starbucks", targetPage: "starbucks.html" }
+            { id: 4, name: "Đại Diện Starbucks VN", username: "client_starbucks", password: "123456", role: "CLIENT", tenantId: "starbucks", targetPage: "starbucks.html" },
+            { id: 5, name: "Đại Diện TCB Ball", username: "client_tcbball", password: "123456", role: "CLIENT", tenantId: "tcbball", targetPage: "tcb_ball.html" }
         ];
 
+        // Khởi tạo hoặc tự động cập nhật thêm tài khoản TCB Ball vào localStorage
         if (!localStorage.getItem('portal_usersDB')) {
             localStorage.setItem('portal_usersDB', JSON.stringify(defaultUsers));
+        } else {
+            let currentUsers = JSON.parse(localStorage.getItem('portal_usersDB'));
+            if (!currentUsers.some(u => u.username === 'client_tcbball')) {
+                currentUsers.push({ id: 5, name: "Đại Diện TCB Ball", username: "client_tcbball", password: "123456", role: "CLIENT", tenantId: "tcbball", targetPage: "tcb_ball.html" });
+                localStorage.setItem('portal_usersDB', JSON.stringify(currentUsers));
+            }
         }
 
         function handleLogin(e) {
@@ -75,10 +84,10 @@
 
             if (user) {
                 errBox.classList.add('hidden');
-                // Lưu thông tin phiên đăng nhập
+                // Lưu session đăng nhập
                 sessionStorage.setItem('portal_session', JSON.stringify(user));
                 
-                // Điều hướng đến đúng trang của dự án hoặc trang Admin
+                // Điều hướng chính xác theo phân quyền và dự án
                 if (user.role === 'ADMIN') {
                     window.location.href = 'admin.html';
                 } else {
