@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0D4F7A">
+    <title>AusAsia Technologies (AAT) - Hồ Sơ Năng Lực Doanh Nghiệp 2026</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        body {
+            padding-top: var(--sat); padding-bottom: var(--sab);
+            padding-left: var(--sal); padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+            font-family: Calibri, Arial, sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+
+        /* AAT Brand Color Codes */
+        .bg-aat-navy { background-color: #0D4F7A; }
+        .text-aat-navy { color: #0D4F7A; }
+        .border-aat-navy { border-color: #0D4F7A; }
+        .bg-aat-gold { background-color: #C8972B; }
+        .text-aat-gold { color: #C8972B; }
+        .border-aat-gold { border-color: #C8972B; }
+        .bg-aat-light { background-color: #EAF2FB; }
+        .border-aat-hairline { border-color: #EEEEEE; }
+    </style>
+</head>
+<body class="bg-slate-100 h-[100dvh] flex flex-col overflow-hidden text-slate-800 antialiased selection:bg-[#C8972B] selection:text-white">
+
+    <!-- HEADER TOP -->
+    <header class="bg-aat-navy text-white px-3.5 sm:px-6 py-2.5 sm:py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-[#0A3D60] gap-2">
+        <div class="flex items-center space-x-3 min-w-0">
+            <!-- LOGO AAT TRÊN HEADER -->
+            <div class="bg-white p-1 rounded-lg border border-slate-200 shadow-sm shrink-0 flex items-center justify-center">
+                <img src="LOGO - AUSASIA Technologies - Style 4.png" alt="AusAsia Technologies Logo" class="h-7 sm:h-8 w-auto max-w-[130px] sm:max-w-[150px] object-contain" onerror="this.onerror=null; this.src='logo.png';">
+            </div>
+            
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate max-w-[220px] sm:max-w-md">AUSASIA TECHNOLOGIES (AAT)</h2>
+                    <span id="role-badge" class="text-[9px] sm:text-[10px] bg-amber-900/40 text-aat-gold border border-aat-gold font-semibold px-2 py-0.5 rounded-full uppercase shrink-0">Company Profile</span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-slate-300 truncate">Hạ tầng công nghệ doanh nghiệp • Vận hành thực chiến • Sẵn sàng mở rộng</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button id="btn-back-admin" onclick="window.location.href='admin.html'" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                👑 Về Admin
+            </button>
+            <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                Thoát
+            </button>
+        </div>
+    </header>
+
+    <!-- SUB-NAV TABS (NAVIGATION 4 MODULES) -->
+    <nav class="bg-white border-b border-[#EEEEEE] px-3 sm:px-6 py-2 flex items-center space-x-2 shrink-0 shadow-xs z-30 overflow-x-auto touch-scroll custom-scrollbar whitespace-nowrap">
+        <button onclick="switchSection('OVERVIEW')" id="btn-sec-overview" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EAF2FB] text-aat-navy border border-cyan-200 transition shrink-0 min-h-[36px]">
+            🏢 1. Tuyên ngôn & Đội ngũ lãnh đạo
+        </button>
+        <button onclick="switchSection('CONTEXT')" id="btn-sec-context" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[#444444] hover:bg-slate-100 transition shrink-0 min-h-[36px]">
+            📊 2. Kinh nghiệm & Bối cảnh ngành
+        </button>
+        <button onclick="switchSection('SERVICES')" id="btn-sec-services" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[#444444] hover:bg-slate-100 transition shrink-0 min-h-[36px]">
+            ⚙️ 3. Hệ giải pháp 360° (01 → 06)
+        </button>
+        <button onclick="switchSection('PROJECTS')" id="btn-sec-projects" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[#444444] hover:bg-slate-100 transition shrink-0 min-h-[36px]">
+            🏗️ 4. Dự án bảo chứng & Năng lực
+        </button>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="flex-1 relative overflow-hidden flex bg-slate-50">
+        
+        <!-- ================================================================= -->
+        <!-- MODULE 1: TUYÊN NGÔN, ĐỘI NGŨ DẪN DẮT & ĐỐI TÁC CHIẾN LƯỢC -->
+        <!-- ================================================================= -->
+        <section id="sec-overview" class="flex-1 overflow-y-auto p-3.5 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-[#EEEEEE] p-5 sm:p-8 space-y-7">
+                
+                <!-- HERO BANNER TRANG TRỌNG -->
+                <div class="bg-aat-navy text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="space-y-3 relative z-10 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white/10 border border-aat-gold/40 text-aat-gold text-[10.5px] sm:text-xs font-bold uppercase tracking-wider">
+                            <span>✨</span> <span>Hồ sơ năng lực doanh nghiệp 2026</span>
+                        </div>
+                        <h3 class="text-xl sm:text-3xl font-extrabold tracking-tight leading-snug">
+                            Hạ Tầng Công Nghệ Doanh Nghiệp — Vận Hành Thực Chiến, Sẵn Sàng Mở Rộng
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-200 italic leading-relaxed">
+                            "Được xây dựng bởi người vận hành. Được thiết kế để mở rộng quy mô."
+                        </p>
+                    </div>
+
+                    <!-- Khung hiển thị Logo AAT -->
+                    <div class="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-aat-gold shadow-xl shrink-0 self-center md:self-auto">
+                        <img src="LOGO - AUSASIA Technologies - Style 4.png" alt="AusAsia Technologies Official Logo" class="h-12 sm:h-16 w-auto object-contain" onerror="this.onerror=null; this.src='logo.png';">
+                    </div>
+                </div>
+
+                <!-- 3 TRỤ CỘT BẢO CHỨNG NĂNG LỰC -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
+                    <div class="p-4 sm:p-5 bg-[#EAF2FB] rounded-xl border border-blue-100 space-y-1">
+                        <div class="text-3xl sm:text-4xl font-black text-aat-navy tracking-tight">15+</div>
+                        <div class="text-xs font-bold text-[#111111] uppercase tracking-wide">Năm Vận Hành Hạ Tầng Lớn</div>
+                        <p class="text-[11px] text-[#555555] leading-relaxed">Kinh nghiệm quản trị hệ thống chuẩn mực tại các tập đoàn Fortune 500 toàn cầu.</p>
+                    </div>
+                    <div class="p-4 sm:p-5 bg-[#EAF2FB] rounded-xl border border-blue-100 space-y-1">
+                        <div class="text-3xl sm:text-4xl font-black text-aat-navy tracking-tight">~99.9%</div>
+                        <div class="text-xs font-bold text-[#111111] uppercase tracking-wide">Uptime Cam Kết Theo Hợp Đồng</div>
+                        <p class="text-[11px] text-[#555555] leading-relaxed">Duy trì độ sẵn sàng tối đa cho các hoạt động kinh doanh và sản xuất liên tục.</p>
+                    </div>
+                    <div class="p-4 sm:p-5 bg-[#EAF2FB] rounded-xl border border-blue-100 space-y-1">
+                        <div class="text-3xl sm:text-4xl font-black text-aat-navy tracking-tight">0</div>
+                        <div class="text-xs font-bold text-[#111111] uppercase tracking-wide">Sự Cố Gián Đoạn Nghiêm Trọng</div>
+                        <p class="text-[11px] text-[#555555] leading-relaxed">Triết lý kiểm soát rủi ro chủ động — Không để sự cố bất ngờ làm tê liệt hệ thống.</p>
+                    </div>
+                </div>
+
+                <!-- VỀ AAT: TUYÊN NGÔN GIÁ TRỊ KHÁC BIỆT -->
+                <div class="space-y-3 text-xs sm:text-sm text-[#444444] leading-relaxed">
+                    <div class="flex items-center gap-2 border-b border-[#EEEEEE] pb-2">
+                        <h4 class="font-bold text-[#111111] text-sm sm:text-base uppercase tracking-wide">Về AusAsia Technologies (AAT)</h4>
+                    </div>
+                    <p>
+                        <b class="text-[#111111]">AusAsia Technologies (AAT)</b> không hoạt động như một đơn vị bán lẻ thiết bị hay nhà thầu lắp đặt ngắn hạn. Chúng tôi định vị là <b>Đối tác Đồng hành Chiến lược về Hạ tầng Công nghệ</b> cho các doanh nghiệp tại TP. Hồ Chí Minh và khu vực Châu Á - Thái Bình Dương.
+                    </p>
+                    <p>
+                        Khác biệt cốt lõi của AAT nằm ở con người: <b>Đội ngũ trực tiếp tư vấn và thiết kế kiến trúc chính là đội ngũ kỹ sư sẽ chịu trách nhiệm vận hành hệ thống của bạn mỗi ngày.</b> Mọi giải pháp chúng tôi đưa ra đều được đúc kết từ hơn 15 năm kinh nghiệm thực chiến quản trị các Data Center, hạ tầng điện toán đám mây và mạng lưới an ninh viễn thông quy mô quốc tế.
+                    </p>
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1 text-xs">
+                        <div class="font-bold text-aat-navy">✓ Cam kết chất lượng tiêu chuẩn quốc tế:</div>
+                        <p class="text-[#555555]">Sở hữu hệ thống chứng chỉ kỹ thuật hàng đầu thế giới: <b>CCIE Enterprise, JNCIE-SP, Azure Solutions Architect Expert, PMP, CDCDP, CDCMP, CDCSP-AOS</b>. Đã và đang bảo chứng thành công cho các tổ chức trọng điểm trong lĩnh vực Công nghiệp, Năng lượng, Dịch vụ chuỗi và Bất động sản thương mại.</p>
+                    </div>
+                </div>
+
+                <!-- BAN LÃNH ĐẠO CỐT LÕI -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-[#111111] text-sm sm:text-base border-b border-[#EEEEEE] pb-2 uppercase tracking-wide">
+                        Đội Ngũ Lãnh Đạo & Chuyên Gia Vận Hành
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1.5 flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold text-aat-navy text-xs sm:text-sm">Leo Dang</div>
+                                <div class="text-[11px] font-semibold text-aat-gold">Nhà sáng lập & Giám đốc Công nghệ</div>
+                                <p class="text-[11px] text-[#555555] leading-relaxed mt-1">Hơn 15 năm dẫn dắt vận hành Data Center quy mô lớn và hạ tầng đám mây toàn cầu. Trực tiếp định hướng chuẩn mực công nghệ và mở rộng hệ sinh thái tại Úc & Việt Nam.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1.5 flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold text-aat-navy text-xs sm:text-sm">Dr. Huan Pham</div>
+                                <div class="text-[11px] font-semibold text-aat-gold">Kiến trúc sư trưởng, An ninh mạng & Dữ liệu</div>
+                                <p class="text-[11px] text-[#555555] leading-relaxed mt-1">Kết hợp chiều sâu nghiên cứu học thuật với kinh nghiệm thực địa, chuyên trách kiến trúc mạng bảo mật cao, bảo vệ dữ liệu cho doanh nghiệp và khối cơ quan nhà nước.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1.5 flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold text-aat-navy text-xs sm:text-sm">Mitch Li</div>
+                                <div class="text-[11px] font-semibold text-aat-gold">Kiến trúc sư trưởng Hạ tầng</div>
+                                <p class="text-[11px] text-[#555555] leading-relaxed mt-1">Chuyên gia thiết kế và triển khai các hệ thống mạng doanh nghiệp phức tạp, tối ưu hóa lưu lượng đa điểm tại Úc và khu vực Châu Á - Thái Bình Dương.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HỆ SINH THÁI ĐỐI TÁC CHIẾN LƯỢC -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-[#111111] text-sm sm:text-base border-b border-[#EEEEEE] pb-2 uppercase tracking-wide">
+                        Hệ Sinh Thái Đối Tác Đa Quốc Gia
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="p-3 bg-white rounded-xl border border-[#EEEEEE] hover:border-cyan-400 transition">
+                            <b class="text-aat-navy text-xs block mb-0.5">Trụ sở Sydney (Úc):</b>
+                            <p class="text-[#555555]">Trung tâm điều phối chiến lược, thương mại quốc tế và chuẩn hóa quy trình vận hành cho khu vực Châu Á - Thái Bình Dương.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-[#EEEEEE] hover:border-cyan-400 transition">
+                            <b class="text-aat-navy text-xs block mb-0.5">Hitek Group:</b>
+                            <p class="text-[#555555]">Hợp tác phát triển phần mềm doanh nghiệp, công nghệ drone và năng lực điều phối kỹ sư tại hiện trường.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-[#EEEEEE] hover:border-cyan-400 transition">
+                            <b class="text-aat-navy text-xs block mb-0.5">SC Group:</b>
+                            <p class="text-[#555555]">Hệ sinh thái sản xuất, logistics và công nghiệp — môi trường triển khai thực chứng cho các dự án hạ tầng quy mô lớn.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-[#EEEEEE] hover:border-cyan-400 transition">
+                            <b class="text-aat-navy text-xs block mb-0.5">Hyundai Corporation:</b>
+                            <p class="text-[#555555]">Hợp tác phân phối chiến lược, kết nối mạng lưới thương mại quốc tế trải rộng hơn 60 quốc gia cho các dòng sản phẩm hạ tầng chọn lọc.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- MODULE 2: KINH NGHIỆM THỰC CHIẾN & BỐI CẢNH THỊ TRƯỜNG -->
+        <!-- ================================================================= -->
+        <section id="sec-context" class="hidden flex-1 overflow-y-auto p-3.5 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-[#EEEEEE] p-5 sm:p-8 space-y-6">
+                
+                <div class="border-b border-[#EEEEEE] pb-3">
+                    <span class="text-[10px] sm:text-xs font-bold text-aat-navy uppercase bg-[#EAF2FB] px-2.5 py-1 rounded-md">Module 2</span>
+                    <h3 class="text-base sm:text-xl font-bold text-[#111111] mt-1.5">Kinh Nghiệm Ngành & Thách Thức Hạ Tầng Thực Tế</h3>
+                </div>
+
+                <!-- 6 LĨNH VỰC THỰC CHIẾN -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-[#111111] text-xs sm:text-sm uppercase tracking-wide">6 Khối Ngành Trọng Yếu Đội Ngũ AAT Từng Quản Trị</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1">
+                            <b class="text-aat-navy text-xs block">Data Center & Colocation</b>
+                            <p class="text-[#555555] leading-relaxed">Xây mới và vận hành Data Center chuẩn 99.999999% uptime; tích hợp hệ thống phức tạp sau M&A và đàm phán hợp đồng đa nhà cung cấp.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1">
+                            <b class="text-aat-navy text-xs block">Đám Mây & AI Doanh Nghiệp</b>
+                            <p class="text-[#555555] leading-relaxed">Quản trị hạ tầng Cloud & AI quy mô lớn phục vụ các tập đoàn Fortune 500, thiết kế năng lực đón đầu tải xử lý cao.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1">
+                            <b class="text-aat-navy text-xs block">Mạng Quốc Phòng & Chính Phủ</b>
+                            <p class="text-[#555555] leading-relaxed">Bảo mật mạng cho nhà thầu quốc phòng & hàng không vũ trụ Mỹ; vận hành mạng an toàn tuyệt đối cho chính quyền đô thị lớn tại Úc.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1">
+                            <b class="text-aat-navy text-xs block">Tài Chính & Giao Dịch Tần Suất Cao</b>
+                            <p class="text-[#555555] leading-relaxed">Hạ tầng tài chính đòi hỏi độ trễ cực thấp, tính chính xác và an toàn tuyệt đối — hoàn toàn không có chỗ cho sai sót.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1">
+                            <b class="text-aat-navy text-xs block">Dữ Liệu & Khách Hàng Doanh Nghiệp</b>
+                            <p class="text-[#555555] leading-relaxed">Chiến lược sao lưu, khôi phục thảm họa và toàn vẹn dữ liệu cho hàng chục ngàn người dùng cuối doanh nghiệp.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-1">
+                            <b class="text-aat-navy text-xs block">Hạ Tầng Giao Thông Trọng Điểm</b>
+                            <p class="text-[#555555] leading-relaxed">Triển khai thực địa cho sân bay quốc tế, các tuyến đèo hiểm trở và hệ thống mạng cơ quan nhà nước tại Việt Nam.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BỐI CẢNH THỊ TRƯỜNG VIỆT NAM -->
+                <div class="p-4 sm:p-5 bg-[#EAF2FB] rounded-xl border border-blue-100 space-y-2.5">
+                    <h4 class="font-bold text-aat-navy text-xs sm:text-sm uppercase tracking-wide">
+                        3 Thách Thức Lớn Nhất Của Doanh Nghiệp Việt Nam Hiện Nay
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#444444] pt-1">
+                        <div class="p-3 bg-white rounded-lg border border-blue-200 space-y-1">
+                            <b class="text-aat-navy block">1. Tăng trưởng nóng vs Mạng cũ</b>
+                            <p class="text-[11px] text-[#555555]">Kinh tế số bùng nổ nhưng hạ tầng mạng nội bộ vẫn thiết kế từ nhiều năm trước, nghẽn cổ chai liên tục.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-blue-200 space-y-1">
+                            <b class="text-aat-navy block">2. Độ phức tạp vượt tầm IT nội bộ</b>
+                            <p class="text-[11px] text-[#555555]">Sự xuất hiện của Hybrid Cloud, AI và thiết bị IoT khiến đội IT thông thường không đủ sức bao quát 24/7.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-blue-200 space-y-1">
+                            <b class="text-aat-navy block">3. Áp lực tuân thủ an toàn dữ liệu</b>
+                            <p class="text-[11px] text-[#555555]">Nghị định bảo vệ dữ liệu cá nhân quy định mức phạt nghiêm khắc (tới 5% doanh thu), buộc phải chuẩn hóa lưu trữ.</p>
+                        </div>
+                    </div>
+                    <p class="text-xs font-bold text-aat-navy pt-1 text-center">
+                        🎯 AAT tồn tại để thu hẹp khoảng cách giữa hạ tầng hiện hữu và yêu cầu vận hành thực tế của thời đại số.
+                    </p>
+                </div>
+
+                <!-- 2 MẢNG KINH DOANH CHỦ LỰC -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-[#111111] text-xs sm:text-sm uppercase tracking-wide">Mô Hình Dịch Vụ Khép Kín Của AAT</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="p-4 bg-white rounded-xl border-2 border-aat-navy space-y-2 shadow-xs">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-aat-navy text-sm uppercase">Mảng 1: Triển Khai Chuẩn Mực</span>
+                                <span class="text-[10px] font-bold bg-aat-navy text-white px-2 py-0.5 rounded">Deploy</span>
+                            </div>
+                            <p class="text-[#555555] italic">Khảo sát, thiết kế kiến trúc và bàn giao hạ tầng hoàn thiện tại hiện trường.</p>
+                            <ul class="list-disc pl-4 space-y-1 text-[#444444]">
+                                <li>Thiết kế lại mạng doanh nghiệp, phân tách VLAN, Firewall NGFW</li>
+                                <li>Triển khai máy chủ Server, Storage SAN All-Flash, sao lưu dự phòng</li>
+                                <li>Triển khai Wi-Fi 6 diện rộng & mạng thiết bị đầu cuối POS đa điểm</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl border-2 border-aat-gold space-y-2 shadow-xs">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-aat-navy text-sm uppercase">Mảng 2: Vận Hành Quản Trị</span>
+                                <span class="text-[10px] font-bold bg-aat-gold text-white px-2 py-0.5 rounded">Operate</span>
+                            </div>
+                            <p class="text-[#555555] italic">Đảm bảo hệ thống duy trì hoạt động ổn định và an toàn sau khi go-live.</p>
+                            <ul class="list-disc pl-4 space-y-1 text-[#444444]">
+                                <li>Giám sát từ xa 24/7 với hệ thống cảnh báo sự cố tức thời</li>
+                                <li>Cam kết chất lượng dịch vụ SLA và kỹ sư chuyên trách onsite</li>
+                                <li>Báo cáo hiệu suất định kỳ hàng tháng và đánh giá rủi ro hàng quý</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- MODULE 3: HỆ GIẢI PHÁP 360 ĐỘ (DỊCH VỤ 01 -> 06) -->
+        <!-- ================================================================= -->
+        <section id="sec-services" class="hidden flex-1 overflow-y-auto p-3.5 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-[#EEEEEE] p-5 sm:p-8 space-y-6">
+                
+                <div class="border-b border-[#EEEEEE] pb-3 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-aat-navy uppercase bg-[#EAF2FB] px-2.5 py-1 rounded-md">Module 3</span>
+                        <h3 class="text-base sm:text-xl font-bold text-[#111111] mt-1.5">Danh Mục Sáu Nhóm Dịch Vụ Hạ Tầng Cốt Lõi (01 → 06)</h3>
+                    </div>
+                    <span class="text-xs font-bold text-aat-gold uppercase bg-amber-50 border border-amber-200 px-3 py-1 rounded-full hidden sm:inline-block">End-to-End Solutions</span>
+                </div>
+
+                <!-- 6 DỊCH VỤ CỐT LÕI -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                    
+                    <!-- Dịch vụ 01 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] hover:border-aat-navy transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xl text-aat-navy">01</span>
+                            <span class="text-[10px] bg-[#EAF2FB] text-aat-navy font-bold px-2 py-0.5 rounded">Tư vấn độc lập</span>
+                        </div>
+                        <h5 class="font-bold text-[#111111] text-sm">Tư Vấn Chiến Lược Data Center & Hạ Tầng</h5>
+                        <p class="text-[#555555] leading-relaxed">
+                            Bảo vệ từng đồng vốn đầu tư của doanh nghiệp: Đánh giá mô hình (On-prem, Colocation, Cloud), hoạch định công suất điện/làm mát, rà soát thiết kế và hỗ trợ đàm phán hồ sơ thầu. Tư vấn hoàn toàn độc lập, không bị chi phối bởi lợi ích bán thiết bị.
+                        </p>
+                    </div>
+
+                    <!-- Dịch vụ 02 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] hover:border-aat-navy transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xl text-aat-navy">02</span>
+                            <span class="text-[10px] bg-[#EAF2FB] text-aat-navy font-bold px-2 py-0.5 rounded">Kiểm toán khách quan</span>
+                        </div>
+                        <h5 class="font-bold text-[#111111] text-sm">Đánh Giá & Kiểm Toán Hạ Tầng Toàn Diện</h5>
+                        <p class="text-[#555555] leading-relaxed">
+                            "Bắt bệnh" chính xác hiện trạng hệ thống trong giờ làm việc không gây gián đoạn: Kiểm toán lớp vật lý, đo bản đồ nhiệt sóng Wi-Fi Heatmap, rà soát mạng logic VLAN/IP, bẫy lỗi bảo mật và đề xuất lộ trình nâng cấp ưu tiên.
+                        </p>
+                    </div>
+
+                    <!-- Dịch vụ 03 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] hover:border-aat-navy transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xl text-aat-navy">03</span>
+                            <span class="text-[10px] bg-[#EAF2FB] text-aat-navy font-bold px-2 py-0.5 rounded">Cầu nối quốc tế</span>
+                        </div>
+                        <h5 class="font-bold text-[#111111] text-sm">Hợp Tác Công Nghệ & Gia Nhập Thị Trường</h5>
+                        <p class="text-[#555555] leading-relaxed">
+                            Đồng hành cùng các hãng công nghệ nước ngoài xây dựng hiện diện tại Việt Nam và Úc: Đánh giá thị trường, kết nối đối tác công nghiệp, triển khai thử nghiệm PoC và phụ trách dịch vụ kỹ thuật bảo hành tại chỗ.
+                        </p>
+                    </div>
+
+                    <!-- Dịch vụ 04 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] hover:border-aat-navy transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xl text-aat-navy">04</span>
+                            <span class="text-[10px] bg-[#EAF2FB] text-aat-navy font-bold px-2 py-0.5 rounded">Triển khai trọn gói</span>
+                        </div>
+                        <h5 class="font-bold text-[#111111] text-sm">Thiết Kế & Nâng Cấp Mạng, Server, Thiết Bị Đầu Cuối</h5>
+                        <p class="text-[#555555] leading-relaxed">
+                            Thi công chuẩn hóa dựa trên số liệu kiểm toán: Xóa bỏ mạng phẳng, triển khai Wi-Fi 6, kéo cáp cấu trúc Cat6, lắp đặt máy chủ Enterprise kèm bản quyền Microsoft hợp lệ, và đồng bộ máy POS/máy trạm đa điểm.
+                        </p>
+                    </div>
+
+                    <!-- Dịch vụ 05 -->
+                    <div class="p-4 bg-white rounded-xl border-2 border-aat-gold hover:border-aat-navy transition space-y-2 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xl text-aat-gold">05</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded">Gói EDB & ITCare™</span>
+                        </div>
+                        <h5 class="font-bold text-[#111111] text-sm">Hạ Tầng Trọn Gói & Quản Trị CNTT Theo SLA (AAT ITCare™)</h5>
+                        <p class="text-[#555555] leading-relaxed">
+                            Thay thế hoặc bổ trợ toàn diện cho đội IT nội bộ với chi phí cố định: Bao gồm NetSure™ (mạng ổn định), POSGuard™ (bảo vệ dòng tiền), Data Safe™ (an toàn dữ liệu). Kỹ sư chứng chỉ CCIE trực tiếp xử lý sự cố, không qua tổng đài trung gian.
+                        </p>
+                    </div>
+
+                    <!-- Dịch vụ 06 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] hover:border-aat-navy transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xl text-aat-navy">06</span>
+                            <span class="text-[10px] bg-[#EAF2FB] text-aat-navy font-bold px-2 py-0.5 rounded">Quản trị thời gian thực</span>
+                        </div>
+                        <h5 class="font-bold text-[#111111] text-sm">Nền Tảng Giám Sát & Quản Lý Tập Trung</h5>
+                        <p class="text-[#555555] leading-relaxed">
+                            Hợp nhất toàn bộ trạng thái máy chủ, switch, đường truyền Internet trên một giao diện trực quan duy nhất: Cảnh báo ngưỡng tức thì, báo cáo uptime hàng tháng và phân tích dự đoán sự cố trước khi xảy ra gián đoạn.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- BẢNG BÁO GIÁ THAM KHẢO GÓI EDB / ITCARE -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                    <div class="p-3 bg-slate-100 border-b border-slate-200 font-bold text-xs text-slate-800 flex justify-between items-center">
+                        <span>Định Phí Gói Dịch Vụ Quản Trị Hạ Tầng AAT ITCare™ (Chi Phí Cố Định Hàng Tháng)</span>
+                        <span class="text-[10px] font-semibold text-aat-navy">Báo giá VNĐ — Không rủi ro tỷ giá</span>
+                    </div>
+                    <table class="w-full text-xs text-left min-w-[500px]">
+                        <thead class="bg-slate-50 text-[11px] text-slate-700 border-b border-slate-200">
+                            <tr>
+                                <th class="p-2.5">Gói Dịch Vụ</th>
+                                <th class="p-2.5">Quy Mô Nhân Sự</th>
+                                <th class="p-2.5">Đặc Quyền Dịch Vụ Chính</th>
+                                <th class="p-2.5 text-right">Mức Giá Khởi Điểm</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-2.5 font-bold text-slate-900">Essential</td>
+                                <td class="p-2.5 text-slate-600">5 – 20 nhân sự</td>
+                                <td class="p-2.5 text-slate-600">Thiết lập mạng chuẩn, sao lưu đám mây, hỗ trợ giờ hành chính</td>
+                                <td class="p-2.5 text-right font-bold text-slate-900">Từ 15.000.000 đ/tháng</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-amber-50/30">
+                                <td class="p-2.5 font-bold text-aat-navy flex items-center gap-1">Professional <span>★</span></td>
+                                <td class="p-2.5 text-slate-600">20 – 80 nhân sự</td>
+                                <td class="p-2.5 text-slate-600">Giám sát & hỗ trợ 24/7, tuân thủ an toàn dữ liệu, kỹ sư chuyên trách</td>
+                                <td class="p-2.5 text-right font-bold text-aat-gold">Từ 35.000.000 đ/tháng</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-2.5 font-bold text-slate-900">Enterprise</td>
+                                <td class="p-2.5 text-slate-600">80 – 200+ nhân sự</td>
+                                <td class="p-2.5 text-slate-600">Hạ tầng đa chi nhánh, Kiến trúc sư cấp cao phụ trách, SLA tùy chỉnh</td>
+                                <td class="p-2.5 text-right font-bold text-slate-900">Từ 80.000.000 đ/tháng</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- MODULE 4: DỰ ÁN THỰC TẾ & BẢO CHỨNG NĂNG LỰC CÔNG NGHỆ -->
+        <!-- ================================================================= -->
+        <section id="sec-projects" class="hidden flex-1 overflow-y-auto p-3.5 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-[#EEEEEE] p-5 sm:p-8 space-y-6">
+                
+                <div class="border-b border-[#EEEEEE] pb-3">
+                    <span class="text-[10px] sm:text-xs font-bold text-aat-navy uppercase bg-[#EAF2FB] px-2.5 py-1 rounded-md">Module 4</span>
+                    <h3 class="text-base sm:text-xl font-bold text-[#111111] mt-1.5">Dự Án Bảo Chứng Thực Tế & Hệ Sinh Thái Công Nghệ</h3>
+                </div>
+
+                <!-- 3 CASE STUDIES ĐIỂN HÌNH -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-[#111111] text-xs sm:text-sm uppercase tracking-wide">3 Dự Án Tiêu Biểu AAT Đã Triển Khai Thành Công</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+                        
+                        <!-- Dự án A -->
+                        <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-2 flex flex-col justify-between">
+                            <div class="space-y-1.5">
+                                <span class="text-[9px] font-bold bg-aat-navy text-white px-2 py-0.5 rounded">Tòa nhà Văn phòng Hạng A</span>
+                                <h5 class="font-bold text-aat-navy text-sm">Bất Động Sản Thương Mại Đa Khách Thuê</h5>
+                                <p class="text-[11px] text-slate-500"><b>Quy mô:</b> Tòa nhà phức hợp nhiều tầng, &gt;1.500 m²/sàn, hơn 2.000 người dùng.</p>
+                                <p class="text-[#555555] leading-relaxed"><b>Giải pháp:</b> Tái cấu trúc toàn diện từ Core Switch đến Wi-Fi 6, phân tách VLAN nhân viên/khách thuê, hợp nhất CCTV, bãi đỗ xe và BMS vào hạ tầng chung.</p>
+                            </div>
+                            <div class="p-2 bg-emerald-50 rounded border border-emerald-200 text-emerald-900 font-bold text-[11px]">
+                                ⚡ Kết quả: 0 thời gian gián đoạn vận hành, phủ sóng Wi-Fi 6 toàn diện.
+                            </div>
+                        </div>
+
+                        <!-- Dự án B -->
+                        <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-2 flex flex-col justify-between">
+                            <div class="space-y-1.5">
+                                <span class="text-[9px] font-bold bg-aat-gold text-white px-2 py-0.5 rounded">Chuỗi Khách Sạn & F&B</span>
+                                <h5 class="font-bold text-aat-navy text-sm">Tập Đoàn Nghỉ Dưỡng & Ẩm Thực Cao Cấp</h5>
+                                <p class="text-[11px] text-slate-500"><b>Quy mô:</b> Khách sạn quy mô vừa kèm chuỗi nhà hàng ẩm thực trực thuộc.</p>
+                                <p class="text-[#555555] leading-relaxed"><b>Giải pháp:</b> Phân đoạn VLAN riêng biệt cho hệ thống POS, ưu tiên băng thông thanh toán qua Firewall NGFW, quản lý Wi-Fi khách qua Captive Portal và giám sát 24/7.</p>
+                            </div>
+                            <div class="p-2 bg-emerald-50 rounded border border-emerald-200 text-emerald-900 font-bold text-[11px]">
+                                ⚡ Kết quả: Uptime hệ thống POS đạt 99.95%, 0 sự cố thất thoát doanh thu.
+                            </div>
+                        </div>
+
+                        <!-- Dự án C -->
+                        <div class="p-4 bg-slate-50 rounded-xl border border-[#EEEEEE] space-y-2 flex flex-col justify-between">
+                            <div class="space-y-1.5">
+                                <span class="text-[9px] font-bold bg-aat-navy text-white px-2 py-0.5 rounded">Phân Phối & Logistics</span>
+                                <h5 class="font-bold text-aat-navy text-sm">Doanh Nghiệp Phân Phối Công Nghiệp</h5>
+                                <p class="text-[11px] text-slate-500"><b>Quy mô:</b> Nhiều kho bãi & chi nhánh, hơn 200 nhân sự.</p>
+                                <p class="text-[#555555] leading-relaxed"><b>Giải pháp:</b> Xóa bỏ hoàn toàn mạng phẳng, triển khai Cloud Wi-Fi 6 xác thực RADIUS, nâng cấp hệ thống cáp cấu trúc Cat6 tốc độ 1Gbps theo từng giai đoạn.</p>
+                            </div>
+                            <div class="p-2 bg-emerald-50 rounded border border-emerald-200 text-emerald-900 font-bold text-[11px]">
+                                ⚡ Kết quả: Giảm 60% thời gian xử lý sự cố, giảm 40% yêu cầu hỗ trợ IT.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- NĂNG LỰC CHỨNG CHỈ & CÔNG NGHỆ BẬC CAO -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                    <div class="p-4 bg-white rounded-xl border border-[#EEEEEE] space-y-2">
+                        <h5 class="font-bold text-aat-navy text-xs uppercase border-b border-[#EEEEEE] pb-1.5">Chứng Chỉ Chuyên Môn Đội Ngũ Kỹ Sư AAT</h5>
+                        <ul class="list-disc pl-4 space-y-1 text-[#444444]">
+                            <li><b>Hạ tầng Mạng Cisco & Juniper:</b> CCIE Enterprise (Expert), CCNP Security, DevNet Pro, JNCIE-SP (Expert), JNCIP-DC.</li>
+                            <li><b>Điện toán Đám mây (Cloud):</b> Microsoft Azure Solutions Architect Expert, M365 Enterprise Admin, AWS DevOps Pro.</li>
+                            <li><b>An toàn Thông tin:</b> Certified Ethical Hacker (CEH), CompTIA Security+.</li>
+                            <li><b>Quản trị Dự án & Data Center:</b> PMP, PMI-ACP, ITIL 4 Foundation, CDCDP, CDCMP, CDCSP-AOS, VMware VCP.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-xl border border-[#EEEEEE] space-y-2">
+                        <h5 class="font-bold text-aat-navy text-xs uppercase border-b border-[#EEEEEE] pb-1.5">Hệ Sinh Thái Đối Tác Công Nghệ Hàng Đầu</h5>
+                        <ul class="list-disc pl-4 space-y-1 text-[#444444]">
+                            <li><b>Thiết bị & Máy chủ:</b> Cisco, Juniper, HPE / Aruba, Ruckus, Ruijie, Dell Enterprise, VMware.</li>
+                            <li><b>Giám sát & Vận hành:</b> Zabbix, Grafana, SolarWinds, ManageEngine, NTOP, Icinga 2.</li>
+                            <li><b>Tường lửa & An ninh:</b> Fortinet, Checkpoint, Palo Alto, Splunk, Nessus, Kaspersky.</li>
+                            <li><b>Cloud Platform:</b> Microsoft Azure, AWS, Google Cloud, Oracle, Viettel IDC, SCloud (Temasek).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- FOOTER THÔNG TIN LIÊN HỆ -->
+                <div class="p-4 sm:p-5 bg-aat-navy text-white rounded-xl space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-[#0A3D60] pb-3">
+                        <div>
+                            <h4 class="font-bold text-sm sm:text-base text-white">Sẵn Sàng Đồng Hành Cùng Hạ Tầng Doanh Nghiệp Bạn</h4>
+                            <p class="text-xs text-slate-300">Phản hồi trong vòng 24 giờ — Làm việc trực tiếp với đội ngũ kỹ sư phụ trách tài khoản.</p>
+                        </div>
+                        <a href="mailto:info@ausasiatechnologies.com" class="px-4 py-2 rounded-lg bg-aat-gold hover:bg-amber-600 text-white text-xs font-bold transition shadow-sm self-start sm:self-auto">
+                            Liên hệ tư vấn ngay →
+                        </a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300 pt-1">
+                        <div>
+                            <b class="text-white block mb-0.5">Trụ sở Sydney (Úc):</b>
+                            <p class="text-[11px]">Sydney, New South Wales, Australia</p>
+                        </div>
+                        <div>
+                            <b class="text-white block mb-0.5">Văn phòng đại diện TP.HCM:</b>
+                            <p class="text-[11px]">60 Đường N3A, The Global City, Phường An Khánh, TP. Thủ Đức, TP. HCM</p>
+                        </div>
+                        <div>
+                            <b class="text-white block mb-0.5">Kênh liên hệ trực tiếp:</b>
+                            <p class="text-[11px]">Hotline: (+84) 028 78938 188 | Email: info@ausasiatechnologies.com</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPT ENGINE -->
+    <script>
+        const session = JSON.parse(sessionStorage.getItem('portal_session'));
+        if (!session) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('role-badge').innerText = session.role;
+            if (session.role === 'ADMIN') document.getElementById('btn-back-admin').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('portal_session');
+            window.location.href = 'index.html';
+        }
+
+        function switchSection(sec) {
+            ['sec-overview', 'sec-context', 'sec-services', 'sec-projects'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['btn-sec-overview', 'btn-sec-context', 'btn-sec-services', 'btn-sec-projects'].forEach(id => {
+                document.getElementById(id).className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[#444444] hover:bg-slate-100 transition shrink-0 min-h-[36px]";
+            });
+
+            if (sec === 'OVERVIEW') {
+                document.getElementById('sec-overview').classList.remove('hidden');
+                document.getElementById('btn-sec-overview').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EAF2FB] text-aat-navy border border-cyan-200 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'CONTEXT') {
+                document.getElementById('sec-context').classList.remove('hidden');
+                document.getElementById('btn-sec-context').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EAF2FB] text-aat-navy border border-cyan-200 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'SERVICES') {
+                document.getElementById('sec-services').classList.remove('hidden');
+                document.getElementById('btn-sec-services').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EAF2FB] text-aat-navy border border-cyan-200 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'PROJECTS') {
+                document.getElementById('sec-projects').classList.remove('hidden');
+                document.getElementById('btn-sec-projects').className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#EAF2FB] text-aat-navy border border-cyan-200 transition shrink-0 min-h-[36px]";
+            }
+        }
+    </script>
+</body>
+</html>
