@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1e293b">
+    <title>Passio Coffee - Hạ Tầng CNTT & Vận Hành Chuỗi (MISP Portal)</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet Maps CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        body {
+            padding-top: var(--sat); padding-bottom: var(--sab);
+            padding-left: var(--sal); padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
+        .leaflet-popup-content { margin: 10px 12px; font-family: inherit; }
+
+        @keyframes pulse-hq { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .hq-marker-icon { animation: pulse-hq 2s infinite ease-in-out; }
+
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+
+        #route-dispatch-panel {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; width: 92%; max-width: 380px; transition: all 0.3s ease;
+        }
+
+        .traffic-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden text-gray-800 antialiased selection:bg-lime-500 selection:text-white">
+
+    <!-- HEADER TOP -->
+    <header class="bg-gray-900 text-white px-3 sm:px-6 py-2.5 sm:py-3 shadow-md flex justify-between items-center z-50 shrink-0 border-b border-gray-800 gap-2">
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-sm shrink-0">
+                ☕
+            </div>
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate max-w-[220px] sm:max-w-md">PASSIO COFFEE VIETNAM</h2>
+                    <span id="role-badge" class="text-[9px] sm:text-[10px] bg-lime-950 text-lime-300 border border-lime-700 font-semibold px-1.5 py-0.5 rounded-full uppercase shrink-0">Phase 1: 35 Sites</span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-gray-400 truncate">Hệ thống Quản trị & Vận hành Hạ tầng CNTT Toàn diện (MISP Retail Portal)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button id="btn-back-admin" onclick="window.location.href='admin.html'" class="hidden bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                👑 Về Admin
+            </button>
+            <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition">
+                Thoát
+            </button>
+        </div>
+    </header>
+
+    <!-- SUB-NAV TABS -->
+    <nav class="bg-white border-b border-gray-200 px-3 sm:px-6 py-2 flex items-center space-x-2 shrink-0 shadow-xs z-30 overflow-x-auto touch-scroll custom-scrollbar whitespace-nowrap">
+        <button onclick="switchSection('REQ')" id="btn-sec-req" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-50 text-lime-800 border border-lime-300 transition shrink-0 min-h-[36px]">
+            📋 1. Hiện trạng & Yêu cầu
+        </button>
+        <button onclick="switchSection('MAP')" id="btn-sec-map" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            🗺️ 2. Bản đồ 35 Sites & Dispatch
+        </button>
+        <button onclick="switchSection('SOL')" id="btn-sec-sol" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            💡 3. Giải pháp Mạng, Camera & POS
+        </button>
+        <button onclick="switchSection('TEMPLATE')" id="btn-sec-template" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
+            📑 4. Template Build Store Mới
+        </button>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="flex-1 relative overflow-hidden flex bg-gray-100">
+        
+        <!-- ================================================================= -->
+        <!-- SECTION 1: HIỆN TRẠNG & YÊU CẦU ĐỀ RA -->
+        <!-- ================================================================= -->
+        <section id="sec-req" class="flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-4 sm:space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                <div class="border-b border-gray-200 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <span class="text-[10px] sm:text-xs font-bold text-lime-700 uppercase bg-lime-50 px-2.5 py-1 rounded-md border border-lime-200">Module 1</span>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Đánh Giá Hiện Trạng & Yêu Cầu Quản Trị Chuỗi Passio Coffee</h3>
+                    </div>
+                    <span class="self-start sm:self-auto bg-lime-100 text-lime-900 text-xs font-bold px-3 py-1 rounded-full border border-lime-200">Phase 1: 35 Cửa Hàng Trực Thuộc</span>
+                </div>
+
+                <!-- TÓM TẮT BAN LÃNH ĐẠO -->
+                <div class="p-3.5 sm:p-4 bg-gradient-to-r from-lime-50 to-emerald-50 rounded-xl border border-lime-200">
+                    <h4 class="font-bold text-lime-950 text-xs sm:text-sm mb-1 flex items-center gap-2">
+                        <span>📌</span> Tóm Tắt Dự Án Dành Cho Ban Lãnh Đạo (Executive Summary)
+                    </h4>
+                    <p class="text-xs text-lime-900 leading-relaxed">
+                        Chuỗi Passio Coffee hiện có quy mô khoảng 100 cửa hàng trên toàn quốc. Trong đó, <b>Phase 1 tập trung chuẩn hóa 35 cửa hàng trực thuộc quản trị trực tiếp</b> (33 cửa hàng tại TP.HCM, 1 cửa hàng tại Củ Chi và 1 cửa hàng tại Bình Dương). Các cửa hàng nhượng quyền sẽ được áp dụng bộ quy chuẩn và bảng giá thiết bị mẫu để nâng cấp đồng bộ.
+                    </p>
+                </div>
+
+                <!-- 4 ĐIỂM NGHẼN TRỌNG YẾU -->
+                <div class="space-y-2.5">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>⚠️</span> 4 Điểm Nghẽn Trọng Yếu Đang Gây Rủi Ro Vận Hành
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="p-3 bg-red-50/70 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Hạ tầng mạng phân mảnh, không đồng bộ</h5>
+                            <p class="text-[11px] text-gray-700 leading-relaxed">Mỗi site dùng một loại modem/router khác nhau từ nhà mạng; không có VLAN phân tách giữa POS và khách hàng, dễ gây nghẽn kết nối thanh toán giờ cao điểm.</p>
+                        </div>
+                        <div class="p-3 bg-red-50/70 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Máy tính tiền POS thiếu bảo mật & dùng dây vướng víu</h5>
+                            <p class="text-[11px] text-gray-700 leading-relaxed">Máy POS chạy dây mạng chằng chịt tại quầy bar; nhân viên tự ý cắm USB hoặc cài phần mềm bên ngoài, tiềm ẩn nguy cơ nhiễm virus và gián đoạn order.</p>
+                        </div>
+                        <div class="p-3 bg-red-50/70 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Camera giám sát chưa quản lý tập trung</h5>
+                            <p class="text-[11px] text-gray-700 leading-relaxed">Hình ảnh chỉ lưu cục bộ tại đầu ghi từng cửa hàng; Ban Giám đốc và An ninh tại Trụ sở (HO) không có giao diện xem trực tiếp 35 site trên một màn hình.</p>
+                        </div>
+                        <div class="p-3 bg-red-50/70 rounded-xl border border-red-200">
+                            <h5 class="font-bold text-red-950 text-xs mb-1">🔴 Đội ngũ IT nội bộ quá tải</h5>
+                            <p class="text-[11px] text-gray-700 leading-relaxed">Nhân sự IT Passio mỏng, không đủ nguồn lực di chuyển xử lý sự cố trên diện rộng từ trung tâm TP.HCM ra tới Củ Chi và Bình Dương khi xảy ra đứt cáp hay treo thiết bị.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 MÔ HÌNH CỬA HÀNG -->
+                <div class="space-y-2.5">
+                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🏬</span> Phân Loại 3 Mô Hình Cửa Hàng & Tiêu Chuẩn Thời Gian Triển Khai
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-xs text-lime-800 uppercase">Mô hình Kiosk</span>
+                                <span class="text-[10px] font-bold bg-lime-100 text-lime-800 px-2 py-0.5 rounded">Setup ~1 Ngày</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">Điểm bán mang đi (Take & Go), diện tích nhỏ gọn, 1 đường Internet FTTH, 1 máy POS không dây, 1-2 camera góc rộng quan sát quầy thu ngân.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-xs text-lime-800 uppercase">Mô hình MiniStore</span>
+                                <span class="text-[10px] font-bold bg-lime-100 text-lime-800 px-2 py-0.5 rounded">Setup 1 - 2 Tuần</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">Diện tích 35 - 60m², phục vụ 7 - 10 chỗ ngồi. 2 đường truyền FTTH tự động chuyển mạch dự phòng, 1-2 máy POS Wi-Fi, 4 camera, Wi-Fi khách riêng biệt.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-xs text-lime-800 uppercase">Mô hình Big Store</span>
+                                <span class="text-[10px] font-bold bg-lime-100 text-lime-800 px-2 py-0.5 rounded">Setup 1 - 2 Tháng</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">Cửa hàng quy mô lớn (Điển hình như Passio Nguyễn Bỉnh Khiêm). Hạ tầng mạng phân tầng Managed Switch, 3-4 AP Wi-Fi 6 Roaming, 6-8 Camera, 2-3 POS.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6 TRỤ CỘT ĐỀ XUẤT ĐỐI TÁC ONE-STOP-SHOP -->
+                <div class="p-4 bg-slate-900 text-white rounded-xl space-y-2">
+                    <h4 class="font-bold text-xs sm:text-sm text-lime-400">🎯 Trách Nhiệm Của Đối Tác Vận Hành Ủy Thác (One-Stop-Shop Retails MISP):</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-xs text-slate-300 pt-1">
+                        <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700"><b>1. Quản lý Kênh Truyền:</b> Đứng tên hợp đồng, đại diện làm việc ISP, cam kết uptime đa đường truyền.</div>
+                        <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700"><b>2. Chuẩn hóa Thiết bị Mạng:</b> Quy hoạch toàn bộ Router, Switch, AP về 1 dòng quản trị Cloud đồng nhất.</div>
+                        <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700"><b>3. Quản trị Camera Tập Trung:</b> HO xem thời gian thực 35 site; lưu tại chỗ và lưu luồng dự phòng về HO.</div>
+                        <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700"><b>4. Đồng bộ POS & Cài đặt MDM:</b> Chuẩn hóa dòng máy POS Wi-Fi, khóa Kiosk không cho cài cắm ngoại vi.</div>
+                        <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700"><b>5. Bộ Template Cửa Hàng Mới:</b> Ban hành bảng danh mục thiết bị và đơn giá cố định cho store tương lai.</div>
+                        <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700"><b>6. Dịch vụ On-site SLA:</b> Giám sát chủ động 24/7, kỹ sư xe máy ứng cứu hiện trường dưới 45-60 phút.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 2: BẢN ĐỒ 35 SITES & ĐIỀU PHỐI DISPATCH -->
+        <!-- ================================================================= -->
+        <section id="sec-map" class="hidden flex-1 relative h-full w-full overflow-hidden">
+            <div id="map" class="absolute inset-0 h-full w-full z-0 bg-slate-200"></div>
+
+            <!-- CHUYỂN ĐỔI CHẾ ĐỘ BẢN ĐỒ -->
+            <div class="absolute top-3 right-14 sm:right-36 z-20 flex bg-white/95 backdrop-blur-md rounded-xl p-1 shadow-xl border border-gray-300 text-xs font-bold">
+                <button id="btn-mode-standard" onclick="setMapMode('standard')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-lime-600 text-white shadow-xs transition flex items-center gap-1">
+                    <span>🗺️</span> <span>Bản đồ thường</span>
+                </button>
+                <button id="btn-mode-traffic" onclick="setMapMode('traffic')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-lime-600 transition flex items-center gap-1">
+                    <span>🚦</span> <span>Traffic Real-time</span>
+                </button>
+            </div>
+
+            <button onclick="toggleBrowserFullscreen()" class="absolute top-3 right-3 z-20 bg-white/95 backdrop-blur-md text-gray-700 border border-gray-300 shadow-lg px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 hover:bg-gray-50 transition">
+                <span>⛶ <span class="hidden sm:inline">Toàn màn hình</span></span>
+            </button>
+
+            <!-- BẢNG ĐIỀU KHIỂN NỔI -->
+            <div id="map-floating-panel" class="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-20 w-auto sm:w-[390px] max-h-[48vh] sm:max-h-[calc(100%-2rem)] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/80 flex flex-col transition-all duration-300">
+                <div class="p-3 sm:p-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/80 rounded-t-2xl shrink-0">
+                    <div class="min-w-0 pr-2">
+                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm truncate">Passio Coffee Phase 1 (35 Sites)</h3>
+                        <p id="map-site-counter" class="text-[10px] sm:text-[11px] font-semibold text-lime-700 truncate">33 HCM • 1 Bình Dương • 1 Củ Chi</p>
+                    </div>
+                    <button onclick="toggleMapPanel()" title="Thu gọn" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs shrink-0">
+                        ◀
+                    </button>
+                </div>
+                <div class="p-2.5 sm:p-3 border-b border-gray-100 shrink-0 space-y-2">
+                    <input type="text" id="map-search-input" oninput="filterStores()" placeholder="Tìm tên cửa hàng, đường phố, quận..." 
+                           class="w-full pl-3 pr-3 py-1.5 sm:py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-lime-500 focus:bg-white outline-none">
+                    <div class="flex gap-1.5 text-[10px] font-bold">
+                        <button onclick="filterByModel('ALL')" class="px-2 py-1 bg-slate-200 hover:bg-slate-300 rounded text-slate-700">Tất cả</button>
+                        <button onclick="filterByModel('Big Store')" class="px-2 py-1 bg-purple-100 hover:bg-purple-200 rounded text-purple-800">Big Store</button>
+                        <button onclick="filterByModel('MiniStore')" class="px-2 py-1 bg-blue-100 hover:bg-blue-200 rounded text-blue-800">MiniStore</button>
+                        <button onclick="filterByModel('Kiosk')" class="px-2 py-1 bg-amber-100 hover:bg-amber-200 rounded text-amber-800">Kiosk</button>
+                    </div>
+                </div>
+                <div id="map-site-list" class="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 custom-scrollbar touch-scroll"></div>
+            </div>
+
+            <button id="btn-open-panel" onclick="toggleMapPanel()" class="hidden absolute top-3 left-3 z-20 bg-white/95 backdrop-blur-md text-gray-800 border border-gray-300 shadow-xl px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-lime-50 transition">
+                <span>📋 Danh sách 35 Cửa Hàng ▶</span>
+            </button>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 3: GIẢI PHÁP ĐỀ XUẤT (NETWORK, CAMERA, POS MDM) -->
+        <!-- ================================================================= -->
+        <section id="sec-sol" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-5">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-6">
+                
+                <div class="border-b pb-3">
+                    <span class="text-xs font-bold text-lime-700 uppercase bg-lime-50 px-2.5 py-1 rounded-md border border-lime-200">Module 3</span>
+                    <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Giải Pháp Kỹ Thuật Đề Xuất & Kiến Trúc Vận Hành</h3>
+                </div>
+
+                <!-- 1. NETWORK & CLOUD HARDWARE -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 bg-lime-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">1</span>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Hạ Tầng Kênh Truyền FTTx & Thiết Bị Mạng Cloud (Aruba vs Ruijie)</h4>
+                    </div>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        NetNam đóng vai trò đại diện ISP cung cấp đường truyền và điều hành tự động hóa chuyển mạch. Đề xuất chuẩn hóa thiết bị mạng tại 35 site về nền tảng <b>Aruba Instant On</b> hoặc <b>Ruijie Reyee</b> để tận dụng quản trị Cloud Controller miễn phí trọn đời, hỗ trợ phân chia VLAN tự động và Fast Roaming 802.11k/v/r mượt mà.
+                    </p>
+                    
+                    <div class="p-3 bg-amber-50 rounded-lg border border-amber-300 text-xs text-amber-900 flex items-start gap-2">
+                        <span class="text-base">⚠️</span>
+                        <div>
+                            <b>Lưu ý kỹ thuật quan trọng về TP-Link Omada:</b> Tránh sử dụng TP-Link Omada cho mô hình chuỗi này vì yêu cầu phải mua thêm thiết bị Controller phần cứng tại chỗ (OC200/OC300) hoặc đóng phí duy trì Cloud Controller. Ngoài ra khả năng chuyển vùng không dây (Fast Roaming) của Omada kém ổn định khi máy POS di động kết nối Wi-Fi trong môi trường mật độ khách đông.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CAMERA ARCHITECTURE (3 PHƯƠNG ÁN) -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 bg-lime-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">2</span>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Hệ Thống Camera Giám Sát: Phân Tích 03 Phương Án Triển Khai</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="p-3 bg-white rounded-xl border-2 border-lime-500 shadow-xs space-y-1.5">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-lime-100 text-lime-800">Phương Án 1 (Khuyến nghị)</span>
+                            <h5 class="font-bold text-gray-900 text-sm">Hik-Connect Cloud Team</h5>
+                            <p class="text-gray-600 leading-relaxed">Sử dụng nền tảng Hik-Connect Team/Enterprise của Hikvision. HO xem trực tiếp camera 35 site trên Web/App mà không cần mở port hay VPN. Dữ liệu lưu tại đầu ghi site và đồng bộ clip quan trọng lên Cloud.</p>
+                            <div class="text-emerald-700 font-bold text-[11px]">✓ Chi phí thấp nhất, triển khai ngay</div>
+                        </div>
+
+                        <div class="p-3 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Phương Án 2</span>
+                            <h5 class="font-bold text-gray-900 text-sm">Site-to-Site VPN / NAT IP</h5>
+                            <p class="text-gray-600 leading-relaxed">Thiết lập mạng ảo riêng (VPN IPSec hoặc WireGuard) nối từ HO đến từng cửa hàng. HO đặt 1 đầu ghi tập trung để gán IP camera từng site kéo luồng RTSP nội bộ.</p>
+                            <div class="text-blue-700 font-bold text-[11px]">✓ Bảo mật nội bộ, cần đường truyền ổn định</div>
+                        </div>
+
+                        <div class="p-3 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Phương Án 3</span>
+                            <h5 class="font-bold text-gray-900 text-sm">VMS Nx Witness / Milestone</h5>
+                            <p class="text-gray-600 leading-relaxed">Xây dựng hạ tầng VMS chuyên nghiệp tại HO gồm 02 Server Enterprise kết hợp tủ đĩa SAN/NAS lưu trữ tập trung. Tích hợp AI đếm khách ra vào và chống thất thoát tại quầy thu ngân.</p>
+                            <div class="text-purple-700 font-bold text-[11px]">✓ Chuyên nghiệp nhất, chi phí CapEx lớn</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. POS WI-FI & MDM LOCKDOWN -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 bg-lime-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">3</span>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Đồng Bộ Máy POS Elanda T3 & Cơ Chế Quản Trị Tập Trung MDM</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1.5">
+                            <h5 class="font-bold text-gray-900 text-xs">🖥️ Thiết Bị: Elanda T3 Touch POS Terminal</h5>
+                            <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                <li>Màn hình cảm ứng phẳng 15.6 inch True-Flat, độ nhạy cao.</li>
+                                <li>Thiết kế không quạt (Fanless), vỏ nhôm nguyên khối tản nhiệt chống bám bụi cà phê và độ ẩm cao tại quầy bar.</li>
+                                <li>Tích hợp Wi-Fi băng tần kép 2.4/5GHz tốc độ cao, hoạt động không dây 100%, dễ dàng bài trí quầy tinh gọn.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1.5">
+                            <h5 class="font-bold text-gray-900 text-xs">🔒 Quản Trị MDM (Microsoft Intune / ManageEngine)</h5>
+                            <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                <li><b>Kiosk Mode:</b> Tự động bật và khóa cứng duy nhất ứng dụng Passio POS khi khởi động thiết bị.</li>
+                                <li><b>Chặn ngoại vi USB:</b> Khóa hoàn toàn tính năng nhận ổ đĩa USB, tránh cài cắm dữ liệu độc hại.</li>
+                                <li><b>Phân quyền chặt chẽ:</b> Cấm nhân viên truy cập hệ điều hành, cấm mở trình duyệt cá nhân, IT hỗ trợ điều khiển từ xa (Remote Support).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SECTION 4: TEMPLATE BUILD STORE MỚI & BÁO GIÁ ĐỊNH MỨC -->
+        <!-- ================================================================= -->
+        <section id="sec-template" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-5">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-6">
+                
+                <div class="border-b pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <span class="text-xs font-bold text-lime-700 uppercase bg-lime-50 px-2.5 py-1 rounded-md border border-lime-200">Module 4</span>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Template Thiết Bị & Dự Toán Cho Các Cửa Hàng Mới Trong Tương Lai</h3>
+                    </div>
+                    <span class="text-xs font-bold bg-lime-100 text-lime-900 px-3 py-1 rounded-full border border-lime-300">Chuẩn hóa danh mục đầu tư</span>
+                </div>
+
+                <p class="text-xs text-gray-600 italic">
+                    Bảng định mức danh mục thiết bị mẫu dùng để áp dụng ngay khi mở điểm mới hoặc chuyển đổi các cửa hàng nhượng quyền sang hệ thống Passio tiêu chuẩn.
+                </p>
+
+                <!-- BẢNG TEMPLATE SO SÁNH 3 FORMAT -->
+                <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                    <table class="w-full text-xs text-left min-w-[700px]">
+                        <thead class="bg-gray-100 font-bold text-gray-700 border-b">
+                            <tr>
+                                <th class="p-3">Hạng mục Thiết bị</th>
+                                <th class="p-3 w-56 text-lime-950 bg-lime-50/50">Mô hình Kiosk (Take & Go)</th>
+                                <th class="p-3 w-56 text-blue-950 bg-blue-50/50">Mô hình MiniStore (35-60m²)</th>
+                                <th class="p-3 w-56 text-purple-950 bg-purple-50/50">Mô hình Big Store (Flagship)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 text-gray-700">
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Router Gateway / Load Balancing</td>
+                                <td class="p-2.5 bg-lime-50/20">01x Ruijie RG-EG105G-P (Tích hợp PoE)</td>
+                                <td class="p-2.5 bg-blue-50/20">01x Ruijie RG-EG210G-E (Multi-WAN Auto-Failover)</td>
+                                <td class="p-2.5 bg-purple-50/20">01x Aruba Instant On 1960 / MikroTik CCR2004</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Switch Chuyển Mạch PoE</td>
+                                <td class="p-2.5 bg-lime-50/20">Đã tích hợp trên Gateway (5 Port PoE)</td>
+                                <td class="p-2.5 bg-blue-50/20">01x Ruijie RG-ES209GC-P (8-Port PoE Gigabit)</td>
+                                <td class="p-2.5 bg-purple-50/20">01x Aruba Instant On 1930 24G PoE+ (Class 4)</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Access Point Wi-Fi 6</td>
+                                <td class="p-2.5 bg-lime-50/20">01x Ruijie RG-RAP1200(F) ốp tường</td>
+                                <td class="p-2.5 bg-blue-50/20">02x Ruijie RG-RAP2260(G) Wi-Fi 6 (Roaming)</td>
+                                <td class="p-2.5 bg-purple-50/20">03 - 04x Aruba AP22 High-Density Wi-Fi 6</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Máy POS Cảm Ứng (Không Dây)</td>
+                                <td class="p-2.5 bg-lime-50/20">01x Elanda T3 Touch POS (Wi-Fi 5GHz)</td>
+                                <td class="p-2.5 bg-blue-50/20">01 - 02x Elanda T3 Touch POS (Wi-Fi 5GHz)</td>
+                                <td class="p-2.5 bg-purple-50/20">02 - 03x Elanda T3 Touch POS (Cân bằng tải Order)</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Hệ Thống Camera Giám Sát</td>
+                                <td class="p-2.5 bg-lime-50/20">02x Camera IP Hikvision + Thẻ nhớ 128GB</td>
+                                <td class="p-2.5 bg-blue-50/20">04x Camera IP PoE + NVR 4 Kênh (Ổ cứng 2TB)</td>
+                                <td class="p-2.5 bg-purple-50/20">06 - 08x Camera IP PoE + NVR 8 Kênh (Ổ cứng 4TB)</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Bản Quyền MDM Quản Trị POS</td>
+                                <td class="p-2.5 bg-lime-50/20">01 License MDM Kiosk Lockdown</td>
+                                <td class="p-2.5 bg-blue-50/20">02 License MDM Kiosk Lockdown</td>
+                                <td class="p-2.5 bg-purple-50/20">03 License MDM Kiosk Lockdown</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Kênh Truyền Internet Dự Phòng</td>
+                                <td class="p-2.5 bg-lime-50/20">01 Line FTTH Doanh nghiệp 150 Mbps</td>
+                                <td class="p-2.5 bg-blue-50/20">02 Line FTTH (Viettel + FPT, 200 Mbps/line)</td>
+                                <td class="p-2.5 bg-purple-50/20">02 Line FTTH Tốc độ cao 300 Mbps + Backup 4G</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-2.5 font-bold text-gray-900">Thời Gian Triển Khai Hoàn Tất</td>
+                                <td class="p-2.5 font-bold text-lime-700 bg-lime-50/20">Khoảng 01 Ngày</td>
+                                <td class="p-2.5 font-bold text-blue-700 bg-blue-50/20">Khoảng 1 - 2 Tuần</td>
+                                <td class="p-2.5 font-bold text-purple-700 bg-purple-50/20">Khoảng 1 - 2 Tháng (Theo fitout)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CAM KẾT DỊCH VỤ MISP SLA -->
+                <div class="p-4 bg-gradient-to-r from-lime-50 to-teal-50 rounded-xl border border-lime-300 space-y-2">
+                    <h4 class="font-bold text-lime-950 text-xs sm:text-sm flex items-center gap-2">
+                        <span>🛡️</span> Cam Kết Dịch Vụ Quản Trị Ủy Thác MISP Của Đối Tác
+                    </h4>
+                    <p class="text-xs text-lime-900 leading-relaxed">
+                        Toàn bộ dịch vụ được đóng gói theo chuẩn catalog <b>MISP for Retail</b>: Trung tâm NOC giám sát 24/7 phát hiện lỗi mạng trong vòng 60 giây; Cam kết xử lý từ xa dưới 15 phút; Đội kỹ sư xe máy có mặt tại bất kỳ cửa hàng nào trong nội thành dưới 45 phút; Báo cáo định kỳ hàng tháng về dung lượng, lưu lượng truy cập và chỉ số sức khỏe của máy POS/Camera.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SCRIPT DATA & ENGINE -->
+    <script>
+        // AUTH GUARD
+        const session = JSON.parse(sessionStorage.getItem('portal_session'));
+        if (!session) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('role-badge').innerText = session.role === 'ADMIN' ? 'SUPER ADMIN' : session.name;
+            if (session.role === 'ADMIN') document.getElementById('btn-back-admin').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('portal_session');
+            window.location.href = 'index.html';
+        }
+
+        function switchSection(sec) {
+            ['sec-req', 'sec-map', 'sec-sol', 'sec-template'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['btn-sec-req', 'btn-sec-map', 'btn-sec-sol', 'btn-sec-template'].forEach(id => {
+                document.getElementById(id).className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]";
+            });
+
+            if (sec === 'REQ') {
+                document.getElementById('sec-req').classList.remove('hidden');
+                document.getElementById('btn-sec-req').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-50 text-lime-800 border border-lime-300 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'MAP') {
+                document.getElementById('sec-map').classList.remove('hidden');
+                document.getElementById('btn-sec-map').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-50 text-lime-800 border border-lime-300 transition shrink-0 min-h-[36px]";
+                setTimeout(initMap, 150);
+            } else if (sec === 'SOL') {
+                document.getElementById('sec-sol').classList.remove('hidden');
+                document.getElementById('btn-sec-sol').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-50 text-lime-800 border border-lime-300 transition shrink-0 min-h-[36px]";
+            } else if (sec === 'TEMPLATE') {
+                document.getElementById('sec-template').classList.remove('hidden');
+                document.getElementById('btn-sec-template').className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-50 text-lime-800 border border-lime-300 transition shrink-0 min-h-[36px]";
+            }
+        }
+
+        // DỮ LIỆU ĐỊA ĐIỂM: 1 TRỤ SỞ VẬN HÀNH NOC + 35 CỬA HÀNG LOCAL PASSIO (PHASE 1)
+        const projectData = {
+            hqs: [
+                { name: "Passio Operations Center (HO)", address: "Tòa nhà VOV, 7 Nguyễn Thị Minh Khai, P. Bến Nghé, Quận 1, TP. HCM", lat: 10.78827, lng: 106.70339 }
+            ],
+            sites: [
+                { stt: 1, name: "Passio Nguyễn Bỉnh Khiêm", model: "Big Store", address: "15F Nguyễn Bỉnh Khiêm, Bến Nghé, Quận 1, TP. HCM", pos: 3, cam: 8, wifi: 4, isp: "Viettel + FPT", lat: 10.7891, lng: 106.6998 },
+                { stt: 2, name: "Passio 53 Nguyễn Du", model: "MiniStore", address: "53 Nguyễn Du, Bến Nghé, Quận 1, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7788, lng: 106.6975 },
+                { stt: 3, name: "Passio 39 Lê Duẩn", model: "Kiosk", address: "39 Lê Duẩn, Bến Nghé, Quận 1, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "Viettel", lat: 10.7825, lng: 106.7001 },
+                { stt: 4, name: "Passio 91 Nguyễn Du", model: "MiniStore", address: "91 Nguyễn Du, Bến Nghé, Quận 1, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "VNPT + FPT", lat: 10.7765, lng: 106.6948 },
+                { stt: 5, name: "Passio 136 Nam Kỳ Khởi Nghĩa", model: "MiniStore", address: "136 Nam Kỳ Khởi Nghĩa, Bến Nghé, Quận 1, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + FPT", lat: 10.7745, lng: 106.6965 },
+                { stt: 6, name: "Passio 202 Nam Kỳ Khởi Nghĩa", model: "Big Store", address: "202 Nam Kỳ Khởi Nghĩa, Võ Thị Sáu, Quận 3, TP. HCM", pos: 3, cam: 7, wifi: 3, isp: "Viettel + FPT", lat: 10.7845, lng: 106.6888 },
+                { stt: 7, name: "Passio 120 Pasteur", model: "Kiosk", address: "120 Pasteur, Bến Nghé, Quận 1, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "FPT", lat: 10.7761, lng: 106.6992 },
+                { stt: 8, name: "Passio 213 Pasteur", model: "MiniStore", address: "213 Pasteur, Võ Thị Sáu, Quận 3, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7852, lng: 106.6912 },
+                { stt: 9, name: "Passio 227 Nguyễn Thị Minh Khai", model: "Big Store", address: "227 Nguyễn Thị Minh Khai, Nguyễn Cư Trinh, Quận 1, TP. HCM", pos: 3, cam: 8, wifi: 4, isp: "Viettel + FPT", lat: 10.7678, lng: 106.6854 },
+                { stt: 10, name: "Passio 158 Nguyễn Thị Minh Khai", model: "MiniStore", address: "158 Nguyễn Thị Minh Khai, Phường 6, Quận 3, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "VNPT + Viettel", lat: 10.7758, lng: 106.6915 },
+                { stt: 11, name: "Passio 24 Trương Định", model: "Kiosk", address: "24 Trương Định, Bến Thành, Quận 1, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "Viettel", lat: 10.7735, lng: 106.6931 },
+                { stt: 12, name: "Passio 43 Trần Cao Vân", model: "MiniStore", address: "43 Trần Cao Vân, Võ Thị Sáu, Quận 3, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "FPT + Viettel", lat: 10.7831, lng: 106.6947 },
+                { stt: 13, name: "Passio 117 Lê Thị Hồng Gấm", model: "MiniStore", address: "117 Lê Thị Hồng Gấm, Cầu Ông Lãnh, Quận 1, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7689, lng: 106.6982 },
+                { stt: 14, name: "Passio 88 Hàm Nghi", model: "MiniStore", address: "88 Hàm Nghi, Bến Nghé, Quận 1, TP. HCM", pos: 2, cam: 5, wifi: 2, isp: "Viettel + FPT", lat: 10.7712, lng: 106.7025 },
+                { stt: 15, name: "Passio 180 Nguyễn Công Trứ", model: "Kiosk", address: "180 Nguyễn Công Trứ, Nguyễn Thái Bình, Quận 1, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "VNPT", lat: 10.7699, lng: 106.7011 },
+                { stt: 16, name: "Passio 260 Điện Biên Phủ", model: "MiniStore", address: "260 Điện Biên Phủ, Võ Thị Sáu, Quận 3, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + FPT", lat: 10.7812, lng: 106.6875 },
+                { stt: 17, name: "Passio 112 Võ Thị Sáu", model: "Kiosk", address: "112 Võ Thị Sáu, Tân Định, Quận 1, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "FPT", lat: 10.7878, lng: 106.6952 },
+                { stt: 18, name: "Passio 146 Hai Bà Trưng", model: "MiniStore", address: "146 Hai Bà Trưng, Đa Kao, Quận 1, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7841, lng: 106.6978 },
+                { stt: 19, name: "Passio 284 Cống Quỳnh", model: "Kiosk", address: "284 Cống Quỳnh, Phạm Ngũ Lão, Quận 1, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "Viettel", lat: 10.7672, lng: 106.6835 },
+                { stt: 20, name: "Passio 137 Phan Xích Long", model: "Big Store", address: "137 Phan Xích Long, Phường 7, Phú Nhuận, TP. HCM", pos: 3, cam: 8, wifi: 4, isp: "Viettel + FPT", lat: 10.7965, lng: 106.6862 },
+                { stt: 21, name: "Passio 84 Hoàng Văn Thụ", model: "MiniStore", address: "84 Hoàng Văn Thụ, Phường 9, Phú Nhuận, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7988, lng: 106.6785 },
+                { stt: 22, name: "Passio 232 Cộng Hòa", model: "MiniStore", address: "232 Cộng Hòa, Phường 12, Tân Bình, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + FPT", lat: 10.8012, lng: 106.6545 },
+                { stt: 23, name: "Passio 60 Út Tịch", model: "Kiosk", address: "60 Út Tịch, Phường 4, Tân Bình, TP. HCM", pos: 1, cam: 2, wifi: 1, isp: "VNPT", lat: 10.7945, lng: 106.6598 },
+                { stt: 24, name: "Passio 101 Bạch Đằng", model: "MiniStore", address: "101 Bạch Đằng, Phường 2, Tân Bình, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + FPT", lat: 10.8122, lng: 106.6712 },
+                { stt: 25, name: "Passio 45 Nguyễn Gia Trí (D2)", model: "Big Store", address: "45 Nguyễn Gia Trí, Phường 25, Bình Thạnh, TP. HCM", pos: 3, cam: 8, wifi: 4, isp: "Viettel + FPT", lat: 10.8035, lng: 106.7145 },
+                { stt: 26, name: "Passio 324 Điện Biên Phủ", model: "MiniStore", address: "324 Điện Biên Phủ, Phường 17, Bình Thạnh, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7995, lng: 106.7112 },
+                { stt: 27, name: "Passio 585 Sư Vạn Hạnh", model: "Big Store", address: "585 Sư Vạn Hạnh, Phường 13, Quận 10, TP. HCM", pos: 3, cam: 8, wifi: 4, isp: "Viettel + FPT", lat: 10.7745, lng: 106.6675 },
+                { stt: 28, name: "Passio 354 Ba Tháng Hai", model: "MiniStore", address: "354 Ba Tháng Hai, Phường 12, Quận 10, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "VNPT + FPT", lat: 10.7702, lng: 106.6715 },
+                { stt: 29, name: "Passio 140 Lý Thường Kiệt", model: "MiniStore", address: "140 Lý Thường Kiệt, Phường 7, Quận 10, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + FPT", lat: 10.7685, lng: 106.6582 },
+                { stt: 30, name: "Passio 235 Nguyễn Văn Cừ", model: "MiniStore", address: "235 Nguyễn Văn Cừ, Phường 4, Quận 5, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + VNPT", lat: 10.7602, lng: 106.6825 },
+                { stt: 31, name: "Passio 485 Nguyễn Thị Thập", model: "Big Store", address: "485 Nguyễn Thị Thập, Tân Phong, Quận 7, TP. HCM", pos: 3, cam: 8, wifi: 4, isp: "Viettel + FPT", lat: 10.7385, lng: 106.7115 },
+                { stt: 32, name: "Passio 105 Tôn Dật Tiên", model: "MiniStore", address: "105 Tôn Dật Tiên, Tân Phú, Quận 7, TP. HCM", pos: 2, cam: 5, wifi: 2, isp: "Viettel + FPT", lat: 10.7285, lng: 106.7212 },
+                { stt: 33, name: "Passio Song Hành Thảo Điền", model: "MiniStore", address: "Song Hành Xa Lộ Hà Nội, Thảo Điền, TP. Thủ Đức, TP. HCM", pos: 2, cam: 5, wifi: 2, isp: "Viettel + VNPT", lat: 10.8042, lng: 106.7415 },
+                { stt: 34, name: "Passio Bình Dương", model: "Big Store", address: "230 Đại lộ Bình Dương, Phú Hòa, TP. Thủ Dầu Một, Bình Dương", pos: 3, cam: 8, wifi: 4, isp: "Viettel + VNPT", lat: 10.9805, lng: 106.6745 },
+                { stt: 35, name: "Passio Củ Chi", model: "MiniStore", address: "45 Tỉnh Lộ 8, Khu phố 1, TT. Củ Chi, TP. HCM", pos: 2, cam: 4, wifi: 2, isp: "Viettel + FPT", lat: 10.9735, lng: 106.4952 }
+            ]
+        };
+
+        let map = null, markers = [], routeSegments = [], animatedBike = null, bikeInterval = null;
+        let baseTileLayer = null, trafficTileLayer = null, activeFilter = 'ALL';
+
+        function initMap() {
+            if (!map) {
+                map = L.map('map', { zoomControl: false }).setView([10.7850, 106.6900], 12);
+                
+                baseTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                trafficTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m@221097413,traffic&hl=vi&x={x}&y={y}&z={z}', {
+                    opacity: 0.82,
+                    attribution: 'Traffic © Google'
+                });
+
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+            }
+            map.invalidateSize();
+            renderSites(projectData.sites);
+        }
+
+        function setMapMode(mode) {
+            const btnStandard = document.getElementById('btn-mode-standard');
+            const btnTraffic = document.getElementById('btn-mode-traffic');
+            if (mode === 'traffic') {
+                if (!map.hasLayer(trafficTileLayer)) trafficTileLayer.addTo(map);
+                btnTraffic.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-lime-600 text-white shadow-xs transition flex items-center gap-1";
+                btnStandard.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-lime-600 transition flex items-center gap-1";
+            } else {
+                if (map.hasLayer(trafficTileLayer)) map.removeLayer(trafficTileLayer);
+                btnStandard.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-lime-600 text-white shadow-xs transition flex items-center gap-1";
+                btnTraffic.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-lime-600 transition flex items-center gap-1";
+            }
+        }
+
+        function renderSites(sites) {
+            const listEl = document.getElementById('map-site-list');
+            listEl.innerHTML = '';
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            closeDispatch();
+
+            // Render HQ Trụ sở Vận hành
+            projectData.hqs.forEach(hq => {
+                const icon = L.divIcon({
+                    className: 'hq-marker-icon',
+                    html: '<div class="w-8 h-8 sm:w-9 sm:h-9 bg-gray-900 rounded-xl border-2 border-lime-400 shadow-xl flex items-center justify-center text-white text-sm font-bold">🏢</div>',
+                    iconSize: [36, 36], iconAnchor: [18, 18]
+                });
+                const marker = L.marker([hq.lat, hq.lng], { icon, zIndexOffset: 1000 }).addTo(map);
+                marker.bindPopup(`<b class="text-lime-900">${hq.name}</b><p class="text-xs text-gray-600">${hq.address}</p>`);
+                markers.push(marker);
+            });
+
+            document.getElementById('map-site-counter').innerText = `Tổng cộng: ${sites.length} cửa hàng (Phase 1)`;
+
+            // Render 35 Stores
+            sites.forEach(site => {
+                let badgeColor = 'bg-blue-100 text-blue-800';
+                let pinColor = 'bg-lime-600';
+                if (site.model === 'Big Store') { badgeColor = 'bg-purple-100 text-purple-800'; pinColor = 'bg-purple-600'; }
+                if (site.model === 'Kiosk') { badgeColor = 'bg-amber-100 text-amber-800'; pinColor = 'bg-amber-500'; }
+
+                const icon = L.divIcon({
+                    html: `<div class="w-7 h-7 ${pinColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">☕</div>`,
+                    iconSize: [30, 30], iconAnchor: [15, 15]
+                });
+
+                const marker = L.marker([site.lat, site.lng], { icon }).addTo(map);
+                marker.bindPopup(`
+                    <div>
+                        <div class="flex justify-between items-center gap-2 mb-1">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm">${site.name}</h4>
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${badgeColor}">${site.model}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2 leading-relaxed">${site.address}</p>
+                        <div class="grid grid-cols-2 gap-1 text-[10px] bg-gray-100 p-2 rounded border">
+                            <div>💳 POS Wi-Fi: <b>${site.pos}</b></div>
+                            <div>📷 Camera: <b>${site.cam}</b></div>
+                            <div>📶 Wi-Fi AP: <b>${site.wifi}</b></div>
+                            <div class="truncate">🌐 ISP: <b>${site.isp}</b></div>
+                        </div>
+                    </div>
+                `);
+                markers.push(marker);
+
+                marker.on('click', () => {
+                    map.flyTo([site.lat, site.lng], 15);
+                    simulateDispatch(projectData.hqs[0], site);
+                });
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 bg-white/95 rounded-xl border border-gray-200 shadow-xs hover:border-lime-500 hover:shadow-md cursor-pointer transition text-xs";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-900 truncate pr-1">${site.name}</h4>
+                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${badgeColor} shrink-0">${site.model}</span>
+                    </div>
+                    <p class="text-gray-500 text-[11px] line-clamp-2">${site.address}</p>
+                    <div class="mt-1.5 grid grid-cols-2 gap-1 text-[10px] text-gray-600 bg-gray-50 p-1.5 rounded">
+                        <span>💳 POS: <b>${site.pos} (Wi-Fi)</b></span>
+                        <span>📷 Cam: <b>${site.cam}</b></span>
+                        <span>📶 APs: <b>${site.wifi}</b></span>
+                        <span class="truncate">🌐 ${site.isp}</span>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    map.flyTo([site.lat, site.lng], 15);
+                    marker.openPopup();
+                    simulateDispatch(projectData.hqs[0], site);
+                    if (window.innerWidth < 640) toggleMapPanel();
+                };
+                listEl.appendChild(card);
+            });
+        }
+
+        function simulateDispatch(hq, site) {
+            closeDispatch();
+            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${hq.lng},${hq.lat};${site.lng},${site.lat}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.routes || !data.routes.length) return;
+                    const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    const distanceKm = (data.routes[0].distance / 1000).toFixed(1);
+                    const durationSeconds = data.routes[0].duration;
+
+                    const casing = L.polyline(coords, { color: '#ffffff', weight: 8, opacity: 0.95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+                    routeSegments.push(casing);
+
+                    const totalPoints = coords.length;
+                    const chunkSize = Math.max(2, Math.floor(totalPoints / 8));
+                    let trafficStats = { green: 0, orange: 0, red: 0 };
+
+                    for (let i = 0; i < totalPoints - 1; i += chunkSize) {
+                        const chunk = coords.slice(i, Math.min(i + chunkSize + 1, totalPoints));
+                        if (chunk.length < 2) continue;
+
+                        const rand = Math.random();
+                        let segColor = '#16a34a';
+                        if (rand > 0.82) { segColor = '#dc2626'; trafficStats.red++; }
+                        else if (rand > 0.55) { segColor = '#f59e0b'; trafficStats.orange++; }
+                        else trafficStats.green++;
+
+                        const segLine = L.polyline(chunk, { color: segColor, weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+                        routeSegments.push(segLine);
+                    }
+
+                    const bikeIcon = L.divIcon({
+                        html: '<div class="w-8 h-8 bg-amber-500 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-sm font-black animate-bounce">🛵</div>',
+                        iconSize: [36, 36], iconAnchor: [18, 18]
+                    });
+                    animatedBike = L.marker(coords[0], { icon: bikeIcon, zIndexOffset: 2000 }).addTo(map);
+                    let idx = 0;
+                    bikeInterval = setInterval(() => {
+                        idx++;
+                        if (idx < coords.length) animatedBike.setLatLng(coords[idx]);
+                        else { idx = 0; animatedBike.setLatLng(coords[0]); }
+                    }, Math.max(30, 2000 / coords.length));
+
+                    const delayFactor = 1 + (trafficStats.orange * 0.05 + trafficStats.red * 0.15);
+                    const durationMins = Math.max(1, Math.round((durationSeconds * delayFactor) / 60));
+
+                    renderDispatchPanel(distanceKm, durationMins, site.name);
+                })
+                .catch(e => console.error("OSRM Error:", e));
+        }
+
+        function renderDispatchPanel(dist, time, siteName) {
+            let p = document.getElementById('route-dispatch-panel');
+            if (!p) {
+                p = document.createElement('div');
+                p.id = 'route-dispatch-panel';
+                document.getElementById('sec-map').appendChild(p);
+            }
+            p.innerHTML = `
+                <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 p-3.5 flex flex-col gap-2.5 relative">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-lime-100 border border-lime-300 flex items-center justify-center text-xl shrink-0">
+                                🛵
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold text-gray-500 uppercase truncate">Ứng cứu xe máy → ${siteName}</div>
+                                <div class="text-sm font-black text-gray-900 mt-0.5">
+                                    <span class="text-lime-700">${time} phút</span> 
+                                    <span class="text-gray-400 font-normal">|</span> 
+                                    <span class="text-gray-600 font-semibold">${dist} km</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="closeDispatch()" title="Đóng" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold transition shrink-0">
+                            ✕
+                        </button>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-semibold text-gray-600 px-0.5">
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-emerald-600"></span> Thông thoáng</div>
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-amber-500"></span> Đông xe</div>
+                        <div class="flex items-center gap-1"><span class="traffic-dot bg-red-600"></span> Ùn tắc</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeDispatch() {
+            const p = document.getElementById('route-dispatch-panel');
+            if (p) p.remove();
+            routeSegments.forEach(s => map.removeLayer(s));
+            routeSegments = [];
+            if (animatedBike) { map.removeLayer(animatedBike); animatedBike = null; }
+            if (bikeInterval) { clearInterval(bikeInterval); bikeInterval = null; }
+        }
+
+        function filterStores() {
+            const q = document.getElementById('map-search-input').value.toLowerCase().trim();
+            const filtered = projectData.sites.filter(s => {
+                const matchQuery = s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q);
+                const matchModel = activeFilter === 'ALL' || s.model === activeFilter;
+                return matchQuery && matchModel;
+            });
+            renderSites(filtered);
+        }
+
+        function filterByModel(model) {
+            activeFilter = model;
+            filterStores();
+        }
+
+        function toggleMapPanel() {
+            document.getElementById('map-floating-panel').classList.toggle('hidden');
+            document.getElementById('btn-open-panel').classList.toggle('hidden');
+        }
+
+        function toggleBrowserFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => console.log(err));
+            else document.exitFullscreen();
+        }
+
+        window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
+        window.addEventListener('orientationchange', () => { setTimeout(() => { if (map) map.invalidateSize(); }, 300); });
+    </script>
+</body>
+</html>
