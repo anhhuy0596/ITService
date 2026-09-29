@@ -84,7 +84,7 @@
             🗺️ 2. Bản đồ 83 Sites & Dispatch SLA
         </button>
         <button onclick="switchSection('SOL')" id="btn-sec-sol" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
-            💡 3. Kiến trúc Kỹ thuật SD-Branch
+            💡 3. Kiến trúc Kỹ thuật SD-Branch & HO
         </button>
         <button onclick="switchSection('TEMPLATE')" id="btn-sec-template" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-gray-600 hover:bg-gray-100 transition shrink-0 min-h-[36px]">
             📑 4. Template Store & Gói MISP
@@ -336,26 +336,68 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- MODULE 3: THIẾT KẾ KIẾN TRÚC KỸ THUẬT TỔNG THỂ (SD-BRANCH) -->
+        <!-- MODULE 3: THIẾT KẾ KIẾN TRÚC KỸ THUẬT TỔNG THỂ (STORE & HEAD OFFICE) -->
         <!-- ================================================================= -->
         <section id="sec-sol" class="hidden flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full custom-scrollbar space-y-5">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-5">
                 
+                <!-- HEADER MODULE 3 -->
                 <div class="border-b border-gray-200 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                     <div>
                         <span class="text-xs font-bold text-lime-700 uppercase bg-lime-50 px-2.5 py-1 rounded-md border border-lime-200">Module 3</span>
-                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Thiết Kế Kiến Trúc Giải Pháp Kỹ Thuật Tổng Thể (Enterprise SD-Branch)</h3>
+                        <h3 class="text-base sm:text-xl font-bold text-gray-900 mt-1.5">Thiết Kế Kiến Trúc Giải Pháp Kỹ Thuật Tổng Thể (Enterprise SD-Branch & Head Office)</h3>
                     </div>
-                    <span class="text-xs font-bold bg-lime-100 text-lime-900 px-3 py-1 rounded-full border border-lime-300">Fortinet & HPE Aruba Ecosystem</span>
+                    <span class="text-xs font-bold bg-lime-100 text-lime-900 px-3 py-1 rounded-full border border-lime-300 self-start sm:self-auto">
+                        Fortinet • HPE Aruba • HikCentral • NetNam One-Stop Shop
+                    </span>
                 </div>
 
-                <!-- SƠ ĐỒ NGUYÊN LÝ KẾT NỐI SD-BRANCH -->
-                <div class="p-4 bg-slate-900 text-white rounded-xl space-y-3 font-mono text-xs">
-                    <div class="flex justify-between items-center text-lime-400 font-bold border-b border-slate-700 pb-2">
-                        <span>🏛️ SƠ ĐỒ KHỐI KIẾN TRÚC HẠ TẦNG CNTT TIÊU CHUẨN TẠI MỖI CỬA HÀNG PASSIO</span>
-                        <span class="text-[10px] text-slate-400">Enterprise SD-Branch Architecture</span>
+                <!-- CỤM NÚT PHÂN NHÁNH CẤP 1: GIẢI PHÁP CỬA HÀNG VS GIẢI PHÁP HO -->
+                <div class="p-2 bg-slate-100 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center gap-2">
+                    <button id="btn-sol-branch-store" onclick="switchSolBranch('STORE')" 
+                            class="w-full sm:w-1/2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-lime-600 text-white shadow-md transition flex items-center justify-center gap-2 border border-lime-600">
+                        <span class="text-base">🏬</span>
+                        <span>1. GIẢI PHÁP CHO CỬA HÀNG (STORE SD-BRANCH)</span>
+                    </button>
+                    <button id="btn-sol-branch-ho" onclick="switchSolBranch('HO')" 
+                            class="w-full sm:w-1/2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center justify-center gap-2 border border-slate-300">
+                        <span class="text-base">🏢</span>
+                        <span>2. GIẢI PHÁP CHO TRỤ SỞ CHÍNH (HEAD OFFICE - HO)</span>
+                    </button>
+                </div>
+
+                <!-- ============================================================= -->
+                <!-- NHÁNH 1: NỘI DUNG GIẢI PHÁP CHO CỬA HÀNG (STORE SD-BRANCH) -->
+                <!-- ============================================================= -->
+                <div id="sol-branch-store" class="space-y-4">
+                    
+                    <!-- BỘ NÚT BẤM 4 HẠNG MỤC CỬA HÀNG -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 text-xs font-bold">
+                        <span class="text-gray-400 shrink-0 text-[11px] mr-1">Hạng mục Store:</span>
+                        <button id="btn-store-all" onclick="filterStoreItems('ALL')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-700 text-white shadow-xs transition shrink-0">
+                            📑 Tất cả hạng mục
+                        </button>
+                        <button id="btn-store-wan" onclick="filterStoreItems('WAN')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>🌐</span> <span>Kênh truyền</span>
+                        </button>
+                        <button id="btn-store-cam" onclick="filterStoreItems('CAM')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>📷</span> <span>Camera</span>
+                        </button>
+                        <button id="btn-store-net" onclick="filterStoreItems('NET')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>🛡️</span> <span>Thiết bị mạng & POS</span>
+                        </button>
+                        <button id="btn-store-it" onclick="filterStoreItems('IT')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>🛠️</span> <span>Dịch vụ IT Service</span>
+                        </button>
                     </div>
-                    <pre class="overflow-x-auto custom-scrollbar text-[11px] leading-relaxed text-slate-300">
+
+                    <!-- SƠ ĐỒ NGUYÊN LÝ SD-BRANCH TẠI CỬA HÀNG -->
+                    <div id="store-diagram" class="p-4 bg-slate-900 text-white rounded-xl space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center text-lime-400 font-bold border-b border-slate-700 pb-2">
+                            <span>🏛️ SƠ ĐỒ KHỐI KIẾN TRÚC HẠ TẦNG CNTT TIÊU CHUẨN TẠI MỖI CỬA HÀNG PASSIO</span>
+                            <span class="text-[10px] text-slate-400">Enterprise SD-Branch Topology</span>
+                        </div>
+                        <pre class="overflow-x-auto custom-scrollbar text-[11px] leading-relaxed text-slate-300">
                    ┌────────────────────────────────────────────────────────┐
                    │           HẠ TẦNG KÊNH TRUYỀN INTERNET MULTI-WAN       │
                    │      Line 1: FTTx Doanh nghiệp  +  Line 2: FTTx / 4G   │
@@ -391,39 +433,85 @@
                                      │ - Khóa chặn USB     │
                                      │ - Kiosk Mode (MDM)  │
                                      └─────────────────────┘
-                    </pre>
-                </div>
+                        </pre>
+                    </div>
 
-                <!-- 2.1 PHÂN TẦNG THIẾT BỊ MẠNG & BẢO MẬT -->
-                <div class="space-y-3">
-                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
-                        <span>🛡️</span> 2.1. Phân Tầng Thiết Bị Mạng & Cấu Hình Bảo Mật Chuẩn Doanh Nghiệp
-                    </h4>
-
-                    <!-- ROUTER FORTIGATE 40G -->
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1 border-b border-slate-200 pb-2">
-                            <b class="text-sm font-bold text-gray-900">A. Router Gateway: Fortinet FortiGate 40G (FG-40G)</b>
-                            <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded border border-red-200">Next-Gen Firewall (NGFW)</span>
+                    <!-- 1. KÊNH TRUYỀN TẠI CỬA HÀNG -->
+                    <div id="store-card-wan" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-lime-700">🌐</span> 1. Kênh Truyền Internet & Đảm Bảo Tính Liên Tục (Store WAN)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-lime-100 text-lime-800 px-2 py-0.5 rounded border border-lime-300">Multi-WAN SD-WAN</span>
                         </div>
                         <p class="text-xs text-gray-700 leading-relaxed">
-                            FortiGate 40G tích hợp vi xử lý bảo mật chuyên dụng thế hệ mới <b>FortiSP5 (Security Processing Unit)</b>, cho phép xử lý định tuyến, mã hóa VPN tốc độ cao và kiểm soát gói tin sâu (Deep Packet Inspection) mà không làm suy giảm băng thông internet của cửa hàng.
+                            Mô hình <b>NetNam One-Stop Shop Telecom</b> đảm nhận toàn trình từ khảo sát hạ tầng, đấu nối đường truyền, đàm phán hợp đồng đa nhà mạng đến giám sát SLA tập trung cho từng điểm bán:
                         </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                             <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
-                                <b class="text-lime-800">⚡ Multi-WAN SD-WAN & Tự Động Failover 1 – 3s:</b>
-                                <p class="text-gray-600 leading-relaxed text-[11px]">Thiết lập kiểm tra chất lượng kết nối (Latency, Jitter, Packet Loss). Dữ liệu POS luôn ưu tiên trên line tốt nhất; tự động chuyển sang đường dự phòng trong <b>1 – 3 giây</b> khi phát hiện đứt cáp.</p>
+                                <b class="text-lime-800">Cấu trúc 2 Tuyến Độc Lập:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Mỗi cửa hàng trang bị tối thiểu 1–2 đường Internet FTTx khác nhà mạng (ví dụ NetNam + Viettel/VNPT) hoặc 1 đường FTTx Doanh nghiệp + 1 SIM 4G/5G Backup chuyên dụng.</p>
                             </div>
                             <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
-                                <b class="text-lime-800">🔒 Traffic Shaping & Cam Kết Băng Thông POS:</b>
-                                <p class="text-gray-600 leading-relaxed text-[11px]">Giới hạn băng thông Wi-Fi khách (5–10 Mbps/khách) tránh nghẽn do xem video 4K/Livestream; đồng thời cam kết băng thông tối thiểu (Guaranteed Bandwidth) cho giao dịch POS.</p>
+                                <b class="text-lime-800">Auto-Failover 1 – 3 Giây:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">FortiGate 40G chủ động đo kiểm Latency, Jitter, Packet Loss liên tục. Khi phát hiện đứt cáp hoặc suy hao, hệ thống tự động bẻ luồng dữ liệu POS sang line dự phòng trong 1–3s, giữ nguyên phiên order bán hàng.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-lime-800">Đầu Mối Duy Nhất (Single POC):</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">NetNam NOC giám sát 24/7 chỉ số Up/Down của 35 cửa hàng; trực tiếp điều phối xử lý với nhà mạng viễn thông khi có sự cố, giải phóng hoàn toàn gánh nặng cho Passio.</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- 4 PHÂN ĐOẠN VLAN -->
-                        <div class="space-y-1.5 pt-1">
-                            <b class="text-xs font-bold text-gray-900">Quy hoạch 4 phân vùng mạng VLAN độc lập trên FortiGate 40G:</b>
+                    <!-- 2. CAMERA TẠI CỬA HÀNG -->
+                    <div id="store-card-cam" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-lime-700">📷</span> 2. Hệ Thống Camera Giám Sát & Lưu Trữ Kép (Store Surveillance)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300">Local Edge + Cloud Sync</span>
+                        </div>
+                        <p class="text-xs text-gray-700 leading-relaxed">
+                            Thiết kế camera cửa hàng phân bổ theo quy mô thực tế, đảm bảo góc nhìn thu ngân, quầy pha chế và bảo vệ tài sản mà không gây nghẽn băng thông mạng nội bộ:
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-emerald-800">Phân Bổ Định Mức Theo Site:</b>
+                                <ul class="list-disc pl-4 text-gray-600 text-[11px] space-y-0.5">
+                                    <li><b>Kiosk:</b> 1–2 Cam IP Dome Full HD (thu ngân, quầy pha chế) + thẻ nhớ / NVR mini.</li>
+                                    <li><b>MiniStore:</b> 3–4 Cam IP Dome/Bullet + 1 NVR 4 Port PoE.</li>
+                                    <li><b>Big Store:</b> 8–12 Cam IP + 1 NVR 16 Port PoE (phủ kín các tầng, kho, bãi xe).</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-emerald-800">Lưu Trữ Kép (Bản Lưu 1 Tại Site):</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Toàn bộ camera ghi hình chất lượng Full HD 1080p chuẩn nén H.265+ 24/7 trực tiếp vào ổ cứng đầu ghi NVR đặt tại cửa hàng (thời gian lưu trữ 15 – 30 ngày), đảm bảo trích xuất offline tại chỗ tức thì khi xảy ra sự cố an ninh.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-emerald-800">Đồng Bộ Thông Minh (Không Nghẽn Mạng):</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Không truyền liên tục luồng video chính về trung tâm vào ban ngày nhằm tránh nghẽn mạng bán hàng. Tự động đồng bộ video sự kiện (Motion detection thu ngân) và sao lưu ban đêm (23:00 - 05:00) lên Cloud NetCloudX S3 / HO.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. THIẾT BỊ MẠNG & POS TẠI CỬA HÀNG -->
+                    <div id="store-card-net" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-lime-700">🛡️</span> 3. Phân Tầng Thiết Bị Mạng, Wi-Fi 6 Chuyên Dụng & Chuẩn Hóa POS (Store Hardware)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded border border-blue-300">Fortinet & HPE Aruba Ecosystem</span>
+                        </div>
+
+                        <!-- ROUTER FORTIGATE 40G & BẢNG VLAN -->
+                        <div class="bg-white p-3.5 rounded-xl border border-gray-200 space-y-2.5">
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1 border-b pb-1.5">
+                                <b class="text-xs font-bold text-gray-900">A. Router Gateway: Fortinet FortiGate 40G (FG-40G NGFW)</b>
+                                <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded">Security Processor FortiSP5</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">
+                                Vi xử lý bảo mật FortiSP5 thế hệ mới xử lý kiểm soát gói tin sâu, định tuyến Multi-WAN và mã hóa IPsec VPN tốc độ cao mà không làm suy giảm băng thông internet của cửa hàng.
+                            </p>
                             <div class="border border-gray-200 rounded-lg overflow-x-auto custom-scrollbar">
                                 <table class="w-full text-xs text-left min-w-[500px]">
                                     <thead class="bg-gray-100 text-[11px] font-bold text-gray-700 border-b">
@@ -438,132 +526,348 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- SWITCH HPE 1930 & ACCESS POINT ARUBA AP22 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <!-- SWITCH -->
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <div class="flex justify-between items-center border-b pb-2">
-                                <b class="text-xs font-bold text-gray-900">B. Access Switch: HPE Instant On 1930 (JL683B)</b>
-                                <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">24G PoE+ 195W</span>
+                        <!-- ACCESS SWITCH & ACCESS POINT -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <div class="flex justify-between items-center border-b pb-1.5">
+                                    <b class="text-xs font-bold text-gray-900">B. Access Switch: HPE Instant On 1930 (JL683B)</b>
+                                    <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">24G PoE+ 195W</span>
+                                </div>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>24 Cổng Gigabit PoE+ (195W):</b> Cấp nguồn tập trung cho AP Wi-Fi và Camera IP hoạt động 24/7 ổn định, không lo sụt áp.</li>
+                                    <li><b>4 Cổng Uplink 10G SFP+:</b> Sẵn sàng nâng cấp liên kết quang giữa các tầng cho Flagship Store.</li>
+                                    <li><b>Cloud Portal Free Trọn Đời:</b> NetNam NOC kiểm tra trạng thái cổng từ xa, reboot nguồn PoE của Camera/AP bị treo cứng mà không cần đến tận nơi.</li>
+                                    <li><b>Chuẩn hóa 1 mã JL683B:</b> Tối ưu hóa spare parts dự phòng nóng và áp dụng cấu hình tự động (Zero-Touch).</li>
+                                </ul>
                             </div>
-                            <ul class="list-disc pl-4 space-y-1.5 text-gray-600 text-[11px]">
-                                <li><b>24 cổng Gigabit PoE+ (Budget nguồn 195W):</b> Cấp nguồn dồi dào cho 2–4 AP Aruba AP22 và 4–12 Camera IP Full HD hồng ngoại hoạt động 24/7 không sụt áp.</li>
-                                <li><b>4 cổng Uplink SFP/SFP+ 1G/10G:</b> Sẵn sàng nâng cấp liên kết cáp quang giữa các tầng tại các Big Store.</li>
-                                <li><b>Quản trị Aruba Instant On Cloud (Miễn phí trọn đời):</b> Kỹ sư NetNam NOC kiểm tra trạng thái cổng từ xa, reboot nguồn PoE của Camera/AP khi bị treo cứng từ Cloud mà không cần đến tận nơi.</li>
-                                <li><b>Chuẩn hóa 1 mã JL683B:</b> Tối ưu hóa dự phòng thiết bị (Spare Parts) và triển khai cắm-là-chạy (Zero-Touch Provisioning).</li>
-                            </ul>
+
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <div class="flex justify-between items-center border-b pb-1.5">
+                                    <b class="text-xs font-bold text-gray-900">C. Access Point: Aruba Instant On AP22 (Wi-Fi 6)</b>
+                                    <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">802.11ax MU-MIMO</span>
+                                </div>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>Khóa cứng SSID POS ở băng tần 5GHz (20/40MHz):</b> Loại bỏ 100% can nhiễu từ lò vi sóng, máy xay, máy pha cà phê hoạt động ở băng tần 2.4GHz.</li>
+                                    <li><b>Fast Roaming (802.11k/v/r) & Smart Mesh:</b> Thu ngân cầm máy POS di động di chuyển giữa các bàn và quầy pha chế mà không rớt phiên.</li>
+                                    <li><b>Bảo mật WPA2-Enterprise / WPA3:</b> SSID POS phát ẩn, chứng thực mã hóa chuẩn doanh nghiệp.</li>
+                                    <li><b>Tích hợp Wi-Fi Marketing:</b> Phát SSID Guest Marketing chào mừng khách hàng và thu thập dữ liệu loyalty.</li>
+                                </ul>
+                            </div>
                         </div>
 
-                        <!-- ACCESS POINT -->
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <div class="flex justify-between items-center border-b pb-2">
-                                <b class="text-xs font-bold text-gray-900">C. Access Point: Aruba Instant On AP22 (Wi-Fi 6)</b>
-                                <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">802.11ax Wi-Fi 6</span>
+                        <!-- CHUẨN HÓA MÁY POS & QUẢN TRỊ MDM -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <b class="text-xs font-bold text-gray-900 block border-b pb-1">🖥️ Chuẩn hóa Phần cứng: Elanda T3 Touch POS</b>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>Màn hình True-Flat chuẩn IP54:</b> Cảm ứng điện dung chống tràn nước và chống bụi bột cà phê tại quầy bar.</li>
+                                    <li><b>Cấu hình mạnh mẽ:</b> Vi xử lý Intel Core i3/i5, RAM 8GB DDR4, ổ SSD tốc độ cao, thiết kế Fanless tản nhiệt nhôm nguyên khối.</li>
+                                    <li><b>Wi-Fi Dual-Band AC/AX nhạy sóng:</b> Hoạt động 100% không dây, loại bỏ dây mạng lòng thòng gây mất thẩm mỹ và dễ đứt lỏng quầy pha chế.</li>
+                                </ul>
                             </div>
-                            <ul class="list-disc pl-4 space-y-1.5 text-gray-600 text-[11px]">
-                                <li><b>Chuẩn Wi-Fi 6 2x2 MU-MIMO & OFDMA:</b> Phục vụ số lượng lớn thiết bị khách tại quán mà vẫn duy trì độ trễ cực thấp.</li>
-                                <li><b>SSID POS Chuyên Dụng (Khóa cứng 5GHz 20/40MHz):</b> Phát SSID ẩn hỗ trợ WPA2-Enterprise/WPA3. Khóa cứng ở băng tần 5GHz giúp loại bỏ 100% nhiễu sóng phát ra từ lò vi sóng, máy xay, máy pha cà phê ở băng tần 2.4GHz.</li>
-                                <li><b>Fast Roaming (802.11k/v/r) & Smart Mesh:</b> Hỗ trợ nhân viên thu ngân cầm máy POS di chuyển order giữa các bàn mà không bị gián đoạn.</li>
-                                <li><b>Tích hợp Wi-Fi Marketing:</b> Phát SSID Guest Marketing chào mừng khách hàng và thu thập dữ liệu loyalty.</li>
-                            </ul>
+
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <b class="text-xs font-bold text-gray-900 block border-b pb-1">🔒 Quản trị MDM (Microsoft Intune / ManageEngine)</b>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>Khóa cổng USB ở cấp độ Kernel:</b> Vô hiệu hóa tính năng nhận ổ đĩa USB Mass Storage và sạc điện thoại, triệt tiêu rò rỉ dữ liệu và virus.</li>
+                                    <li><b>Hardware ID Whitelisting:</b> Chỉ chấp nhận duy nhất mã phần cứng của máy in bill LAN/USB và máy quét mã vạch đã được IT duyệt.</li>
+                                    <li><b>Kiosk Mode (Assigned Access):</b> Khóa cứng duy nhất ứng dụng Passio POS toàn màn hình; vô hiệu hóa tổ hợp phím Ctrl+Alt+Del, Task Manager; tước quyền Admin của nhân viên.</li>
+                                    <li><b>Hỗ trợ từ xa (Remote Assistance):</b> NetNam Helpdesk truy cập điều khiển xử lý lỗi tức thì không làm gián đoạn ca bán hàng.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- 4. DỊCH VỤ IT SERVICE TẠI CỬA HÀNG -->
+                    <div id="store-card-it" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-lime-700">🛠️</span> 4. Dịch Vụ Vận Hành IT Service & Ứng Cứu Hiện Trường SLA (Store IT Services)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded border border-amber-300">SLA 2 - 4 Giờ Onsite</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-lime-900 block text-xs">📞 Helpdesk 06h - 23h:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Tổng đài hỗ trợ mở xuyên suốt giờ kinh doanh của chuỗi cà phê (kể cả Lễ/Tết). Tiếp nhận qua Hotline, Ticket Portal và Zalo OA; phản hồi và hỗ trợ từ xa trong <b>15 – 30 phút</b>.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-lime-900 block text-xs">🛵 Smart Hands Onsite:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Sự cố phần cứng mạng/camera/POS không thể xử lý từ xa, kỹ sư xe máy NetNam có mặt tận nơi xử lý trong vòng <b>2 – 4 giờ</b> (áp dụng toàn bộ cửa hàng tại TP.HCM, Củ Chi, Bình Dương).</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-lime-900 block text-xs">🔄 System Rescue:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Kho spare parts dự phòng nóng sẵn sàng cấp mượn thiết bị Router, Switch PoE, AP hoặc máy POS thay thế tạm thời trong thời gian mang thiết bị lỗi đi bảo hành chính hãng.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-lime-900 block text-xs">☁️ Cloud NetCloudX S3:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Cung cấp không gian lưu trữ đám mây S3 bảo mật cao cho bản sao lưu video camera thứ hai, có tính năng WORM/chống mã độc ransomware bảo toàn dữ liệu trọng yếu.</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- 2.3 SO SÁNH 3 PHƯƠNG ÁN CAMERA TẬP TRUNG -->
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
-                            <span>📷</span> 2.3. Phân Tích & Đánh Giá 3 Phương Án Quản Lý Camera Tập Trung
-                        </h4>
-                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-300">Presale Khuyến Nghị: Mô hình Lai (Hybrid)</span>
+                <!-- ============================================================= -->
+                <!-- NHÁNH 2: NỘI DUNG GIẢI PHÁP CHO TRỤ SỞ CHÍNH (HEAD OFFICE - HO) -->
+                <!-- ============================================================= -->
+                <div id="sol-branch-ho" class="hidden space-y-4">
+                    
+                    <!-- BỘ NÚT BẤM 4 HẠNG MỤC HEAD OFFICE -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 text-xs font-bold">
+                        <span class="text-gray-400 shrink-0 text-[11px] mr-1">Hạng mục HO:</span>
+                        <button id="btn-ho-all" onclick="filterHoItems('ALL')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-700 text-white shadow-xs transition shrink-0">
+                            📑 Tất cả hạng mục
+                        </button>
+                        <button id="btn-ho-wan" onclick="filterHoItems('WAN')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>🌐</span> <span>Kênh truyền</span>
+                        </button>
+                        <button id="btn-ho-cam" onclick="filterHoItems('CAM')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>📷</span> <span>Camera & SAN Storage</span>
+                        </button>
+                        <button id="btn-ho-net" onclick="filterHoItems('NET')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>🛡️</span> <span>Thiết bị mạng, Firewall & Server</span>
+                        </button>
+                        <button id="btn-ho-it" onclick="filterHoItems('IT')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 flex items-center gap-1">
+                            <span>🛠️</span> <span>Dịch vụ IT Service HO</span>
+                        </button>
                     </div>
 
-                    <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
-                        <table class="w-full text-xs text-left min-w-[700px]">
-                            <thead class="bg-gray-100 font-bold text-gray-700 border-b text-[11px]">
-                                <tr>
-                                    <th class="p-2.5 w-40">Tiêu chí Đánh giá</th>
-                                    <th class="p-2.5 w-56 text-lime-950 bg-lime-50/60 font-bold">Phương án 1 (PA1): HikCentral Connect</th>
-                                    <th class="p-2.5 w-56 text-blue-950 bg-blue-50/40">Phương án 2 (PA2): VPN qua FortiGate 40G</th>
-                                    <th class="p-2.5 w-56 text-purple-950 bg-purple-50/40">Phương án 3 (PA3): VMS 3rd Vendor + SAN/NAS</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 text-[11px] text-gray-700">
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-2.5 font-bold text-gray-900">Cơ chế Hoạt động</td>
-                                    <td class="p-2.5 bg-lime-50/20 font-semibold text-lime-900">NVR Hikvision tại site đẩy luồng P2P lên Cloud. HO xem qua Web/App/HikCentral Client.</td>
-                                    <td class="p-2.5">Tạo mạng IPsec VPN Hub-and-Spoke giữa 35 FortiGate 40G về HO; HO kéo RTSP trực tiếp.</td>
-                                    <td class="p-2.5">Đầu ghi/Camera tại site kết nối về VMS Server tập trung tại HO; quản lý và đồng bộ vào SAN/NAS.</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-2.5 font-bold text-gray-900">Yêu cầu Băng thông</td>
-                                    <td class="p-2.5 bg-lime-50/20 font-bold text-emerald-700">Tối ưu nhất: Băng thông chỉ tốn khi HO chủ động xem trực tiếp hoặc xem lại.</td>
-                                    <td class="p-2.5 text-amber-700">Nguy cơ nghẽn cao: Kéo đồng thời ~100 luồng RTSP cần tối thiểu 150–250 Mbps liên tục tại HO.</td>
-                                    <td class="p-2.5 text-red-700">Cần kênh Leased Line riêng biệt hoặc đường truyền nội bộ 10Gbps tại HO.</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-2.5 font-bold text-gray-900">Chi phí Đầu tư (CAPEX)</td>
-                                    <td class="p-2.5 bg-lime-50/20 font-bold text-emerald-700">Thấp nhất: Tận dụng Camera IP sẵn có, chuẩn hóa đầu ghi NVR Hikvision tại site.</td>
-                                    <td class="p-2.5 text-blue-700">Trung bình: Tận dụng IPsec VPN phần cứng của FortiGate 40G, không tốn license VMS.</td>
-                                    <td class="p-2.5 text-red-700">Rất cao: Mua Server vật lý, tủ đĩa SAN/NAS dung lượng lớn và license VMS theo từng camera.</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-2.5 font-bold text-gray-900">Lưu trữ Kép (Dual Storage)</td>
-                                    <td class="p-2.5 bg-lime-50/20 text-lime-900">Lưu 24/7 tại NVR site; tự động đồng bộ video sự kiện/backup ban đêm về Cloud/HO.</td>
-                                    <td class="p-2.5">Ghi hình luồng phụ (Sub-stream) liên tục 24/7 về NVR trung tâm tại HO qua VPN.</td>
-                                    <td class="p-2.5">Lưu cục bộ ban ngày, nén tự động và đẩy về SAN/NAS ban đêm theo chính sách chuyên sâu.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <!-- SƠ ĐỒ HẠ TẦNG TRUNG TÂM TẠI HEAD OFFICE -->
+                    <div id="ho-diagram" class="p-4 bg-slate-900 text-white rounded-xl space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center text-indigo-400 font-bold border-b border-slate-700 pb-2">
+                            <span>🏛️ SƠ ĐỒ HẠ TẦNG MẠNG, MÁY CHỦ VMS & LƯU TRỮ TẬP TRUNG TẠI HEAD OFFICE (HO)</span>
+                            <span class="text-[10px] text-slate-400">Head Office Data Center Topology</span>
+                        </div>
+                        <pre class="overflow-x-auto custom-scrollbar text-[11px] leading-relaxed text-slate-300">
+                      ┌──────────────────────────────────────────────┐
+                      │    INTERNET LEASED LINE / DIA TẠI SITE HO    │
+                      │       (1 Gbps Đối xứng - NetNam Telecom)     │
+                      └──────────────────────┬───────────────────────┘
+                                             │
+                      ┌──────────────────────▼───────────────────────┐
+                      │       CORE ROUTER / FIREWALL GATEWAY         │
+                      │          FortiGate 100F / 200F tại HO        │
+                      └──────────────────────┬───────────────────────┘
+                                             │ 10GbE SFP+ LACP Trunk
+                      ┌──────────────────────▼───────────────────────┐
+                      │          CORE / AGGREGATION SWITCH           │
+                      │    HPE FlexFabric / Aruba CX 10G Switch      │
+                      └──────┬────────────────────────┬──────────────┘
+                             │ 10GbE SFP+             │ 10GbE SFP+ (iSCSI/NFS)
+       ┌─────────────────────▼──────┐   ┌─────────────▼─────────────────────────┐
+       │   HIKCENTRAL VMS SERVER    │   │      HỆ THỐNG LƯU TRỮ SAN / NAS       │
+       │  (Dell PowerEdge R760/R660)│   │  (Dell PowerVault ME5024 / Synology)  │
+       │ - CPU: 2x Intel Xeon Silver│   │ - Phase 1: 10x 18TB (RAID 6) -> 116 TB│
+       │ - RAM: 64GB DDR5 ECC       │   │ - 100 Site: 24x 20TB(RAID 60)-> 331 TB│
+       │ - OS: 2x 960GB SSD RAID 1  │   │ - Băng thông ghi: 100 MB/s liên tục   │
+       └────────────────────────────┘   └───────────────────────────────────────┘
+                                             │ Mạng nội bộ 1GbE/10GbE
+                      ┌──────────────────────▼───────────────────────┐
+                      │ TRẠM HIỂN THỊ VIDEO WALL / WORKSTATION       │
+                      │ - Intel Core i9, 32GB RAM, GPU RTX 4070 12GB │
+                      │ - Xuất 4 - 6 Màn hình chuyên dụng cho Admin  │
+                      └──────────────────────────────────────────────┘
+                        </pre>
                     </div>
 
-                    <!-- ĐỀ XUẤT MÔ HÌNH LAI HYBRID DUAL STORAGE -->
-                    <div class="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-950 space-y-1.5">
-                        <b class="text-sm font-bold flex items-center gap-1.5">
-                            <span>💡</span> Đề xuất Tối ưu từ Presale NetNam (Mô hình Lai - Hybrid Dual Storage):
-                        </b>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] pt-1">
-                            <div class="p-2.5 bg-white rounded-lg border border-emerald-200">
-                                <b class="text-emerald-900">1. Bản lưu 1 (Local Edge Storage):</b>
-                                <p class="text-gray-600 mt-0.5">Ghi hình 100% chất lượng Full HD 24/7 tại đầu ghi NVR đặt ở từng cửa hàng (lưu trữ từ 15 – 30 ngày) đảm bảo trích xuất ngay tại chỗ khi cần.</p>
+                    <!-- 1. KÊNH TRUYỀN TẠI HEAD OFFICE -->
+                    <div id="ho-card-wan" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-indigo-700">🌐</span> 1. Hạ Tầng Kênh Truyền Internet Băng Thông Lớn & VPN Hub (HO Telecom & WAN)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded border border-indigo-300">Dedicated Leased Line 1Gbps</span>
+                        </div>
+                        <p class="text-xs text-gray-700 leading-relaxed">
+                            Trụ sở chính đóng vai trò trung tâm tiếp nhận đồng thời toàn bộ dữ liệu giao dịch POS, báo cáo kế toán và luồng video giám sát từ 35–100 điểm bán. Yêu cầu kênh truyền đạt độ ổn định và băng thông cực lớn:
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-900">Kênh Leased Line / DIA Đối Xứng:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Cung cấp kênh truyền Internet trực tiếp (DIA - Direct Internet Access) cam kết băng thông quốc tế và trong nước đối xứng 100%, tỷ lệ cam kết SLA sẵn sàng 99.9% từ NetNam Telecom.</p>
                             </div>
-                            <div class="p-2.5 bg-white rounded-lg border border-emerald-200">
-                                <b class="text-emerald-900">2. Bản lưu 2 (HO / NetCloudX S3 Storage):</b>
-                                <p class="text-gray-600 mt-0.5">Tránh nghẽn mạng ban ngày bằng cách sao lưu tự động ban đêm (23:00 - 05:00) và đồng bộ theo sự kiện (Motion Detection quầy thu ngân, cảnh báo sau giờ đóng cửa) lên đám mây <b>NetCloudX S3</b> chống Ransomware.</p>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-900">Sizing Băng Thông Ghi Hình & Live:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">
+                                    • <b>Phase 1 (140 Cam):</b> Băng thông ghi hình 280 Mbps + Live View 30–50 Mbps -> Bắt buộc kênh Internet HO tối thiểu <b>300 – 500 Mbps đối xứng</b>.<br>
+                                    • <b>Full Chuỗi (400 Cam):</b> Ghi hình 800 Mbps + Live View 60–100 Mbps -> Bắt buộc kênh <b>1 Gbps đối xứng</b> với 2 hướng cáp vật lý độc lập chống đứt.
+                                </p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-900">Mạng Bảo Mật IPsec VPN Hub-and-Spoke:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Thiết lập mạng VPN mã hóa phần cứng giữa Core Firewall HO và 35–100 FortiGate 40G tại cửa hàng. Dữ liệu chạy hoàn toàn trong đường hầm nội bộ, không NAT/mở cổng ra ngoài Internet công cộng.</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 2.4 CHUẨN HÓA MÁY POS & QUẢN TRỊ TẬP TRUNG MDM -->
-                <div class="space-y-3">
-                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
-                        <span>💳</span> 2.4. Chuẩn Hóa Máy POS Elanda T3 & Nền Tảng Quản Trị Tập Trung MDM
-                    </h4>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <b class="text-xs font-bold text-gray-900 block border-b pb-1">🖥️ Chuẩn hóa Phần cứng: Elanda T3 Touch POS</b>
-                            <ul class="list-disc pl-4 space-y-1.5 text-gray-600 text-[11px]">
-                                <li><b>Màn hình True-Flat chuẩn IP54:</b> Cảm ứng điện dung chống tràn nước và chống bụi bột cà phê tại quầy bar.</li>
-                                <li><b>Cấu hình mạnh mẽ:</b> Vi xử lý Intel Core i3/i5, RAM 8GB DDR4, ổ cứng SSD 128GB/256GB tốc độ cao, thiết kế Fanless không quạt tản nhiệt nhôm nguyên khối.</li>
-                                <li><b>Wi-Fi Dual-Band AC/AX nhạy sóng:</b> Hoạt động 100% không dây, loại bỏ dây mạng lòng thòng gây mất thẩm mỹ và dễ đứt lỏng quầy pha chế.</li>
-                            </ul>
+                    <!-- 2. CAMERA TẬP TRUNG & SAN STORAGE TẠI HEAD OFFICE -->
+                    <div id="ho-card-cam" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-indigo-700">📷</span> 2. Hệ Thống Quản Lý Camera VMS, Sizing SAN Storage 30 Ngày & Video Wall (HO Surveillance)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded border border-purple-300">HikCentral Professional VMS</span>
                         </div>
 
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <b class="text-xs font-bold text-gray-900 block border-b pb-1">🔒 Quản trị MDM (Microsoft Intune / ManageEngine)</b>
-                            <ul class="list-disc pl-4 space-y-1.5 text-gray-600 text-[11px]">
-                                <li><b>Khóa cổng USB ở cấp độ Kernel:</b> Vô hiệu hóa tính năng nhận ổ đĩa USB Mass Storage và sạc điện thoại, triệt tiêu rò rỉ dữ liệu và virus.</li>
-                                <li><b>Hardware ID Whitelisting:</b> Chỉ chấp nhận duy nhất mã phần cứng của máy in bill LAN/USB và máy quét mã vạch đã được IT duyệt.</li>
-                                <li><b>Kiosk Mode (Assigned Access):</b> Khóa cứng duy nhất ứng dụng Passio POS toàn màn hình; vô hiệu hóa tổ hợp phím Ctrl+Alt+Del, Alt+Tab, Task Manager, Control Panel; tước quyền Admin của nhân viên.</li>
-                                <li><b>Hỗ trợ từ xa (Remote Assistance):</b> NetNam Helpdesk truy cập điều khiển xử lý lỗi tức thì không làm gián đoạn ca bán hàng.</li>
-                            </ul>
+                        <!-- SO SÁNH 3 PHƯƠNG ÁN & KHUYẾN NGHỊ PA2 -->
+                        <div class="space-y-2">
+                            <b class="text-xs font-bold text-gray-900">Đánh giá 3 Phương Án Quản Lý Camera Tập Trung Toàn Chuỗi:</b>
+                            <div class="border border-gray-200 rounded-xl overflow-x-auto touch-scroll custom-scrollbar shadow-xs">
+                                <table class="w-full text-xs text-left min-w-[650px]">
+                                    <thead class="bg-gray-100 font-bold text-gray-700 border-b text-[11px]">
+                                        <tr>
+                                            <th class="p-2.5 w-36">Tiêu chí Đánh giá</th>
+                                            <th class="p-2.5 w-52 text-gray-700">PA1: HikCentral Connect (Cloud P2P)</th>
+                                            <th class="p-2.5 w-56 text-indigo-950 bg-indigo-50/70 font-bold">PA2 (Khuyến nghị): VPN FortiGate + HikCentral On-prem</th>
+                                            <th class="p-2.5 w-52 text-gray-700">PA3: VMS 3rd Vendor + SAN/NAS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 text-[11px] text-gray-700">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-2.5 font-bold text-gray-900">Cơ chế hoạt động</td>
+                                            <td class="p-2.5">Đẩy luồng metadata/P2P lên Cloud hãng; HO kết nối xem qua Cloud.</td>
+                                            <td class="p-2.5 bg-indigo-50/30 font-semibold text-indigo-900">VPN Hub-and-Spoke mã hóa nội bộ về Server & SAN đặt tại HO; quản lý tập trung.</td>
+                                            <td class="p-2.5">Kéo luồng về Server chạy phần mềm độc lập (Nx Witness, Milestone) tại HO.</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-2.5 font-bold text-gray-900">Chi phí License</td>
+                                            <td class="p-2.5 text-amber-700">Thu phí thuê bao Cloud hàng năm trên từng mắt camera.</td>
+                                            <td class="p-2.5 bg-indigo-50/30 font-bold text-emerald-700">Mua 1 lần vĩnh viễn (Base + Channel license), tiết kiệm hơn 40% so với VMS bên thứ 3.</td>
+                                            <td class="p-2.5 text-red-700">Chi phí bản quyền VMS bên thứ 3 rất đắt đỏ trên từng camera.</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-2.5 font-bold text-gray-900">Mức độ an toàn</td>
+                                            <td class="p-2.5 text-amber-700">Phụ thuộc chính sách Cloud của hãng thứ 3.</td>
+                                            <td class="p-2.5 bg-indigo-50/30 font-bold text-emerald-700">Bảo mật tuyệt đối trong mạng VPN nội bộ, đáp ứng quy chuẩn an toàn dữ liệu.</td>
+                                            <td class="p-2.5">Bảo mật trong mạng nội bộ công ty.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- BẢNG TÍNH TOÁN BĂNG THÔNG & DUNG LƯỢNG LƯU TRỮ 30 NGÀY -->
+                        <div class="space-y-2">
+                            <b class="text-xs font-bold text-gray-900">Tính Toán Băng Thông & Dung Lượng Lưu Trữ Tập Trung 30 Ngày (H.265+ Full HD 1080p @ 15-20fps, Bitrate 2.0 Mbps):</b>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                    <div class="flex justify-between items-center border-b pb-1">
+                                        <b class="text-xs font-bold text-indigo-900">1. Phase 1: 140 Camera (35 Cửa Hàng)</b>
+                                        <span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Tối thiểu 110 TB</span>
+                                    </div>
+                                    <ul class="space-y-1 text-gray-600 text-[11px]">
+                                        <li>• <b>Băng thông ghi hình đổ về HO (Main Stream):</b> 280 Mbps (~35 MB/s liên tục).</li>
+                                        <li>• <b>Băng thông xem Live tại HO (Sub Stream):</b> 30 – 50 Mbps.</li>
+                                        <li>• <b>Dung lượng khả dụng thực tế (Net Usable):</b> 140 x 0.648 TB = <b>90.72 TB</b>.</li>
+                                        <li>• <b>Dung lượng Sizing kèm dự phòng an toàn (+15%):</b> <b>~105 – 110 TB Khả Dụng</b>.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                    <div class="flex justify-between items-center border-b pb-1">
+                                        <b class="text-xs font-bold text-purple-900">2. Toàn Chuỗi: 400 Camera (100 Cửa Hàng)</b>
+                                        <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Tối thiểu 330 TB</span>
+                                    </div>
+                                    <ul class="space-y-1 text-gray-600 text-[11px]">
+                                        <li>• <b>Băng thông ghi hình đổ về HO (Main Stream):</b> 800 Mbps (~100 MB/s liên tục).</li>
+                                        <li>• <b>Băng thông xem Live tại HO (Sub Stream):</b> 60 – 100 Mbps.</li>
+                                        <li>• <b>Dung lượng khả dụng thực tế (Net Usable):</b> 400 x 0.648 TB = <b>259.20 TB</b>.</li>
+                                        <li>• <b>Dung lượng Sizing kèm dự phòng an toàn (+15%):</b> <b>~300 – 330 TB Khả Dụng</b>.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CẤU HÌNH SAN STORAGE, TRẠM VIDEO WALL & LICENSE -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <b class="text-xs font-bold text-gray-900 block border-b pb-1">💽 Tủ Đĩa SAN Storage (Dell ME5024)</b>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>Phase 1:</b> 10 ổ SAS/SATA Enterprise 18TB. Cấu hình <b>RAID 6 (7 Data + 2 Parity) + 1 Hot Spare</b> tự kích hoạt -> Khả dụng <b>115.9 TB</b>.</li>
+                                    <li><b>Toàn chuỗi:</b> 24 ổ Enterprise 20TB. Cấu hình <b>RAID 60 (18 Data + 4 Parity) + 2 Hot Spare</b> -> Khả dụng <b>331.2 TB</b>, băng thông ghi 100 MB/s liên tục.</li>
+                                    <li><b>Controller Kép Active-Active:</b> Cổng 10GbE SFP+ iSCSI không điểm nghẽn.</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <b class="text-xs font-bold text-gray-900 block border-b pb-1">🖥️ Trạm Hiển Thị Video Wall Workstation</b>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>Không giải mã trên VMS Server:</b> Trang bị Workstation riêng biệt (Intel Core i9, 32GB RAM DDR5, GPU NVIDIA RTX 4070 12GB) tránh quá tải máy chủ ghi hình.</li>
+                                    <li><b>Xuất 4–6 Màn Hình 55 Inch Viền Mỏng:</b> Màn hình 1 hiển thị E-Map 100 site; Màn hình 2 & 3 hiển thị tuần tra thu ngân/quầy bar; Màn hình 4 tự động pop-up phóng to hình ảnh khi có cảnh báo an ninh.</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                                <b class="text-xs font-bold text-gray-900 block border-b pb-1">📑 Danh Mục Bản Quyền License HikCentral</b>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 text-[11px]">
+                                    <li><b>HCP-V-Base:</b> License nền tảng máy chủ HikCentral Professional cơ sở.</li>
+                                    <li><b>HCP-V-Camera:</b> License quản trị kênh video (Phase 1: 140 kênh; mở rộng: mua thêm 260 kênh).</li>
+                                    <li><b>HCP-pStor:</b> License quản lý lưu trữ ghi hình tập trung trên SAN Storage.</li>
+                                    <li><b>HikCentral Smart Wall:</b> License điều khiển ma trận hiển thị tường màn hình tập trung.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- 3. THIẾT BỊ MẠNG LÕI, FIREWALL & SERVER TẠI HEAD OFFICE -->
+                    <div id="ho-card-net" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-indigo-700">🛡️</span> 3. Core Firewall, Core Switch 10G & Cụm Máy Chủ VMS Server (HO Network & Hardware)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded border border-blue-300">Enterprise Data Center Specs</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1.5">
+                                <b class="text-indigo-900 block text-xs">Core Firewall: Fortinet FortiGate 100F / 200F</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Đóng vai trò VPN Concentrator Hub tại trung tâm. Chịu tải đồng thời hàng trăm kết nối IPsec VPN từ các cửa hàng, kiểm soát lưu lượng sâu (NGFW), chống tấn công DDoS và phân luồng dữ liệu an toàn vào máy chủ.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1.5">
+                                <b class="text-indigo-900 block text-xs">Core Switch: HPE FlexFabric / Aruba CX 10G</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Hệ thống chuyển mạch lõi tốc độ cao với các cổng quang 10GbE SFP+. Cấu hình đường truyền gộp cổng LACP Trunk 20 Gbps kết nối trực tiếp đến Server VMS và tủ đĩa SAN Storage, triệt tiêu hoàn toàn nghẽn cổ chai mạng nội bộ.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1.5">
+                                <b class="text-indigo-900 block text-xs">VMS Server: Dell PowerEdge R760 / HPE DL380 Gen11</b>
+                                <ul class="list-disc pl-4 text-gray-600 text-[11px] space-y-0.5">
+                                    <li><b>CPU:</b> 2x Intel Xeon Silver 4410Y (Tổng 24 Cores / 48 Threads, CPU tải &lt; 60% khi chạy 400 cam).</li>
+                                    <li><b>RAM:</b> 64GB DDR5-4800MHz ECC Registered.</li>
+                                    <li><b>OS Disk:</b> 2x 960GB Enterprise SATA/NVMe SSD (RAID 1 qua PERC H755 có pin cache).</li>
+                                    <li><b>NIC & Nguồn:</b> Dual-port 10GbE SFP+ + Nguồn kép dự phòng Hot-plug 800W Platinum.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. DỊCH VỤ IT SERVICE TẠI HEAD OFFICE -->
+                    <div id="ho-card-it" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm flex items-center gap-2">
+                                <span class="text-indigo-700">🛠️</span> 4. Dịch Vụ Quản Trị Vận Hành Hạ Tầng Trung Tâm 24/7 (HO IT Managed Services)
+                            </h4>
+                            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300">NOC 24/7 & Disaster Recovery</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-950 block text-xs">Giám Sát Core Hạ Tầng 24/7:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Kỹ sư cấp cao NetNam NOC theo dõi trực tuyến tải CPU/RAM, tình trạng đĩa cứng SAN, nhiệt độ thiết bị và băng thông đường truyền Leased Line của HO 24/7.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-950 block text-xs">Quản Trị Backup & DR:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Thiết lập chính sách sao lưu tự động cơ sở dữ liệu HikCentral, snapshot cấu hình hệ thống và định kỳ kiểm thử kịch bản khôi phục thảm họa (Disaster Recovery).</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-950 block text-xs">Cập Nhật & Vá Lỗi Hệ Thống:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Cập nhật firmware thiết bị Core, bản vá bảo mật hệ điều hành Windows Server/Linux và bản cập nhật phần mềm VMS định kỳ ngoài giờ kinh doanh.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-gray-200 space-y-1">
+                                <b class="text-indigo-950 block text-xs">Báo Cáo Cấp Điều Hành:</b>
+                                <p class="text-gray-600 text-[11px] leading-relaxed">Gửi báo cáo định kỳ hàng tháng chi tiết về tình trạng uptime toàn chuỗi, hiệu năng kênh truyền, sức khỏe lưu trữ SAN và tỷ lệ đáp ứng SLA tới Ban Giám Đốc Passio.</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -865,7 +1169,107 @@
             }
         }
 
-        // DỮ LIỆU ĐỊA ĐIỂM: 3 TRỤ SỞ NOC ĐIỀU PHỐI (HCM, HN, ĐÀ NẴNG) & 83 CỬA HÀNG PASSIO KÈM TỌA ĐỘ MỚI
+        // =========================================================================
+        // LOGIC CHUYỂN PHÂN NHÁNH VÀ BỘ LỌC HẠNG MỤC TẠI MODULE 3 (STORE & HO)
+        // =========================================================================
+        function switchSolBranch(branch) {
+            const storeContainer = document.getElementById('sol-branch-store');
+            const hoContainer = document.getElementById('sol-branch-ho');
+            const btnStore = document.getElementById('btn-sol-branch-store');
+            const btnHo = document.getElementById('btn-sol-branch-ho');
+
+            if (branch === 'STORE') {
+                storeContainer.classList.remove('hidden');
+                hoContainer.classList.add('hidden');
+                btnStore.className = "w-full sm:w-1/2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-lime-600 text-white shadow-md transition flex items-center justify-center gap-2 border border-lime-600";
+                btnHo.className = "w-full sm:w-1/2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center justify-center gap-2 border border-slate-300";
+            } else if (branch === 'HO') {
+                storeContainer.classList.add('hidden');
+                hoContainer.classList.remove('hidden');
+                btnHo.className = "w-full sm:w-1/2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-indigo-700 text-white shadow-md transition flex items-center justify-center gap-2 border border-indigo-700";
+                btnStore.className = "w-full sm:w-1/2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center justify-center gap-2 border border-slate-300";
+            }
+        }
+
+        function filterStoreItems(category) {
+            const cards = ['store-card-wan', 'store-card-cam', 'store-card-net', 'store-card-it', 'store-diagram'];
+            const buttons = [
+                { id: 'btn-store-all', cat: 'ALL' },
+                { id: 'btn-store-wan', cat: 'WAN' },
+                { id: 'btn-store-cam', cat: 'CAM' },
+                { id: 'btn-store-net', cat: 'NET' },
+                { id: 'btn-store-it', cat: 'IT' }
+            ];
+
+            buttons.forEach(b => {
+                const el = document.getElementById(b.id);
+                if (el) {
+                    if (b.cat === category) {
+                        el.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-lime-700 text-white shadow-xs transition shrink-0";
+                    } else {
+                        el.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0";
+                    }
+                }
+            });
+
+            cards.forEach(cardId => {
+                const el = document.getElementById(cardId);
+                if (!el) return;
+                if (category === 'ALL') {
+                    el.classList.remove('hidden');
+                } else if (category === 'WAN') {
+                    el.classList.toggle('hidden', cardId !== 'store-card-wan');
+                } else if (category === 'CAM') {
+                    el.classList.toggle('hidden', cardId !== 'store-card-cam');
+                } else if (category === 'NET') {
+                    el.classList.toggle('hidden', cardId !== 'store-card-net' && cardId !== 'store-diagram');
+                } else if (category === 'IT') {
+                    el.classList.toggle('hidden', cardId !== 'store-card-it');
+                }
+            });
+        }
+
+        function filterHoItems(category) {
+            const cards = ['ho-card-wan', 'ho-card-cam', 'ho-card-net', 'ho-card-it', 'ho-diagram'];
+            const buttons = [
+                { id: 'btn-ho-all', cat: 'ALL' },
+                { id: 'btn-ho-wan', cat: 'WAN' },
+                { id: 'btn-ho-cam', cat: 'CAM' },
+                { id: 'btn-ho-net', cat: 'NET' },
+                { id: 'btn-ho-it', cat: 'IT' }
+            ];
+
+            buttons.forEach(b => {
+                const el = document.getElementById(b.id);
+                if (el) {
+                    if (b.cat === category) {
+                        el.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-700 text-white shadow-xs transition shrink-0";
+                    } else {
+                        el.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0";
+                    }
+                }
+            });
+
+            cards.forEach(cardId => {
+                const el = document.getElementById(cardId);
+                if (!el) return;
+                if (category === 'ALL') {
+                    el.classList.remove('hidden');
+                } else if (category === 'WAN') {
+                    el.classList.toggle('hidden', cardId !== 'ho-card-wan');
+                } else if (category === 'CAM') {
+                    el.classList.toggle('hidden', cardId !== 'ho-card-cam');
+                } else if (category === 'NET') {
+                    el.classList.toggle('hidden', cardId !== 'ho-card-net' && cardId !== 'ho-diagram');
+                } else if (category === 'IT') {
+                    el.classList.toggle('hidden', cardId !== 'ho-card-it');
+                }
+            });
+        }
+
+        // =========================================================================
+        // DỮ LIỆU ĐỊA ĐIỂM: 3 TRỤ SỞ NOC ĐIỀU PHỐI & 83 CỬA HÀNG PASSIO KÈM GPS
+        // =========================================================================
         const projectData = {
             hqs: [
                 { name: "Passio NOC TP.HCM (Tòa nhà VOV)", address: "Tầng 12, Tòa nhà VOV, 7 Nguyễn Thị Minh Khai, P. Bến Nghé, Q.1, TP. HCM", lat: 10.78827, lng: 106.70339 },
